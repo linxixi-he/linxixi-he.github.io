@@ -1497,6 +1497,21 @@ function loadData() {
   try {
     const saved = localStorage.getItem(STORE_KEY);
     if(saved) store = { ...store, ...JSON.parse(saved) };
+    // 迁移旧随机ID的默认任务 → 固定ID
+    const DEFAULT_TASKS = {
+      '浏览今日护肤热点，筛选2个二创方向': 'default-task-1',
+      '拍摄/剪辑1条极简护肤内容': 'default-task-2',
+      '复盘上次发布的内容数据': 'default-task-3',
+      '回复粉丝评论，收集下期选题': 'default-task-4'
+    };
+    if (store.tasks && store.tasks.length > 0) {
+      let migrated = false;
+      store.tasks.forEach(t => {
+        const fixedId = DEFAULT_TASKS[t.title];
+        if (fixedId && t.id !== fixedId) { t.id = fixedId; migrated = true; }
+      });
+      if (migrated) saveData();
+    }
     if(!store.tasks || store.tasks.length===0) {
       store.tasks = [
         { id: 'default-task-1', title: '浏览今日护肤热点，筛选2个二创方向', desc: '在「热点」中查看护肤爆款趋势', status: 'todo', priority: 'high', createdAt: Date.now() },
