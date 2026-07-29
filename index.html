@@ -1101,8 +1101,12 @@ body {
     </div>
   </div>
   <div class="sidebar-footer">
-    <button class="sidebar-sync-btn" onclick="showToast('数据已同步到本地 ✓')">🔄 同步到手机</button>
-    <div class="sidebar-hint">完成一项打卡，进度一目了然 ✨</div>
+    <div style="display:flex; gap:8px; justify-content:center;">
+      <button class="sidebar-sync-btn" style="flex:1; padding:10px 12px; font-size:13px;" onclick="exportData()">📤 导出</button>
+      <button class="sidebar-sync-btn" style="flex:1; padding:10px 12px; font-size:13px;" onclick="document.getElementById('importFile').click()">📥 导入</button>
+    </div>
+    <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(this)">
+    <div class="sidebar-hint">导出数据 → 发送到电脑 → 在电脑版导入 ✨</div>
   </div>
 </aside>
 
@@ -1478,6 +1482,43 @@ function loadData() {
   } catch(e){}
 }
 function saveData() { localStorage.setItem(STORE_KEY, JSON.stringify(store)); }
+
+function exportData() {
+  const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+  const blob = new Blob([JSON.stringify(store, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `linxixi-backup-${timestamp}.json`;
+  a.click();
+  showToast('✅ 已导出！发送到电脑 → 电脑版导入');
+}
+
+function importData(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const imported = JSON.parse(e.target.result);
+      if (!imported.tasks && !imported.reviews) throw new Error('无效文件');
+      const existingIds = new Set(store.tasks.map(t => t.id));
+      const newTasks = (imported.tasks || []).filter(t => !existingIds.has(t.id));
+      store.tasks = [...store.tasks, ...newTasks];
+      const existingRvIds = new Set(store.reviews.map(r => r.id));
+      const newReviews = (imported.reviews || []).filter(r => !existingRvIds.has(r.id));
+      store.reviews = [...store.reviews, ...newReviews];
+      store.collected = [...new Set([...store.collected, ...(imported.collected || [])])];
+      if (imported.streak > store.streak) store.streak = imported.streak;
+      saveData();
+      renderTasks(); renderReviews();
+      showToast(`✅ 导入 ${newTasks.length} 任务 + ${newReviews.length} 复盘`);
+    } catch(err) {
+      showToast('❌ 导入失败，请检查文件');
+    }
+  };
+  reader.readAsText(file);
+  input.value = '';
+}
 
 // ===== Navigation =====
 let currentPage = 'plan';
