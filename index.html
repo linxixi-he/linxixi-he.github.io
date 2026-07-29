@@ -1108,10 +1108,8 @@ body {
     <div class="sidebar-title">林夕夕的工作台</div>
     <div class="sidebar-subtitle">创作 · 学习 · 生活</div>
     <div class="sidebar-sync-row">
-      <button class="sidebar-sync-pill" onclick="exportData()">📤 导出</button>
-      <button class="sidebar-sync-pill" onclick="document.getElementById('importFile').click()">📥 导入</button>
+      <button class="sidebar-sync-pill" style="width:100%" onclick="syncFromCloud()">📲 同步到手机</button>
     </div>
-    <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(this)">
   </div>
   <div class="sidebar-menu">
     <div class="sidebar-item active" data-page="plan" onclick="navFromSidebar('plan')">
@@ -1132,7 +1130,7 @@ body {
     </div>
   </div>
   <div class="sidebar-footer">
-    <div class="sidebar-hint">导出 → 电脑版导入，保持数据同步 ✨</div>
+    <div class="sidebar-hint">电脑端点「同步到云端」→ 手机端点这里 ✨</div>
   </div>
 </aside>
 
@@ -1508,6 +1506,30 @@ function loadData() {
   } catch(e){}
 }
 function saveData() { localStorage.setItem(STORE_KEY, JSON.stringify(store)); }
+
+function syncFromCloud() {
+  showToast('⏳ 正在从云端拉取数据...');
+  fetch('https://linxixi-he.github.io/sync-data.json?t=' + Date.now())
+    .then(r => { if (!r.ok) throw new Error('网络错误'); return r.json(); })
+    .then(imported => {
+      if (!imported.tasks && !imported.reviews) throw new Error('无效数据');
+      const existingIds = new Set(store.tasks.map(t => t.id));
+      const newTasks = (imported.tasks || []).filter(t => !existingIds.has(t.id));
+      store.tasks = [...store.tasks, ...newTasks];
+      const existingRvIds = new Set(store.reviews.map(r => r.id));
+      const newReviews = (imported.reviews || []).filter(r => !existingRvIds.has(r.id));
+      store.reviews = [...store.reviews, ...newReviews];
+      store.collected = [...new Set([...store.collected, ...(imported.collected || [])])];
+      if (imported.streak > store.streak) store.streak = imported.streak;
+      if (imported.lastActiveDate) store.lastActiveDate = imported.lastActiveDate;
+      saveData();
+      renderTasks(); renderReviews();
+      showToast('✅ 同步成功！' + newTasks.length + ' 任务 + ' + newReviews.length + ' 复盘');
+    })
+    .catch(err => {
+      showToast('❌ 同步失败，请检查网络后重试');
+    });
+}
 
 function exportData() {
   const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
