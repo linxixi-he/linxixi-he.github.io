@@ -152,6 +152,32 @@ body {
   z-index: 1;
 }
 
+.sidebar-sync-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 14px;
+  position: relative;
+  z-index: 1;
+}
+.sidebar-sync-pill {
+  flex: 1;
+  padding: 8px 0;
+  border: 1.5px solid rgba(255,255,255,0.7);
+  background: rgba(255,255,255,0.6);
+  backdrop-filter: blur(6px);
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-dark);
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+}
+.sidebar-sync-pill:active {
+  background: rgba(255,255,255,0.9);
+  transform: scale(0.95);
+}
+
 .sidebar-menu {
   flex: 1;
   overflow-y: auto;
@@ -1081,6 +1107,11 @@ body {
     <div class="sidebar-avatar">✨</div>
     <div class="sidebar-title">林夕夕的工作台</div>
     <div class="sidebar-subtitle">创作 · 学习 · 生活</div>
+    <div class="sidebar-sync-row">
+      <button class="sidebar-sync-pill" onclick="exportData()">📤 导出</button>
+      <button class="sidebar-sync-pill" onclick="document.getElementById('importFile').click()">📥 导入</button>
+    </div>
+    <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(this)">
   </div>
   <div class="sidebar-menu">
     <div class="sidebar-item active" data-page="plan" onclick="navFromSidebar('plan')">
@@ -1099,21 +1130,9 @@ body {
       <div class="sidebar-item-icon" style="background:var(--blue-light);">📊</div>
       <div class="sidebar-item-text">内容复盘</div>
     </div>
-    <div class="sidebar-divider"></div>
-    <div class="sidebar-item" onclick="exportData()">
-      <div class="sidebar-item-icon" style="background:var(--green-light);">📤</div>
-      <div class="sidebar-item-text">导出数据</div>
-      <div class="sidebar-item-tag">备份</div>
-    </div>
-    <div class="sidebar-item" onclick="document.getElementById('importFile').click()">
-      <div class="sidebar-item-icon" style="background:var(--purple-light);">📥</div>
-      <div class="sidebar-item-text">导入数据</div>
-      <div class="sidebar-item-tag">同步</div>
-    </div>
-    <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(this)">
   </div>
   <div class="sidebar-footer">
-    <div class="sidebar-hint">导出 → 发送到电脑 → 电脑版导入 ✨</div>
+    <div class="sidebar-hint">导出 → 电脑版导入，保持数据同步 ✨</div>
   </div>
 </aside>
 
