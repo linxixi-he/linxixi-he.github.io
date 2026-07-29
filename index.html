@@ -1516,18 +1516,20 @@ function syncFromCloud() {
     .then(r => { if (!r.ok) throw new Error('网络错误'); return r.json(); })
     .then(imported => {
       if (!imported.tasks && !imported.reviews) throw new Error('无效数据');
-      const existingIds = new Set(store.tasks.map(t => t.id));
-      const newTasks = (imported.tasks || []).filter(t => !existingIds.has(t.id));
-      store.tasks = [...store.tasks, ...newTasks];
-      const existingRvIds = new Set(store.reviews.map(r => r.id));
-      const newReviews = (imported.reviews || []).filter(r => !existingRvIds.has(r.id));
-      store.reviews = [...store.reviews, ...newReviews];
+      // Upsert tasks: update existing by id, add new
+      const taskMap = new Map(store.tasks.map(t => [t.id, t]));
+      (imported.tasks || []).forEach(t => { taskMap.set(t.id, t); });
+      store.tasks = Array.from(taskMap.values());
+      // Upsert reviews: update existing by id, add new
+      const reviewMap = new Map(store.reviews.map(r => [r.id, r]));
+      (imported.reviews || []).forEach(r => { reviewMap.set(r.id, r); });
+      store.reviews = Array.from(reviewMap.values());
       store.collected = [...new Set([...store.collected, ...(imported.collected || [])])];
       if (imported.streak > store.streak) store.streak = imported.streak;
       if (imported.lastActiveDate) store.lastActiveDate = imported.lastActiveDate;
       saveData();
       renderTasks(); renderReviews();
-      showToast('✅ 同步成功！' + newTasks.length + ' 任务 + ' + newReviews.length + ' 复盘');
+      showToast('✅ 同步成功！数据已更新');
     })
     .catch(err => {
       showToast('❌ 同步失败，请检查网络后重试');
@@ -1552,12 +1554,14 @@ function importData(input) {
     try {
       const imported = JSON.parse(e.target.result);
       if (!imported.tasks && !imported.reviews) throw new Error('无效文件');
-      const existingIds = new Set(store.tasks.map(t => t.id));
-      const newTasks = (imported.tasks || []).filter(t => !existingIds.has(t.id));
-      store.tasks = [...store.tasks, ...newTasks];
-      const existingRvIds = new Set(store.reviews.map(r => r.id));
-      const newReviews = (imported.reviews || []).filter(r => !existingRvIds.has(r.id));
-      store.reviews = [...store.reviews, ...newReviews];
+      // Upsert tasks: update existing by id, add new
+      const taskMap = new Map(store.tasks.map(t => [t.id, t]));
+      (imported.tasks || []).forEach(t => { taskMap.set(t.id, t); });
+      store.tasks = Array.from(taskMap.values());
+      // Upsert reviews: update existing by id, add new
+      const reviewMap = new Map(store.reviews.map(r => [r.id, r]));
+      (imported.reviews || []).forEach(r => { reviewMap.set(r.id, r); });
+      store.reviews = Array.from(reviewMap.values());
       store.collected = [...new Set([...store.collected, ...(imported.collected || [])])];
       if (imported.streak > store.streak) store.streak = imported.streak;
       saveData();
