@@ -1099,14 +1099,21 @@ body {
       <div class="sidebar-item-icon" style="background:var(--blue-light);">📊</div>
       <div class="sidebar-item-text">内容复盘</div>
     </div>
-  </div>
-  <div class="sidebar-footer">
-    <div style="display:flex; gap:8px; justify-content:center;">
-      <button class="sidebar-sync-btn" style="flex:1; padding:10px 12px; font-size:13px;" onclick="exportData()">📤 导出</button>
-      <button class="sidebar-sync-btn" style="flex:1; padding:10px 12px; font-size:13px;" onclick="document.getElementById('importFile').click()">📥 导入</button>
+    <div class="sidebar-divider"></div>
+    <div class="sidebar-item" onclick="exportData()">
+      <div class="sidebar-item-icon" style="background:var(--green-light);">📤</div>
+      <div class="sidebar-item-text">导出数据</div>
+      <div class="sidebar-item-tag">备份</div>
+    </div>
+    <div class="sidebar-item" onclick="document.getElementById('importFile').click()">
+      <div class="sidebar-item-icon" style="background:var(--purple-light);">📥</div>
+      <div class="sidebar-item-text">导入数据</div>
+      <div class="sidebar-item-tag">同步</div>
     </div>
     <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(this)">
-    <div class="sidebar-hint">导出数据 → 发送到电脑 → 在电脑版导入 ✨</div>
+  </div>
+  <div class="sidebar-footer">
+    <div class="sidebar-hint">导出 → 发送到电脑 → 电脑版导入 ✨</div>
   </div>
 </aside>
 
