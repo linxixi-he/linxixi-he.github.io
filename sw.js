@@ -1,5 +1,5 @@
 // Service Worker - 缓存优先，断网也能用
-const CACHE_NAME = 'linxixi-v10';
+const CACHE_NAME = 'linxixi-v11';
 const ASSETS = ['./', './index.html', './sw.js'];
 
 self.addEventListener('install', e => {
