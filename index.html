@@ -1499,10 +1499,10 @@ function loadData() {
     if(saved) store = { ...store, ...JSON.parse(saved) };
     if(!store.tasks || store.tasks.length===0) {
       store.tasks = [
-        { id:uid(), title:'浏览今日护肤热点，筛选2个二创方向', desc:'在「热点」中查看护肤爆款趋势', status:'todo', priority:'high', createdAt:Date.now() },
-        { id:uid(), title:'拍摄/剪辑1条极简护肤内容', desc:'可以是产品测评/红黑榜/场景化种草', status:'todo', priority:'high', createdAt:Date.now() },
-        { id:uid(), title:'复盘上次发布的内容数据', desc:'记录播放/点赞/评论/收藏到「复盘」', status:'doing', priority:'medium', createdAt:Date.now() },
-        { id:uid(), title:'回复粉丝评论，收集下期选题', desc:'关注评论区高频问题和肤质需求', status:'done', priority:'low', createdAt:Date.now() }
+        { id: 'default-task-1', title: '浏览今日护肤热点，筛选2个二创方向', desc: '在「热点」中查看护肤爆款趋势', status: 'todo', priority: 'high', createdAt: Date.now() },
+        { id: 'default-task-2', title: '拍摄/剪辑1条极简护肤内容', desc: '可以是产品测评/红黑榜/场景化种草', status: 'todo', priority: 'high', createdAt: Date.now() },
+        { id: 'default-task-3', title: '复盘上次发布的内容数据', desc: '记录播放/点赞/评论/收藏到「复盘」', status: 'doing', priority: 'medium', createdAt: Date.now() },
+        { id: 'default-task-4', title: '回复粉丝评论，收集下期选题', desc: '关注评论区高频问题和肤质需求', status: 'done', priority: 'low', createdAt: Date.now() }
       ];
       saveData();
     }
@@ -1520,6 +1520,18 @@ function syncFromCloud() {
       const taskMap = new Map(store.tasks.map(t => [t.id, t]));
       (imported.tasks || []).forEach(t => { taskMap.set(t.id, t); });
       store.tasks = Array.from(taskMap.values());
+      // Deduplicate tasks with same title (keep fixed-ID or newer)
+      const titleMap = new Map();
+      store.tasks.forEach(t => {
+        const old = titleMap.get(t.title);
+        if (!old) { titleMap.set(t.title, t); return; }
+        const oldFixed = old.id && old.id.startsWith('default-task-');
+        const newFixed = t.id && t.id.startsWith('default-task-');
+        if (newFixed && !oldFixed) titleMap.set(t.title, t);
+        else if (!newFixed && oldFixed) {} // keep old
+        else if ((t.createdAt||0) > (old.createdAt||0)) titleMap.set(t.title, t);
+      });
+      store.tasks = Array.from(titleMap.values());
       // Upsert reviews: update existing by id, add new
       const reviewMap = new Map(store.reviews.map(r => [r.id, r]));
       (imported.reviews || []).forEach(r => { reviewMap.set(r.id, r); });
