@@ -1526,20 +1526,65 @@ const weeklyTaskTemplates = [
   { day: 0, title: '整理本周复盘，规划下周方向', desc: '记录数据到「复盘」，制定下周计划', priority: 'medium' },
 ];
 
+// 每日任务用固定语义ID，确保同步时正确匹配、不会重复
+const dailyFixedIds = ['daily-browse-hotspots','daily-shoot-content','daily-reply-comments'];
+
 function generateDailyTasks() {
   const today = new Date();
   const dayOfWeek = today.getDay();
   const dateStr = today.toDateString();
   store.tasks = store.tasks.filter(t => !t.isDaily);
-  dailyTaskTemplates.forEach(t => {
-    store.tasks.push({ id:'daily-'+dateStr+'-'+t.title.substring(0,4), title:t.title, desc:t.desc, status:'todo', priority:t.priority, isDaily:true, createdAt:Date.now() });
+  // 也用关键词清理残留的旧旧版每日任务（没有 isDaily 标记的）
+  store.tasks = store.tasks.filter(t => !t.id || !t.id.startsWith('daily-20'));
+  // 同样清理旧版 weekly-20xx 的任务
+  store.tasks = store.tasks.filter(t => !t.id || !t.id.startsWith('weekly-20'));
+  dailyTaskTemplates.forEach((t, i) => {
+    store.tasks.push({ id:dailyFixedIds[i], title:t.title, desc:t.desc, status:'todo', priority:t.priority, isDaily:true, createdAt:Date.now() });
   });
   const weeklyTask = weeklyTaskTemplates.find(w => w.day === dayOfWeek);
   if (weeklyTask) {
-    store.tasks.push({ id:'weekly-'+dateStr, title:weeklyTask.title, desc:weeklyTask.desc, status:'todo', priority:weeklyTask.priority, isDaily:true, createdAt:Date.now() });
+    store.tasks.push({ id:'daily-weekly-task', title:weeklyTask.title, desc:weeklyTask.desc, status:'todo', priority:weeklyTask.priority, isDaily:true, createdAt:Date.now() });
   }
+  // 智能去重：按标题语义去除高度相似的任务
+  dedupSimilarTasks();
   store.lastTaskDate = dateStr;
   saveData();
+}
+
+// 智能去重：按标题关键词分组，保留最新的那个
+function dedupSimilarTasks() {
+  if (!store.tasks || store.tasks.length <= 1) return;
+  // 关键词分组规则：提取标题核心语义
+  function getKey(title) {
+    var t = title.toLowerCase();
+    if (t.indexOf('热点') >= 0 || t.indexOf('二创') >= 0 || t.indexOf('趋势') >= 0) return 'hotspot';
+    if (t.indexOf('拍摄') >= 0 || t.indexOf('剪辑') >= 0 || t.indexOf('极简') >= 0) return 'shoot';
+    if (t.indexOf('评论') >= 0 || t.indexOf('粉丝') >= 0 || t.indexOf('互动') >= 0 || t.indexOf('回复') >= 0) return 'comments';
+    if (t.indexOf('复盘') >= 0 || t.indexOf('数据') >= 0 || t.indexOf('计划') >= 0) return 'review';
+    if (t.indexOf('新品') >= 0 || t.indexOf('成分') >= 0 || t.indexOf('研究') >= 0) return 'research';
+    if (t.indexOf('对比') >= 0 || t.indexOf('测评') >= 0 || t.indexOf('素材') >= 0) return 'compare';
+    if (t.indexOf('发布') >= 0 || t.indexOf('封面') >= 0 || t.indexOf('标题') >= 0) return 'publish';
+    if (t.indexOf('涨粉') >= 0 || t.indexOf('挑战') >= 0 || t.indexOf('打卡') >= 0) return 'growth';
+    return null;
+  }
+  var keyMap = {};
+  var toRemove = [];
+  store.tasks.forEach(function(t) {
+    var key = getKey(t.title);
+    if (!key) return;
+    var existing = keyMap[key];
+    if (!existing) { keyMap[key] = t; return; }
+    // 存在同义任务：保留 isDaily 或更新、或 ID 更规范的
+    if (t.isDaily && !existing.isDaily) { toRemove.push(existing.id); keyMap[key] = t; }
+    else if (!t.isDaily && existing.isDaily) { toRemove.push(t.id); }
+    else if ((t.createdAt||0) > (existing.createdAt||0)) { toRemove.push(existing.id); keyMap[key] = t; }
+    else { toRemove.push(t.id); }
+  });
+  if (toRemove.length > 0) {
+    var rmSet = {};
+    toRemove.forEach(function(id) { rmSet[id] = true; });
+    store.tasks = store.tasks.filter(function(t) { return !rmSet[t.id]; });
+  }
 }
 
 // ===== 每日热点轮播 =====
@@ -1655,6 +1700,8 @@ function syncFromCloud() {
         else if ((t.createdAt||0) > (old.createdAt||0)) titleMap.set(t.title, t);
       });
       store.tasks = Array.from(titleMap.values());
+      // 智能去重：合并高度相似的任务（如不同日期生成的同质任务）
+      dedupSimilarTasks();
       // Upsert reviews: update existing by id, add new
       const reviewMap = new Map(store.reviews.map(r => [r.id, r]));
       (imported.reviews || []).forEach(r => { reviewMap.set(r.id, r); });
