@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="林夕夕工作台">
 <meta name="theme-color" content="#faf7f5">
-<link rel="apple-touch-icon" href="https://linxixi-he.github.io/icon-192.png">
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect width='192' height='192' rx='40' fill='%23ffb7c5'/><text x='96' y='125' text-anchor='middle' font-size='72'>✨</text></svg>">
 <title>林夕夕的工作台</title>
 <style>
 /* ===== CSS Variables - Ins风配色 ===== */
@@ -1533,44 +1533,53 @@ function generateDailyTasks() {
   const today = new Date();
   const dayOfWeek = today.getDay();
   const dateStr = today.toDateString();
-  store.tasks = store.tasks.filter(t => !t.isDaily);
-  // 也用关键词清理残留的旧旧版每日任务（没有 isDaily 标记的）
-  store.tasks = store.tasks.filter(t => !t.id || !t.id.startsWith('daily-20'));
-  // 同样清理旧版 weekly-20xx 的任务
-  store.tasks = store.tasks.filter(t => !t.id || !t.id.startsWith('weekly-20'));
+  // 建立当日新任务的语义 key 集合
+  var newKeys = new Set();
+  dailyTaskTemplates.forEach(function(t) { var k = getTaskSemanticKey(t.title); if (k) newKeys.add(k); });
+  var weeklyTask = weeklyTaskTemplates.find(function(w) { return w.day === dayOfWeek; });
+  if (weeklyTask) { var wk = getTaskSemanticKey(weeklyTask.title); if (wk) newKeys.add(wk); }
+  // 移除旧的每日任务：isDaily 标记 + 旧版 ID + 语义撞车的残留任务
+  store.tasks = store.tasks.filter(function(t) {
+    if (t.isDaily) return false;
+    if (t.id && (t.id.startsWith('daily-20') || t.id.startsWith('weekly-20'))) return false;
+    // 语义撞车：老任务（非 isDaily）的标题语义和当天新任务相同 → 也会被替换
+    if (!t.isDaily) {
+      var oldKey = getTaskSemanticKey(t.title);
+      if (oldKey && newKeys.has(oldKey)) return false;
+    }
+    return true;
+  });
   dailyTaskTemplates.forEach((t, i) => {
     store.tasks.push({ id:dailyFixedIds[i], title:t.title, desc:t.desc, status:'todo', priority:t.priority, isDaily:true, createdAt:Date.now() });
   });
-  const weeklyTask = weeklyTaskTemplates.find(w => w.day === dayOfWeek);
   if (weeklyTask) {
     store.tasks.push({ id:'daily-weekly-task', title:weeklyTask.title, desc:weeklyTask.desc, status:'todo', priority:weeklyTask.priority, isDaily:true, createdAt:Date.now() });
   }
-  // 智能去重：按标题语义去除高度相似的任务
-  dedupSimilarTasks();
   store.lastTaskDate = dateStr;
   saveData();
+}
+
+// 任务语义分组：从标题提取核心关键词，用于去重
+function getTaskSemanticKey(title) {
+  var t = title.toLowerCase();
+  if (t.indexOf('热点') >= 0 || t.indexOf('二创') >= 0 || t.indexOf('趋势') >= 0) return 'hotspot';
+  if (t.indexOf('拍摄') >= 0 || t.indexOf('剪辑') >= 0 || t.indexOf('极简') >= 0) return 'shoot';
+  if (t.indexOf('评论') >= 0 || t.indexOf('粉丝') >= 0 || t.indexOf('互动') >= 0 || t.indexOf('回复') >= 0) return 'comments';
+  if (t.indexOf('复盘') >= 0 || t.indexOf('数据') >= 0 || t.indexOf('计划') >= 0) return 'review';
+  if (t.indexOf('新品') >= 0 || t.indexOf('成分') >= 0 || t.indexOf('研究') >= 0) return 'research';
+  if (t.indexOf('对比') >= 0 || t.indexOf('测评') >= 0 || t.indexOf('素材') >= 0) return 'compare';
+  if (t.indexOf('发布') >= 0 || t.indexOf('封面') >= 0 || t.indexOf('标题') >= 0) return 'publish';
+  if (t.indexOf('涨粉') >= 0 || t.indexOf('挑战') >= 0 || t.indexOf('打卡') >= 0) return 'growth';
+  return null;
 }
 
 // 智能去重：按标题关键词分组，保留最新的那个
 function dedupSimilarTasks() {
   if (!store.tasks || store.tasks.length <= 1) return;
-  // 关键词分组规则：提取标题核心语义
-  function getKey(title) {
-    var t = title.toLowerCase();
-    if (t.indexOf('热点') >= 0 || t.indexOf('二创') >= 0 || t.indexOf('趋势') >= 0) return 'hotspot';
-    if (t.indexOf('拍摄') >= 0 || t.indexOf('剪辑') >= 0 || t.indexOf('极简') >= 0) return 'shoot';
-    if (t.indexOf('评论') >= 0 || t.indexOf('粉丝') >= 0 || t.indexOf('互动') >= 0 || t.indexOf('回复') >= 0) return 'comments';
-    if (t.indexOf('复盘') >= 0 || t.indexOf('数据') >= 0 || t.indexOf('计划') >= 0) return 'review';
-    if (t.indexOf('新品') >= 0 || t.indexOf('成分') >= 0 || t.indexOf('研究') >= 0) return 'research';
-    if (t.indexOf('对比') >= 0 || t.indexOf('测评') >= 0 || t.indexOf('素材') >= 0) return 'compare';
-    if (t.indexOf('发布') >= 0 || t.indexOf('封面') >= 0 || t.indexOf('标题') >= 0) return 'publish';
-    if (t.indexOf('涨粉') >= 0 || t.indexOf('挑战') >= 0 || t.indexOf('打卡') >= 0) return 'growth';
-    return null;
-  }
   var keyMap = {};
   var toRemove = [];
   store.tasks.forEach(function(t) {
-    var key = getKey(t.title);
+    var key = getTaskSemanticKey(t.title);
     if (!key) return;
     var existing = keyMap[key];
     if (!existing) { keyMap[key] = t; return; }
