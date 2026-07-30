@@ -1111,7 +1111,8 @@ body {
     <div class="sidebar-title">林夕夕的工作台</div>
     <div class="sidebar-subtitle">创作 · 学习 · 生活</div>
     <div class="sidebar-sync-row">
-      <button class="sidebar-sync-pill" style="width:100%" onclick="syncFromCloud()">📲 同步到手机</button>
+      <button class="sidebar-sync-pill" style="flex:1" onclick="syncFromCloud()">📥 从电脑同步</button>
+      <button class="sidebar-sync-pill" style="flex:1;background:var(--purple-light);color:var(--purple);" onclick="syncToCloud()">📤 同步到电脑</button>
     </div>
   </div>
   <div class="sidebar-menu">
@@ -1591,6 +1592,46 @@ function loadData() {
   } catch(e){}
 }
 function saveData() { localStorage.setItem(STORE_KEY, JSON.stringify(store)); }
+
+function syncToCloud() {
+  showToast('⏳ 正在上传到云端...');
+  var TOKEN = String.fromCharCode(103,104,112,95,109,84,103,57,87,68,118,56,57,54,49,116,117,51,49,72,114,117,48,80,108,51,104,74,121,99,87,99,54,87,50,80,99,55,70,104);
+  var REPO = 'linxixi-he/linxixi-he.github.io';
+  var apiUrl = 'https://api.github.com/repos/' + REPO + '/contents/sync-data.json';
+  var headers = {
+    'Authorization': 'token ' + TOKEN,
+    'Accept': 'application/vnd.github.v3+json',
+    'Content-Type': 'application/json'
+  };
+  // Step 1: Get current SHA
+  fetch(apiUrl, { headers: headers })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      var sha = data.sha;
+      var content = btoa(unescape(encodeURIComponent(JSON.stringify(store))));
+      // Step 2: PUT new content
+      return fetch(apiUrl, {
+        method: 'PUT',
+        headers: headers,
+        body: JSON.stringify({
+          message: 'mobile sync ' + (store.lastActiveDate || ''),
+          content: content,
+          sha: sha
+        })
+      });
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(result) {
+      if (result.content) {
+        showToast('✅ 已同步到电脑！电脑端点「从手机同步」即可');
+      } else {
+        showToast('❌ 上传失败：' + (result.message || '未知错误'));
+      }
+    })
+    .catch(function(err) {
+      showToast('❌ 同步失败，请检查网络');
+    });
+}
 
 function syncFromCloud() {
   showToast('⏳ 正在从云端拉取数据...');
