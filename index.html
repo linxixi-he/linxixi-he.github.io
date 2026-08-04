@@ -2,1339 +2,1462 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="林夕夕工作台">
-<meta name="theme-color" content="#faf7f5">
-<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect width='192' height='192' rx='40' fill='%23ffb7c5'/><text x='96' y='125' text-anchor='middle' font-size='72'>✨</text></svg>">
-<title>林夕夕的工作台</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>林夕夕的工作台 | 创作者每日工作台</title>
 <style>
-/* ===== CSS Variables - Ins风配色 ===== */
+/* ===== 全局重置与变量 ===== */
 :root {
-  --bg: #faf7f5;
-  --bg-warm: #f5f0ec;
-  --card: #ffffff;
-  --card-hover: #fdfbf9;
-  --pink-light: #ffe4e1;
-  --pink: #ffb7c5;
-  --pink-dark: #ff8fab;
-  --pink-text: #be185d;
-  --blue-light: #e0f0ff;
-  --blue: #a8d0e6;
-  --blue-dark: #7ec8e3;
-  --blue-text: #0369a1;
-  --yellow-light: #fff8dc;
-  --yellow: #fde68a;
-  --yellow-dark: #fbbf24;
-  --yellow-text: #b45309;
-  --green-light: #dcfce7;
-  --green: #86efac;
-  --red-light: #fee2e2;
-  --purple-light: #f3e8ff;
-  --text: #4a4a4a;
-  --text-dark: #2d2a26;
-  --text-secondary: #888888;
-  --text-muted: #aaaaaa;
-  --border: #f0e6e0;
-  --shadow: 0 4px 20px rgba(0,0,0,0.05);
-  --shadow-lg: 0 8px 30px rgba(0,0,0,0.08);
-  --shadow-pink: 0 4px 16px rgba(255,143,171,0.25);
-  --radius-sm: 12px;
-  --radius-md: 16px;
+  --bg-primary: #f8f6f3;
+  --bg-card: #ffffff;
+  --bg-soft: #f3f0ec;
+  --text-primary: #2d2a26;
+  --text-secondary: #6b6660;
+  --text-muted: #a8a29a;
+  --accent-coral: #ff6b6b;
+  --accent-orange: #ff9a56;
+  --accent-pink: #ff8fab;
+  --accent-purple: #a78bfa;
+  --accent-teal: #4ecdc4;
+  --accent-green: #6bcf7f;
+  --accent-blue: #6ba6ff;
+  --border-color: #e8e4df;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.08);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.12);
+  --radius-sm: 8px;
+  --radius-md: 12px;
   --radius-lg: 20px;
-  --radius-xl: 24px;
-  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Segoe UI', sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  min-height: 100vh;
-  overflow-x: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
-  padding-bottom: calc(72px + var(--safe-bottom));
-  max-width: 480px;
-  margin: 0 auto;
-  position: relative;
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
 }
 
-::-webkit-scrollbar { width: 0; height: 0; }
-
-/* ===== 侧边栏遮罩 ===== */
-.sidebar-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.25);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  z-index: 200;
-  opacity: 0;
-  visibility: hidden;
-  transition: all 0.35s ease;
-}
-.sidebar-overlay.active { opacity: 1; visibility: visible; }
-
-/* ===== 侧边栏 ===== */
+/* ===== 左侧边栏 ===== */
 .sidebar {
-  position: fixed;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 280px;
-  background: var(--card);
-  z-index: 210;
-  transform: translateX(-110%);
-  transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1);
+  width: 220px;
+  flex-shrink: 0;
+  background: var(--bg-card);
+  border-right: 1px solid var(--border-color);
   display: flex;
   flex-direction: column;
-  box-shadow: var(--shadow-lg);
-  border-radius: 0 28px 28px 0;
-  overflow: hidden;
+  padding: 20px 0;
 }
-.sidebar.open { transform: translateX(0); }
 
-.sidebar-header {
-  padding: 36px 22px 24px;
-  background: linear-gradient(160deg, var(--pink-light) 0%, var(--blue-light) 50%, var(--yellow-light) 100%);
-  position: relative;
-  overflow: hidden;
-}
-.sidebar-header::before {
-  content: '';
-  position: absolute;
-  top: -40px;
-  right: -40px;
-  width: 120px;
-  height: 120px;
-  background: rgba(255,255,255,0.4);
-  border-radius: 50%;
-}
-.sidebar-header::after {
-  content: '';
-  position: absolute;
-  bottom: -20px;
-  left: -20px;
-  width: 80px;
-  height: 80px;
-  background: rgba(255,255,255,0.3);
-  border-radius: 50%;
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 20px 20px;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 12px;
 }
 
 .sidebar-avatar {
-  width: 52px;
-  height: 52px;
-  border-radius: 18px;
-  background: linear-gradient(135deg, var(--pink-dark), var(--blue-dark));
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 26px;
-  margin-bottom: 14px;
-  box-shadow: 0 4px 16px rgba(255,143,171,0.35);
-  position: relative;
-  z-index: 1;
-}
-.sidebar-title {
-  font-size: 19px;
-  font-weight: 800;
-  color: var(--text-dark);
-  margin-bottom: 5px;
-  position: relative;
-  z-index: 1;
-  letter-spacing: 0.5px;
-}
-.sidebar-subtitle {
-  font-size: 13px;
-  color: var(--text-secondary);
-  position: relative;
-  z-index: 1;
-}
-
-.sidebar-sync-row {
-  display: flex;
-  gap: 10px;
-  margin-top: 14px;
-  position: relative;
-  z-index: 1;
-}
-.sidebar-sync-pill {
-  flex: 1;
-  padding: 8px 0;
-  border: 1.5px solid rgba(255,255,255,0.7);
-  background: rgba(255,255,255,0.6);
-  backdrop-filter: blur(6px);
-  border-radius: 20px;
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--text-dark);
-  cursor: pointer;
-  transition: all 0.2s;
-  text-align: center;
-}
-.sidebar-sync-pill:active {
-  background: rgba(255,255,255,0.9);
-  transform: scale(0.95);
-}
-
-.sidebar-menu {
-  flex: 1;
-  overflow-y: auto;
-  padding: 16px 14px;
-}
-.sidebar-item {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 14px 16px;
-  border-radius: var(--radius-md);
-  margin-bottom: 6px;
-  cursor: pointer;
-  transition: all 0.25s ease;
-  position: relative;
-}
-.sidebar-item:hover { background: var(--bg); }
-.sidebar-item:active { transform: scale(0.97); }
-.sidebar-item.active {
-  background: linear-gradient(135deg, var(--pink-light), var(--blue-light));
-  box-shadow: 0 2px 12px rgba(255,183,197,0.3);
-}
-.sidebar-item-icon {
-  width: 38px;
-  height: 38px;
-  border-radius: 14px;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--accent-pink), var(--accent-coral));
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 20px;
-  flex-shrink: 0;
-  transition: transform 0.2s;
+  font-weight: 700;
+  color: #fff;
 }
-.sidebar-item:active .sidebar-item-icon { transform: scale(1.1); }
-.sidebar-item-text {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text);
+
+.sidebar-brand-name {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.sidebar-brand-sub {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.sidebar-nav {
   flex: 1;
+  padding: 0 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
-.sidebar-item-badge {
-  background: linear-gradient(135deg, var(--pink-dark), #ff6b9d);
+
+.sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  transition: var(--transition);
+  position: relative;
+}
+
+.sidebar-item:hover {
+  background: var(--bg-soft);
+  color: var(--text-primary);
+}
+
+.sidebar-item.active {
+  background: linear-gradient(135deg, #fff5f5, #fff0f0);
+  color: var(--accent-coral);
+  font-weight: 600;
+}
+
+.sidebar-item-icon {
+  font-size: 18px;
+  width: 28px;
+  text-align: center;
+}
+
+.sidebar-badge {
+  margin-left: auto;
+  background: var(--accent-coral);
   color: #fff;
   font-size: 11px;
-  font-weight: 700;
-  padding: 3px 10px;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(255,143,171,0.3);
-}
-.sidebar-item-tag {
-  background: linear-gradient(135deg, var(--yellow), #fcd34d);
-  color: var(--yellow-text);
-  font-size: 10px;
-  font-weight: 700;
-  padding: 3px 10px;
+  font-weight: 600;
+  padding: 2px 8px;
   border-radius: 10px;
 }
 
-.sidebar-divider {
-  height: 1px;
-  background: linear-gradient(90deg, transparent, var(--border), transparent);
-  margin: 8px 16px;
-}
-
 .sidebar-footer {
-  padding: 18px 16px;
-  border-top: 1px solid var(--border);
-  text-align: center;
+  padding: 12px;
+  border-top: 1px solid var(--border-color);
+  margin-top: auto;
 }
+
 .sidebar-sync-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 12px 24px;
-  background: linear-gradient(135deg, var(--blue-light), var(--pink-light));
-  border-radius: var(--radius-xl);
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--text);
-  border: none;
-  box-shadow: var(--shadow);
+  width: 100%;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-soft);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
   cursor: pointer;
-  transition: all 0.2s;
-}
-.sidebar-sync-btn:active { transform: scale(0.96); }
-.sidebar-hint {
-  font-size: 11px;
-  color: var(--text-muted);
-  margin-top: 10px;
+  transition: var(--transition);
 }
 
-/* ===== 主体区域 ===== */
-.main {
-  min-height: 100vh;
+.sidebar-sync-btn:hover {
+  background: var(--accent-coral);
+  color: #fff;
+  border-color: var(--accent-coral);
 }
 
-.main-header {
+/* ===== 右侧内容区包裹 ===== */
+.content-wrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ===== 顶部导航栏 ===== */
+.topbar {
+  background: rgba(255,255,255,0.85);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border-color);
+  padding: 0 24px;
+  height: 64px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 14px 18px 10px;
-  position: sticky;
-  top: 0;
-  background: rgba(250,247,245,0.92);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  z-index: 50;
+  flex-shrink: 0;
 }
-.menu-btn {
-  width: 42px;
-  height: 42px;
-  border-radius: var(--radius-md);
-  background: var(--card);
-  border: 1px solid var(--border);
+
+.topbar-left {
   display: flex;
   align-items: center;
-  justify-content: center;
-  font-size: 18px;
-  cursor: pointer;
-  box-shadow: var(--shadow);
-  transition: all 0.2s;
+  gap: 16px;
 }
-.menu-btn:active { transform: scale(0.92); background: var(--pink-light); }
-.header-title {
-  font-size: 17px;
-  font-weight: 800;
-  color: var(--text-dark);
-  letter-spacing: 0.3px;
+
+.logo {
+  font-size: 20px;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--accent-coral), var(--accent-orange), var(--accent-pink));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
-.header-date {
-  text-align: right;
+
+.logo-sub {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-weight: 400;
 }
-.header-date-day {
-  font-size: 12px;
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.date-pill {
+  background: var(--bg-soft);
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 13px;
   color: var(--text-secondary);
   font-weight: 500;
 }
-.header-date-week {
-  font-size: 11px;
-  color: var(--blue-text);
-  background: var(--blue-light);
-  padding: 3px 12px;
-  border-radius: 12px;
-  margin-top: 3px;
-  display: inline-block;
+
+.streak-badge {
+  background: linear-gradient(135deg, #fff5e6, #ffe0cc);
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  color: #d97706;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.btn-sync {
+  background: var(--bg-soft);
+  border: 1px solid var(--border-color);
+  padding: 5px 12px;
+  border-radius: 16px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+.btn-sync:hover { background: var(--accent-coral); color: #fff; border-color: var(--accent-coral); }
+
+/* ===== Tab 导航 ===== */
+.tabs {
+  display: flex;
+  gap: 4px;
+  padding: 12px 24px 0;
+  background: var(--bg-primary);
+  position: sticky;
+  top: 64px;
+  z-index: 99;
+  overflow-x: auto;
+  white-space: nowrap;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.tabs::-webkit-scrollbar { display: none; }
+
+.tab {
+  padding: 10px 20px;
+  border-radius: 12px 12px 0 0;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-muted);
+  border: 1px solid transparent;
+  border-bottom: none;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.tab:hover {
+  color: var(--text-secondary);
+  background: rgba(0,0,0,0.02);
+}
+
+.tab.active {
+  background: var(--bg-card);
+  color: var(--text-primary);
+  border-color: var(--border-color);
   font-weight: 600;
 }
 
-.content {
-  padding: 8px 18px 24px;
+.tab-icon {
+  font-size: 16px;
 }
 
-/* ===== 页面切换 ===== */
-.page { display: none; }
-.page.active { display: block; animation: fadeInUp 0.35s cubic-bezier(0.32, 0.72, 0, 1); }
-@keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(16px); }
+.tab-badge {
+  background: var(--accent-coral);
+  color: white;
+  font-size: 11px;
+  padding: 1px 6px;
+  border-radius: 10px;
+  font-weight: 600;
+}
+
+/* ===== 主内容区 ===== */
+.main-content {
+  padding: 24px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.panel {
+  display: none;
+  animation: fadeIn 0.3s ease;
+}
+.panel.active { display: block; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
 /* ===== 通用卡片 ===== */
 .card {
-  background: var(--card);
-  border-radius: var(--radius-lg);
-  padding: 22px;
-  margin-bottom: 16px;
-  box-shadow: var(--shadow);
-  border: 1px solid var(--border);
-  transition: all 0.2s;
-}
-.card:active { transform: scale(0.99); }
-.card-title {
-  font-size: 16px;
-  font-weight: 800;
-  margin-bottom: 6px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: var(--text-dark);
-}
-.card-desc {
-  font-size: 13px;
-  color: var(--text-secondary);
-  margin-bottom: 16px;
-  line-height: 1.6;
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-color);
+  padding: 20px;
+  transition: var(--transition);
 }
 
-/* ===== 统计卡片 ===== */
-.stats-row {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
-  margin-bottom: 20px;
+.card:hover {
+  box-shadow: var(--shadow-md);
 }
-.stat-card {
-  background: var(--card);
-  border-radius: var(--radius-lg);
-  padding: 18px 12px;
-  text-align: center;
-  box-shadow: var(--shadow);
-  border: 1px solid var(--border);
-  transition: all 0.2s;
-}
-.stat-card:active { transform: scale(0.96); }
-.stat-icon { font-size: 22px; margin-bottom: 6px; }
-.stat-value { font-size: 24px; font-weight: 800; color: var(--pink-dark); }
-.stat-label { font-size: 11px; color: var(--text-muted); margin-top: 4px; font-weight: 500; }
 
-/* ===== 任务输入 ===== */
-.task-input-group {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
-}
-.task-input {
-  flex: 1;
-  padding: 14px 18px;
-  border: 2px solid var(--border);
-  border-radius: var(--radius-xl);
-  font-size: 15px;
-  background: var(--card);
-  outline: none;
-  color: var(--text);
-  transition: all 0.2s;
-}
-.task-input::placeholder { color: var(--text-muted); }
-.task-input:focus {
-  border-color: var(--pink);
-  box-shadow: 0 0 0 4px rgba(255,183,197,0.15);
-}
-.task-add-btn {
-  width: 50px;
-  height: 50px;
-  border-radius: var(--radius-xl);
-  background: linear-gradient(135deg, var(--pink-dark), var(--blue-dark));
-  color: #fff;
-  border: none;
-  font-size: 24px;
-  font-weight: 300;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: var(--shadow-pink);
-  cursor: pointer;
-  transition: all 0.2s;
-  flex-shrink: 0;
-}
-.task-add-btn:active { transform: scale(0.9); }
-
-/* ===== 任务分组 ===== */
-.task-section {
-  margin-bottom: 24px;
-}
-.task-section-header {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 14px;
-  font-size: 14px;
+.section-title {
+  font-size: 18px;
   font-weight: 700;
-  color: var(--text-dark);
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
-.task-section-dot {
+
+.section-desc {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 16px;
+}
+
+/* ===== 任务看板 ===== */
+.kanban {
+  display: flex;
+  flex-direction: row;
+  gap: 16px;
+  width: 100%;
+}
+
+.kanban-col {
+  flex: 1;
+  min-width: 0;
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  padding: 16px;
+}
+
+.kanban-col-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--border-color);
+}
+
+.kanban-col-title {
+  font-size: 15px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.col-dot {
   width: 8px;
   height: 8px;
   border-radius: 50%;
 }
-.dot-todo { background: linear-gradient(135deg, var(--pink-dark), #ff6b9d); }
-.dot-doing { background: linear-gradient(135deg, var(--blue-dark), #60a5fa); }
-.dot-done { background: linear-gradient(135deg, var(--green), #34d399); }
-.task-section-count {
-  margin-left: auto;
+
+.col-todo .col-dot { background: var(--accent-blue); }
+.col-doing .col-dot { background: var(--accent-orange); }
+.col-done .col-dot { background: var(--accent-green); }
+
+.col-count {
   font-size: 12px;
   color: var(--text-muted);
-  font-weight: 500;
-  background: var(--bg);
-  padding: 2px 10px;
+  background: var(--bg-soft);
+  padding: 2px 8px;
   border-radius: 10px;
 }
 
-/* ===== 任务项 ===== */
-.task-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 16px;
-  background: var(--card);
-  border-radius: var(--radius-md);
-  margin-bottom: 10px;
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow);
-  transition: all 0.2s;
+.task-card {
+  background: var(--bg-soft);
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  margin-bottom: 8px;
+  cursor: grab;
+  border-left: 3px solid var(--accent-blue);
+  transition: var(--transition);
+  position: relative;
 }
-.task-item:active { transform: scale(0.98); }
-.task-checkbox {
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  border: 2.5px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  cursor: pointer;
-  font-size: 13px;
-  color: transparent;
-  transition: all 0.2s;
+
+.task-card:hover {
+  box-shadow: var(--shadow-sm);
+  transform: translateY(-1px);
 }
-.task-checkbox.checked {
-  background: linear-gradient(135deg, var(--pink-dark), var(--blue-dark));
-  border-color: transparent;
-  color: #fff;
-  box-shadow: 0 2px 8px rgba(255,143,171,0.3);
-}
-.task-text {
-  flex: 1;
+
+.task-card.priority-high { border-left-color: var(--accent-coral); }
+.task-card.priority-medium { border-left-color: var(--accent-orange); }
+.task-card.priority-low { border-left-color: var(--accent-blue); }
+
+.task-card.dragging { opacity: 0.5; }
+
+.task-title {
   font-size: 14px;
   font-weight: 500;
-  color: var(--text);
-  line-height: 1.5;
+  margin-bottom: 4px;
+  word-break: break-word;
 }
-.task-text.done {
-  text-decoration: line-through;
+
+.task-desc {
+  font-size: 12px;
   color: var(--text-muted);
+  margin-bottom: 8px;
+  word-break: break-word;
 }
-.task-priority {
-  font-size: 10px;
-  padding: 4px 10px;
-  border-radius: 10px;
-  font-weight: 700;
-  flex-shrink: 0;
-}
-.priority-high { background: var(--pink-light); color: var(--pink-text); }
-.priority-medium { background: var(--yellow-light); color: var(--yellow-text); }
-.priority-low { background: var(--blue-light); color: var(--blue-text); }
-.task-actions {
-  display: flex;
-  gap: 6px;
-  flex-shrink: 0;
-}
-.task-btn {
-  width: 32px;
-  height: 32px;
-  border-radius: 10px;
-  border: 1px solid var(--border);
-  background: var(--bg);
+
+.task-meta {
   display: flex;
   align-items: center;
-  justify-content: center;
-  font-size: 13px;
+  justify-content: space-between;
+}
+
+.task-priority {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-weight: 500;
+}
+
+.priority-high .task-priority { background: #fee2e2; color: #dc2626; }
+.priority-medium .task-priority { background: #fef3c7; color: #d97706; }
+.priority-low .task-priority { background: #dbeafe; color: #2563eb; }
+
+.task-actions {
+  display: flex;
+  gap: 4px;
+  opacity: 0;
+  transition: var(--transition);
+}
+
+.task-card:hover .task-actions { opacity: 1; }
+
+.task-btn {
+  background: none;
+  border: none;
   cursor: pointer;
-  transition: all 0.15s;
+  font-size: 14px;
+  padding: 2px 4px;
+  border-radius: 4px;
+  color: var(--text-muted);
+  transition: var(--transition);
+}
+
+.task-btn:hover { background: rgba(0,0,0,0.08); color: var(--text-primary); }
+.task-btn.delete:hover { color: var(--accent-coral); }
+
+.add-task-btn {
+  width: 100%;
+  padding: 10px;
+  border: 1px dashed var(--border-color);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--text-muted);
+  transition: var(--transition);
+}
+
+.add-task-btn:hover {
+  border-color: var(--accent-coral);
+  color: var(--accent-coral);
+  background: #fff5f5;
+}
+
+/* ===== 热点发现 ===== */
+.trending-filters {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.filter-chip {
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid var(--border-color);
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  transition: var(--transition);
+}
+
+.filter-chip:hover { border-color: var(--accent-coral); color: var(--accent-coral); }
+.filter-chip.active { background: var(--accent-coral); color: white; border-color: var(--accent-coral); }
+
+.trending-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 16px;
+}
+
+.trending-card {
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  overflow: hidden;
+  transition: var(--transition);
+  display: flex;
+  flex-direction: column;
+}
+
+.trending-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.trending-card-header {
+  padding: 14px 16px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.platform-tag {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 12px;
+}
+
+.platform-douyin { background: #000; color: white; }
+.platform-xiaohongshu { background: #ff2442; color: white; }
+
+.heat-tag {
+  font-size: 11px;
+  color: var(--accent-coral);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.trending-card-body {
+  padding: 0 16px 12px;
+  flex: 1;
+}
+
+.trending-title {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 6px;
+  line-height: 1.4;
+}
+
+.trending-desc {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin-bottom: 10px;
+}
+
+.trending-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 10px;
+}
+
+.trend-tag {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: var(--bg-soft);
   color: var(--text-secondary);
 }
-.task-btn:active { transform: scale(0.9); }
-.task-btn.danger { color: #ef4444; }
 
-/* ===== 热点卡片 ===== */
-.trend-card {
-  background: var(--card);
-  border-radius: var(--radius-lg);
-  padding: 22px;
-  margin-bottom: 16px;
-  box-shadow: var(--shadow);
-  border: 1px solid var(--border);
+.trending-remix {
+  background: linear-gradient(135deg, #fff5f5, #fff0f5);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  border: 1px dashed var(--accent-pink);
+  line-height: 1.5;
+}
+
+.trending-remix strong {
+  color: var(--accent-coral);
+}
+
+.trending-card-footer {
+  padding: 10px 16px 14px;
+  display: flex;
+  gap: 8px;
+  border-top: 1px solid var(--border-color);
+}
+
+.remix-btn {
+  flex: 1;
+  padding: 8px;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.btn-collect {
+  background: var(--bg-soft);
+  color: var(--text-secondary);
+}
+
+.btn-collect:hover { background: var(--bg-primary); }
+.btn-collect.collected { background: #fef3c7; color: #d97706; }
+
+.btn-remix {
+  background: linear-gradient(135deg, var(--accent-coral), var(--accent-pink));
+  color: white;
+}
+
+.btn-remix:hover { opacity: 0.9; transform: scale(1.02); }
+
+/* ===== 内容复盘 ===== */
+.review-layout {
+  display: grid;
+  grid-template-columns: 380px 1fr;
+  gap: 20px;
+}
+
+.review-form {
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  padding: 20px;
+  position: sticky;
+  top: 120px;
+  height: fit-content;
+}
+
+.form-group {
+  margin-bottom: 14px;
+}
+
+.form-label {
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 6px;
+  display: block;
+  color: var(--text-secondary);
+}
+
+.form-input, .form-select, .form-textarea {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-family: inherit;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  transition: var(--transition);
+}
+
+.form-input:focus, .form-select:focus, .form-textarea:focus {
+  outline: none;
+  border-color: var(--accent-coral);
+  box-shadow: 0 0 0 3px rgba(255,107,107,0.1);
+}
+
+.form-textarea {
+  resize: vertical;
+  min-height: 60px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.form-row-4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.metric-input {
+  text-align: center;
+}
+
+.metric-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  text-align: center;
+  margin-bottom: 2px;
+}
+
+.rating-stars {
+  display: flex;
+  gap: 4px;
+}
+
+.star {
+  font-size: 20px;
+  cursor: pointer;
+  color: #ddd;
+  transition: var(--transition);
+}
+
+.star.active { color: #fbbf24; }
+.star:hover { color: #fbbf24; }
+
+.submit-btn {
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(135deg, var(--accent-coral), var(--accent-pink));
+  color: white;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.submit-btn:hover { opacity: 0.9; transform: scale(1.01); }
+
+.review-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.review-card {
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  padding: 20px;
+  transition: var(--transition);
+}
+
+.review-card:hover { box-shadow: var(--shadow-md); }
+
+.review-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.review-title {
+  font-size: 16px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.review-date {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.review-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 14px;
+  padding: 12px;
+  background: var(--bg-soft);
+  border-radius: var(--radius-sm);
+}
+
+.metric-item {
+  text-align: center;
+}
+
+.metric-value {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.metric-name {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.review-section {
+  margin-bottom: 12px;
+}
+
+.review-section-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.review-section-content {
+  font-size: 13px;
+  color: var(--text-primary);
+  line-height: 1.6;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-soft);
+}
+
+.review-section-content.improve {
+  background: #fff5f5;
+  border-left: 3px solid var(--accent-coral);
+}
+
+.review-section-content.next {
+  background: #f0fdf4;
+  border-left: 3px solid var(--accent-green);
+}
+
+.review-stars-display {
+  display: flex;
+  gap: 2px;
+}
+
+.review-star-display {
+  font-size: 14px;
+  color: #ddd;
+}
+.review-star-display.active { color: #fbbf24; }
+
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-muted);
+}
+
+.empty-state-icon {
+  font-size: 48px;
+  margin-bottom: 12px;
+  opacity: 0.3;
+}
+
+/* ===== 灵感库 ===== */
+.inspiration-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.inspo-card {
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  padding: 20px;
+  transition: var(--transition);
   position: relative;
   overflow: hidden;
 }
-.trend-card::before {
+
+.inspo-card::before {
   content: '';
   position: absolute;
   top: 0;
   left: 0;
-  right: 0;
-  height: 4px;
-  background: linear-gradient(90deg, var(--pink-dark), var(--blue-dark), var(--yellow-dark));
+  width: 4px;
+  height: 100%;
 }
-.trend-top {
+
+.inspo-card.c1::before { background: var(--accent-coral); }
+.inspo-card.c2::before { background: var(--accent-orange); }
+.inspo-card.c3::before { background: var(--accent-purple); }
+.inspo-card.c4::before { background: var(--accent-teal); }
+
+.inspo-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+
+.inspo-header {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   margin-bottom: 12px;
-  margin-top: 4px;
 }
-.trend-platform {
-  font-size: 11px;
+
+.inspo-icon {
+  font-size: 24px;
+}
+
+.inspo-title {
+  font-size: 16px;
   font-weight: 700;
-  padding: 4px 12px;
-  border-radius: var(--radius-xl);
 }
-.platform-douyin { background: var(--blue-light); color: var(--blue-text); }
-.platform-xiaohongshu { background: var(--pink-light); color: var(--pink-text); }
-.trend-heat {
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--pink-text);
-  background: linear-gradient(135deg, var(--pink-light), var(--yellow-light));
-  padding: 4px 12px;
-  border-radius: var(--radius-xl);
-}
-.trend-title {
-  font-size: 15px;
-  font-weight: 800;
-  margin-bottom: 10px;
-  line-height: 1.6;
-  color: var(--text-dark);
-}
-.trend-desc {
-  font-size: 13px;
+
+.inspo-body {
+  font-size: 14px;
   color: var(--text-secondary);
-  line-height: 1.8;
-  margin-bottom: 14px;
-}
-.trend-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-bottom: 14px;
-}
-.trend-tag {
-  font-size: 11px;
-  padding: 5px 12px;
-  border-radius: var(--radius-xl);
-  background: var(--blue-light);
-  color: var(--blue-text);
-  font-weight: 600;
-}
-.trend-remix {
-  background: linear-gradient(135deg, var(--yellow-light), var(--pink-light));
-  border-radius: var(--radius-md);
-  padding: 14px 16px;
-  font-size: 13px;
   line-height: 1.7;
-  margin-bottom: 14px;
-  color: var(--text);
-}
-.trend-actions {
-  display: flex;
-  gap: 10px;
-}
-.trend-btn {
-  flex: 1;
-  padding: 12px;
-  border-radius: var(--radius-xl);
-  border: 1.5px solid var(--border);
-  background: var(--bg);
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--text);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  transition: all 0.2s;
-}
-.trend-btn:active { transform: scale(0.96); }
-.trend-btn.primary {
-  background: linear-gradient(135deg, var(--pink-dark), var(--blue-dark));
-  color: #fff;
-  border: none;
-  box-shadow: var(--shadow-pink);
-}
-.trend-btn.collected {
-  background: var(--pink-light);
-  color: var(--pink-text);
-  border-color: var(--pink);
 }
 
-/* ===== 筛选标签 ===== */
-.filter-bar {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 16px;
-  overflow-x: auto;
-  padding-bottom: 4px;
-}
-.filter-chip {
-  flex-shrink: 0;
-  padding: 8px 18px;
-  border-radius: var(--radius-xl);
-  border: 1.5px solid var(--border);
-  background: var(--card);
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text-secondary);
-  cursor: pointer;
-  transition: all 0.2s;
-}
-.filter-chip:active { transform: scale(0.95); }
-.filter-chip.active {
-  background: linear-gradient(135deg, var(--pink-dark), var(--blue-dark));
-  color: #fff;
-  border-color: transparent;
-  box-shadow: var(--shadow-pink);
-}
-
-/* ===== 复盘表单 ===== */
-.review-form {
-  background: var(--card);
-  border-radius: var(--radius-lg);
-  padding: 22px;
-  margin-bottom: 16px;
-  box-shadow: var(--shadow);
-  border: 1px solid var(--border);
-}
-.form-group {
-  margin-bottom: 18px;
-}
-.form-label {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--text-secondary);
-  margin-bottom: 8px;
-  display: block;
-}
-.form-input, .form-textarea, .form-select {
-  width: 100%;
-  padding: 14px 16px;
-  border: 2px solid var(--border);
-  border-radius: var(--radius-xl);
-  font-size: 15px;
-  background: var(--bg);
-  outline: none;
-  color: var(--text);
-  font-family: inherit;
-  transition: all 0.2s;
-}
-.form-input:focus, .form-textarea:focus, .form-select:focus {
-  border-color: var(--pink);
-  box-shadow: 0 0 0 4px rgba(255,183,197,0.15);
-}
-.form-textarea {
-  min-height: 90px;
-  resize: vertical;
-}
-.form-row {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
-}
-.form-row-4 {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
-}
-.star-group {
-  display: flex;
-  gap: 10px;
-  font-size: 28px;
-}
-.star {
-  color: #e5e5e5;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-.star.active { color: var(--yellow-dark); text-shadow: 0 2px 8px rgba(251,191,36,0.4); }
-.submit-btn {
-  width: 100%;
-  padding: 16px;
-  border-radius: var(--radius-xl);
-  background: linear-gradient(135deg, var(--pink-dark), var(--blue-dark));
-  color: #fff;
-  border: none;
-  font-size: 16px;
-  font-weight: 800;
-  box-shadow: var(--shadow-pink);
-  cursor: pointer;
-  transition: all 0.2s;
-  letter-spacing: 1px;
-}
-.submit-btn:active { transform: scale(0.97); }
-
-/* ===== 复盘记录项 ===== */
-.review-item {
-  background: var(--card);
-  border-radius: var(--radius-lg);
-  padding: 22px;
-  margin-bottom: 16px;
-  box-shadow: var(--shadow);
-  border: 1px solid var(--border);
-}
-.review-item-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 14px;
-}
-.review-item-title {
-  font-size: 15px;
-  font-weight: 800;
-  color: var(--text-dark);
-  flex: 1;
-  line-height: 1.5;
-}
-.review-item-meta {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-shrink: 0;
-}
-.review-platform {
-  font-size: 11px;
-  padding: 3px 10px;
-  border-radius: 10px;
-  background: var(--blue-light);
-  color: var(--blue-text);
-  font-weight: 700;
-}
-.review-date {
-  font-size: 11px;
-  color: var(--text-muted);
-}
-.review-delete {
-  width: 26px;
-  height: 26px;
-  border-radius: 8px;
-  border: none;
-  background: var(--red-light);
-  color: #ef4444;
-  font-size: 12px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.review-metrics {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
-  margin-bottom: 14px;
-}
-.review-metric {
-  text-align: center;
-  padding: 12px 8px;
-  background: var(--bg);
-  border-radius: var(--radius-md);
-}
-.review-metric-value {
-  font-size: 16px;
-  font-weight: 800;
-  color: var(--pink-dark);
-}
-.review-metric-label {
-  font-size: 10px;
-  color: var(--text-muted);
-  margin-top: 3px;
-  font-weight: 500;
-}
-.review-section {
-  margin-bottom: 10px;
-}
-.review-section-title {
-  font-size: 12px;
-  font-weight: 700;
+.inspo-body li {
   margin-bottom: 6px;
+  list-style: none;
+  padding-left: 18px;
+  position: relative;
 }
-.review-section.issue .review-section-title { color: #dc2626; }
-.review-section.improve .review-section-title { color: #16a34a; }
-.review-section-content {
-  font-size: 13px;
-  line-height: 1.7;
-  padding: 10px 14px;
-  border-radius: var(--radius-md);
-  background: var(--bg);
-  color: var(--text-secondary);
-}
-.review-section.issue .review-section-content { background: var(--red-light); color: #991b1b; }
-.review-section.improve .review-section-content { background: var(--green-light); color: #166534; }
-.review-stars { color: var(--yellow-dark); font-size: 13px; letter-spacing: 1px; }
 
-/* ===== 灵感区域 ===== */
-.inspo-hero {
-  background: linear-gradient(160deg, var(--pink-light) 0%, var(--blue-light) 50%, var(--yellow-light) 100%);
-  border-radius: var(--radius-xl);
-  padding: 32px 24px;
+.inspo-body li::before {
+  content: '▸';
+  position: absolute;
+  left: 0;
+  color: var(--accent-coral);
+}
+
+.inspo-tag {
+  display: inline-block;
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: var(--bg-soft);
+  color: var(--text-secondary);
+  margin-top: 8px;
+  margin-right: 4px;
+}
+
+.daily-prompt {
+  background: linear-gradient(135deg, #fff5f5, #fff0f5, #f5f0ff);
+  border-radius: var(--radius-lg);
+  padding: 28px;
   text-align: center;
   margin-bottom: 20px;
-  position: relative;
-  overflow: hidden;
-  box-shadow: var(--shadow);
+  border: 1px solid var(--border-color);
 }
-.inspo-hero::after {
-  content: '';
-  position: absolute;
-  top: -40%;
-  right: -15%;
-  width: 180px;
-  height: 180px;
-  background: rgba(255,255,255,0.35);
-  border-radius: 50%;
-}
-.inspo-hero-title {
-  font-size: 14px;
-  color: var(--text-secondary);
-  margin-bottom: 10px;
-  position: relative;
-  z-index: 1;
-  font-weight: 600;
-}
-.inspo-hero-text {
-  font-size: 20px;
-  font-weight: 800;
-  line-height: 1.6;
-  margin-bottom: 8px;
-  position: relative;
-  z-index: 1;
-  color: var(--text-dark);
-}
-.inspo-hero-sub {
-  font-size: 13px;
-  color: var(--text-secondary);
-  position: relative;
-  z-index: 1;
-  line-height: 1.6;
-}
-.inspo-refresh {
-  margin-top: 18px;
-  padding: 12px 28px;
-  border-radius: var(--radius-xl);
-  background: var(--card);
-  border: none;
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--text);
-  box-shadow: var(--shadow);
-  cursor: pointer;
-  position: relative;
-  z-index: 1;
-  transition: all 0.2s;
-}
-.inspo-refresh:active { transform: scale(0.95); background: var(--pink-light); }
 
-.inspo-card {
-  background: var(--card);
-  border-radius: var(--radius-lg);
-  padding: 22px;
-  margin-bottom: 16px;
-  box-shadow: var(--shadow);
-  border: 1px solid var(--border);
-}
-.inspo-card-header {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 16px;
-}
-.inspo-card-icon {
-  width: 40px;
-  height: 40px;
-  border-radius: 14px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 20px;
-  flex-shrink: 0;
-}
-.inspo-card-title {
-  font-size: 16px;
-  font-weight: 800;
-  color: var(--text-dark);
-}
-.inspo-card-body {
-  font-size: 13px;
-  line-height: 1.9;
-  color: var(--text-secondary);
-}
-.inspo-card-body li {
-  margin-bottom: 10px;
-  list-style: none;
-  position: relative;
-  padding-left: 18px;
-}
-.inspo-card-body li::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 10px;
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--pink), var(--blue));
-}
-.inspo-card-body strong { color: var(--text-dark); }
-
-/* ===== 检查清单 ===== */
-.checklist {
-  background: var(--card);
-  border-radius: var(--radius-lg);
-  padding: 22px;
-  margin-bottom: 16px;
-  box-shadow: var(--shadow);
-  border: 1px solid var(--border);
-}
-.checklist-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 0;
-  font-size: 13px;
-  border-bottom: 1px solid var(--border);
-  color: var(--text);
-  cursor: pointer;
-  transition: all 0.15s;
-}
-.checklist-item:last-child { border-bottom: none; }
-.checklist-item:active { opacity: 0.7; }
-.checklist-box {
-  width: 22px;
-  height: 22px;
-  border-radius: 8px;
-  border: 2.5px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
+.daily-prompt-label {
   font-size: 12px;
-  color: transparent;
-  transition: all 0.2s;
-}
-.checklist-box.checked {
-  background: linear-gradient(135deg, var(--pink-dark), var(--blue-dark));
-  border-color: transparent;
-  color: #fff;
-  box-shadow: 0 2px 8px rgba(255,143,171,0.3);
-}
-.checklist-text.checked { text-decoration: line-through; color: var(--text-muted); }
-
-/* ===== 底部标签栏 ===== */
-.tab-bar {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 68px;
-  background: rgba(255,255,255,0.95);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-top: 1px solid var(--border);
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  z-index: 100;
-  padding-bottom: var(--safe-bottom);
-}
-.tab-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 3px;
-  padding: 6px 16px;
-  border-radius: 16px;
-  cursor: pointer;
-  transition: all 0.2s;
-  border: none;
-  background: none;
-  font-family: inherit;
-}
-.tab-item:active { transform: scale(0.9); }
-.tab-item.active {
-  background: linear-gradient(135deg, var(--pink-light), var(--blue-light));
-}
-.tab-icon {
-  font-size: 22px;
-  line-height: 1;
-  transition: all 0.2s;
-}
-.tab-item.active .tab-icon { transform: translateY(-2px); }
-.tab-label {
-  font-size: 10px;
-  color: var(--text-muted);
   font-weight: 600;
+  color: var(--accent-coral);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
 }
-.tab-item.active .tab-label {
-  color: var(--pink-text);
-  font-weight: 800;
+
+.daily-prompt-text {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.5;
+  margin-bottom: 12px;
+}
+
+.daily-prompt-sub {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.refresh-btn {
+  margin-top: 16px;
+  padding: 8px 20px;
+  background: white;
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  font-size: 13px;
+  cursor: pointer;
+  color: var(--text-secondary);
+  transition: var(--transition);
+}
+
+.refresh-btn:hover { border-color: var(--accent-coral); color: var(--accent-coral); }
+
+/* ===== 模态框 ===== */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.4);
+  backdrop-filter: blur(4px);
+  z-index: 200;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.2s ease;
+}
+
+.modal-overlay.show { display: flex; }
+
+.modal {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  width: 90%;
+  max-width: 480px;
+  box-shadow: var(--shadow-lg);
+  animation: slideUp 0.25s ease;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.modal-title {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.modal-btn {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.btn-cancel {
+  background: var(--bg-soft);
+  color: var(--text-secondary);
+}
+
+.btn-confirm {
+  background: linear-gradient(135deg, var(--accent-coral), var(--accent-pink));
+  color: white;
 }
 
 /* ===== Toast ===== */
 .toast {
   position: fixed;
-  bottom: 90px;
+  bottom: 24px;
   left: 50%;
-  transform: translateX(-50%) translateY(20px);
-  background: rgba(45,42,38,0.9);
-  backdrop-filter: blur(10px);
-  color: #fff;
-  padding: 12px 28px;
-  border-radius: var(--radius-xl);
-  font-size: 14px;
-  font-weight: 600;
+  transform: translateX(-50%);
+  background: var(--text-primary);
+  color: white;
+  padding: 10px 24px;
+  border-radius: 24px;
+  font-size: 13px;
+  font-weight: 500;
   z-index: 300;
   opacity: 0;
+  transition: var(--transition);
   pointer-events: none;
-  transition: all 0.3s ease;
-  white-space: nowrap;
 }
-.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-/* ===== 空状态 ===== */
-.empty {
-  text-align: center;
-  padding: 60px 20px;
-  color: var(--text-muted);
-}
-.empty-icon { font-size: 48px; margin-bottom: 12px; }
-.empty-text { font-size: 14px; }
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(-8px); }
 
-/* ===== 占位页面 ===== */
-.placeholder-page {
-  text-align: center;
-  padding: 80px 30px;
+/* ===== 美食博主板块 ===== */
+.food-header { margin-bottom: 20px; }
+.food-header h2 { font-size: 20px; font-weight: 700; }
+.food-header p { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
+
+.task-flow { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.flow-column { background: var(--bg-card); border-radius: var(--radius-md); border: 1px solid var(--border-color); overflow: hidden; }
+.flow-header { padding: 14px 18px; font-weight: 700; font-size: 14px; color: #fff; display: flex; align-items: center; gap: 8px; }
+.flow-header.plog { background: linear-gradient(135deg, #ff6b6b, #ee5a6f); }
+.flow-header.vlog { background: linear-gradient(135deg, #4ecdc4, #44a08d); }
+.flow-body { padding: 12px 18px; }
+.flow-step { display: flex; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border-color); align-items: flex-start; }
+.flow-step:last-child { border-bottom: none; }
+.step-time { font-size: 11px; font-weight: 600; color: var(--text-muted); min-width: 72px; padding-top: 1px; }
+.step-content { flex: 1; }
+.step-content h4 { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+.step-content p { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+.step-checkbox { width: 18px; height: 18px; border: 2px solid var(--border-color); border-radius: 5px; cursor: pointer; flex-shrink: 0; margin-top: 1px; transition: all 0.2s; display: flex; align-items: center; justify-content: center; }
+.step-checkbox.checked { background: var(--accent-green); border-color: var(--accent-green); }
+.step-checkbox.checked::after { content: '✓'; color: #fff; font-size: 11px; font-weight: 700; }
+.food-progress { margin-top: 16px; font-size: 13px; color: var(--text-secondary); }
+.food-progress-bar { margin-top: 8px; height: 8px; background: var(--border-color); border-radius: 4px; overflow: hidden; }
+.food-progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent-coral), var(--accent-orange)); transition: width 0.3s; border-radius: 4px; }
+
+.recipe-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 16px; }
+.recipe-card { background: var(--bg-card); border-radius: var(--radius-md); border: 1px solid var(--border-color); overflow: hidden; transition: var(--transition); }
+.recipe-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+.recipe-top { padding: 14px 18px; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; }
+.recipe-name { font-size: 15px; font-weight: 700; }
+.recipe-tags-v { display: flex; gap: 4px; }
+.recipe-tag { font-size: 11px; padding: 2px 8px; border-radius: 10px; font-weight: 500; }
+.tag-家常菜 { background: #fff0ec; color: var(--accent-coral); }
+.tag-快手晚餐 { background: #fef5e7; color: var(--accent-orange); }
+.tag-一人食 { background: #e3f2fd; color: var(--accent-blue); }
+.tag-减脂 { background: #e0f7f0; color: var(--accent-green); }
+.tag-烘焙 { background: #fce4ec; color: #c2185b; }
+.recipe-body-v { padding: 14px 18px; }
+.recipe-sec-label { font-size: 11px; font-weight: 600; color: var(--text-muted); margin-bottom: 4px; margin-top: 10px; display: flex; align-items: center; gap: 4px; }
+.recipe-sec-label:first-child { margin-top: 0; }
+.recipe-text { font-size: 13px; color: var(--text-primary); line-height: 1.6; }
+.recipe-shoot { background: #fef5e7; padding: 8px 12px; border-radius: 8px; font-size: 13px; }
+.recipe-kws { display: flex; flex-wrap: wrap; gap: 4px; }
+.kw-chip { font-size: 11px; padding: 2px 8px; border-radius: 10px; background: #fff0ec; color: var(--accent-coral); }
+.recipe-copy-block { font-size: 13px; background: var(--bg-primary); border-radius: 8px; padding: 10px 12px; border-left: 3px solid var(--accent-coral); margin-top: 4px; white-space: pre-wrap; }
+.recipe-copy-block.xhs { border-left-color: #ff2442; }
+.recipe-copy-block.dy { border-left-color: #000; }
+
+/* === 新版菜谱卡片 v2 === */
+.recipe-card-v2 { background: var(--bg-card); border-radius: 12px; border: 1px solid var(--border-color); overflow: hidden; transition: var(--transition); }
+.recipe-card-v2:hover { box-shadow: var(--shadow-md); }
+.recipe-header-v2 { padding: 16px 20px; border-bottom: 2px solid #ffe0d6; background: linear-gradient(135deg, #fff9f7, #fff5f2); display: flex; align-items: center; flex-wrap: wrap; gap: 10px; }
+.recipe-name-v2 { font-size: 17px; font-weight: 800; color: #333; }
+.recipe-meta-v2 { font-size: 12px; color: var(--text-muted); }
+.recipe-cat-v2 { font-size: 11px; padding: 3px 10px; border-radius: 10px; font-weight: 600; color: #fff; margin-left: auto; }
+.cat-家常菜,.cat-荤菜 { background: #e85d3a; }
+.cat-素菜 { background: #4caf50; }
+.cat-凉拌菜 { background: #26a69a; }
+.cat-简易汤品 { background: #ff9800; }
+.cat-快手晚餐 { background: #ff6d00; }
+.cat-一人食 { background: #5c6bc0; }
+.cat-减脂 { background: #43a047; }
+.cat-烘焙 { background: #ec407a; }
+.recipe-sec-v2 { padding: 14px 20px; border-bottom: 1px solid var(--border-color); }
+.recipe-sec-v2:last-child { border-bottom: none; }
+.recipe-sec-title-v2 { font-size: 14px; font-weight: 700; color: #333; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+.ingr-list-v2 { display: flex; flex-wrap: wrap; gap: 6px; }
+.ingr-seg { font-size: 12px; background: var(--bg-soft); border-radius: 6px; padding: 4px 10px; line-height: 1.5; }
+.steps-list-v2 { display: flex; flex-direction: column; gap: 8px; }
+.step-line-v2 { display: flex; gap: 10px; align-items: flex-start; }
+.step-num-v2 { width: 26px; height: 26px; border-radius: 50%; background: linear-gradient(135deg, #e85d3a, #ff7e5f); color: #fff; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.step-text-v2 { font-size: 13px; color: var(--text-primary); line-height: 1.7; padding-top: 3px; }
+.tips-list-v2 { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 6px; }
+.tips-list-v2 li { font-size: 13px; color: var(--text-primary); padding: 8px 12px; background: #fffbeb; border-radius: 8px; border-left: 3px solid #ffc107; line-height: 1.6; }
+.tips-list-v2 li::before { content: '💡 '; }
+.shoot-sub-v2 { margin-bottom: 8px; }
+.shoot-sub-v2:last-child { margin-bottom: 0; }
+.shoot-label-v2 { display: inline-block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 4px; padding: 2px 8px; border-radius: 4px; }
+.shoot-text-v2 { font-size: 13px; color: var(--text-primary); line-height: 1.7; background: var(--bg-soft); padding: 10px 14px; border-radius: 8px; }
+.copy-block-v2 { margin-bottom: 12px; }
+.copy-block-v2:last-child { margin-bottom: 0; }
+.copy-platform-v2 { display: inline-block; font-size: 12px; font-weight: 600; margin-bottom: 6px; padding: 3px 10px; border-radius: 4px; color: #fff; }
+.platform-xhs-v2 { background: #ff2442; }
+.platform-dy-v2 { background: #000; }
+.copy-text-v2 { font-size: 13px; color: var(--text-primary); line-height: 1.8; white-space: pre-wrap; }
+.tag-row-v2 { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 6px; }
+.tag-row-v2:last-child { margin-bottom: 0; }
+.tag-plat-label-v2 { font-size: 12px; font-weight: 600; color: var(--text-muted); flex-shrink: 0; padding-top: 3px; }
+.tag-chips-v2 { display: flex; flex-wrap: wrap; gap: 6px; }
+.tag-chip-v2 { font-size: 11px; padding: 3px 10px; border-radius: 12px; font-weight: 500; }
+.tag-xhs-v2 { background: #fff0f3; color: #ff2442; }
+.tag-dy-v2 { background: #f5f5f5; color: #333; }
+
+.topic-table { width: 100%; border-collapse: collapse; }
+.topic-table th { text-align: left; padding: 10px 14px; font-size: 12px; font-weight: 600; color: var(--text-muted); border-bottom: 2px solid var(--border-color); }
+.topic-table td { padding: 10px 14px; font-size: 13px; border-bottom: 1px solid var(--border-color); }
+.topic-table tr:hover { background: #fdf6f3; }
+.badge-t { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 10px; font-weight: 500; }
+.badge-plog { background: #ff6b6b; color: #fff; }
+.badge-vlog { background: #4ecdc4; color: #fff; }
+.badge-both { background: var(--accent-orange); color: #fff; }
+.status-badge { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 10px; font-weight: 500; }
+.status-idea { background: #e3f2fd; color: #2563eb; }
+.status-planning { background: #fef3c7; color: #d97706; }
+.status-shooting { background: #fce4ec; color: #c2185b; }
+.status-done { background: #e0f7f0; color: var(--accent-green); }
+
+.review-item-v { display: flex; gap: 12px; padding: 14px 0; border-bottom: 1px solid var(--border-color); }
+.review-item-v:last-child { border-bottom: none; }
+.review-plat { width: 56px; text-align: center; flex-shrink: 0; }
+.review-plat-icon { font-size: 26px; }
+.review-plat-name { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+.review-cont { flex: 1; }
+.review-metrics-v { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 8px; }
+.metric-box-v { background: var(--bg-soft); border-radius: 8px; padding: 8px 10px; text-align: center; }
+.metric-val-v { font-size: 16px; font-weight: 700; }
+.metric-lbl-v { font-size: 10px; color: var(--text-muted); }
+
+.command-bar { background: linear-gradient(135deg, var(--accent-coral), #ff7e5f); border-radius: var(--radius-md); padding: 18px 22px; margin-bottom: 20px; color: #fff; display: flex; align-items: center; justify-content: space-between; }
+.command-bar h3 { font-size: 15px; margin-bottom: 2px; }
+.command-bar p { font-size: 12px; opacity: 0.9; }
+.command-bar .btn-cmd { background: #fff; color: var(--accent-coral); border: none; padding: 10px 20px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; transition: var(--transition); }
+.command-bar .btn-cmd:hover { transform: scale(1.03); }
+
+.quick-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 18px; }
+.quick-action { background: var(--bg-card); border: 2px solid var(--border-color); border-radius: 10px; padding: 10px 16px; cursor: pointer; transition: var(--transition); text-align: center; min-width: 80px; }
+.quick-action:hover { border-color: var(--accent-coral); transform: translateY(-2px); }
+.quick-action-icon { font-size: 22px; }
+.quick-action-label { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+.platform-tabs-v { display: flex; gap: 6px; margin-bottom: 12px; }
+.platform-tab-v { padding: 7px 16px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 500; border: 2px solid var(--border-color); background: var(--bg-card); transition: var(--transition); }
+.platform-tab-v.active.xhs { background: #ff2442; color: #fff; border-color: #ff2442; }
+.platform-tab-v.active.dy { background: #000; color: #fff; border-color: #000; }
+
+.content-template { background: var(--bg-soft); border-radius: 8px; padding: 14px; margin-top: 10px; font-size: 13px; white-space: pre-wrap; line-height: 1.7; }
+
+.food-actions { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+.food-actions .btn { padding: 8px 16px; border-radius: 8px; border: none; font-size: 13px; font-weight: 600; cursor: pointer; transition: var(--transition); }
+.btn-primary-sm { background: var(--accent-coral); color: #fff; }
+.btn-primary-sm:hover { background: #e55a4a; }
+.btn-outline-sm { background: transparent; border: 2px solid var(--border-color); color: var(--text-secondary); }
+.btn-outline-sm:hover { border-color: var(--accent-coral); color: var(--accent-coral); }
+.btn-danger-sm { background: transparent; border: none; color: #e74c3c; font-size: 12px; cursor: pointer; }
+
+.review-compare { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 16px; }
+.review-compare-card { border-radius: 10px; padding: 14px; font-size: 13px; line-height: 2; }
+.review-compare-card.xhs { background: #fff0f3; }
+.review-compare-card.xhs h4 { color: #ff2442; margin-bottom: 8px; }
+.review-compare-card.dy { background: #f5f5f5; }
+.review-compare-card.dy h4 { color: #000; margin-bottom: 8px; }
+.review-compare-card ul { padding-left: 16px; color: var(--text-primary); }
+
+.sidebar-divider { height: 1px; background: var(--border-color); margin: 8px 16px; }
+
+.food-filter-bar { display: flex; gap: 10px; margin-bottom: 16px; align-items: center; flex-wrap: wrap; }
+.food-filter-bar .form-input { width: 180px; }
+
+/* ===== 响应式 ===== */
+@media (max-width: 900px) {
+  .kanban { max-width: 100%; }
+  .review-layout { grid-template-columns: 1fr; }
+  .review-form { position: static; }
+  .inspiration-grid { grid-template-columns: 1fr; }
+  .trending-grid { grid-template-columns: 1fr; }
+  .form-row-4 { grid-template-columns: repeat(2, 1fr); }
+  .review-metrics { grid-template-columns: repeat(2, 1fr); }
 }
-.placeholder-icon { font-size: 56px; margin-bottom: 20px; }
-.placeholder-title { font-size: 18px; font-weight: 800; margin-bottom: 8px; color: var(--text-dark); }
-.placeholder-desc { color: var(--text-secondary); font-size: 14px; }
+
+/* ===== 统计卡片 ===== */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.stat-card {
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  padding: 16px;
+  text-align: center;
+  transition: var(--transition);
+}
+
+.stat-card:hover { box-shadow: var(--shadow-md); }
+
+.stat-icon { font-size: 24px; margin-bottom: 4px; }
+.stat-value { font-size: 24px; font-weight: 700; }
+.stat-label { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+
+/* 任务面板统计行 */
+#panel-tasks .stats-row {
+  width: 100%;
+}
+
+@media (max-width: 600px) {
+  .stats-row { grid-template-columns: repeat(2, 1fr); }
+  #panel-tasks .stats-row { width: 100%; }
+  .kanban { flex-direction: column; }
+}
 </style>
 </head>
 <body>
 
-<!-- 侧边栏遮罩 -->
-<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
-
-<!-- 侧边栏 -->
-<aside class="sidebar" id="sidebar">
-  <div class="sidebar-header">
-    <div class="sidebar-avatar">✨</div>
-    <div class="sidebar-title">林夕夕的工作台</div>
-    <div class="sidebar-subtitle">创作 · 学习 · 生活</div>
-    <div class="sidebar-sync-row">
-      <button class="sidebar-sync-pill" style="flex:1" onclick="syncFromCloud()">📥 从电脑同步</button>
-      <button class="sidebar-sync-pill" style="flex:1;background:var(--purple-light);color:var(--purple);" onclick="syncToCloud()">📤 同步到电脑</button>
+<!-- 左侧边栏 -->
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <div class="sidebar-avatar">林</div>
+    <div class="sidebar-brand-text">
+      <div class="sidebar-brand-name">林夕夕</div>
+      <div class="sidebar-brand-sub">创作者工作台</div>
     </div>
   </div>
-  <div class="sidebar-menu">
-    <div class="sidebar-item active" data-page="plan" onclick="navFromSidebar('plan')">
-      <div class="sidebar-item-icon" style="background:var(--pink-light);">📅</div>
-      <div class="sidebar-item-text">每日计划</div>
+  <nav class="sidebar-nav">
+    <div class="sidebar-item active" data-tab="tasks" onclick="switchPanel('tasks')">
+      <span class="sidebar-item-icon">📋</span>
+      <span class="sidebar-item-label">任务看板</span>
     </div>
-    <div class="sidebar-item" data-page="inspo" onclick="navFromSidebar('inspo')">
-      <div class="sidebar-item-icon" style="background:var(--yellow-light);">💡</div>
-      <div class="sidebar-item-text">选题每日灵感</div>
+    <div class="sidebar-item" data-tab="trending" onclick="switchPanel('trending')">
+      <span class="sidebar-item-icon">🔥</span>
+      <span class="sidebar-item-label">热点发现</span>
+      <span class="sidebar-badge" id="sidebarBadge">12</span>
     </div>
-    <div class="sidebar-item" data-page="trending" onclick="navFromSidebar('trending')">
-      <div class="sidebar-item-icon" style="background:var(--red-light);">🔥</div>
-      <div class="sidebar-item-text">爆款热点视频/二创</div>
+    <div class="sidebar-item" data-tab="review" onclick="switchPanel('review')">
+      <span class="sidebar-item-icon">📊</span>
+      <span class="sidebar-item-label">内容复盘</span>
     </div>
-    <div class="sidebar-item" data-page="review" onclick="navFromSidebar('review')">
-      <div class="sidebar-item-icon" style="background:var(--blue-light);">📊</div>
-      <div class="sidebar-item-text">内容复盘</div>
+    <div class="sidebar-item" data-tab="inspiration" onclick="switchPanel('inspiration')">
+      <span class="sidebar-item-icon">💡</span>
+      <span class="sidebar-item-label">灵感库</span>
     </div>
-  </div>
+    <div class="sidebar-divider"></div>
+    <div class="sidebar-item" data-tab="daily-food" onclick="switchPanel('daily-food')">
+      <span class="sidebar-item-icon">🍳</span>
+      <span class="sidebar-item-label">每日执行任务</span>
+    </div>
+    <div class="sidebar-item" data-tab="food-topics" onclick="switchPanel('food-topics')">
+      <span class="sidebar-item-icon">📝</span>
+      <span class="sidebar-item-label">内容选题库</span>
+    </div>
+    <div class="sidebar-item" data-tab="food-recipes" onclick="switchPanel('food-recipes')">
+      <span class="sidebar-item-icon">🥘</span>
+      <span class="sidebar-item-label">菜谱素材库</span>
+    </div>
+    <div class="sidebar-item" data-tab="food-review" onclick="switchPanel('food-review')">
+      <span class="sidebar-item-icon">📊</span>
+      <span class="sidebar-item-label">发布复盘</span>
+    </div>
+  </nav>
   <div class="sidebar-footer">
-    <div class="sidebar-hint">电脑端点「同步到云端」→ 手机端点这里 ✨</div>
+    <button class="sidebar-sync-btn" onclick="syncToCloud()" id="sidebarSyncBtn">📤 同步到手机</button>
+    <button class="sidebar-sync-btn" onclick="syncFromCloud()" id="sidebarPullBtn" style="margin-top:6px;background:var(--purple-light);color:var(--purple);">📥 从手机同步</button>
   </div>
 </aside>
 
-<!-- 主体区域 -->
-<div class="main" id="main">
-  <div class="main-header">
-    <button class="menu-btn" onclick="toggleSidebar()">☰</button>
-    <div class="header-title" id="pageTitle">每日计划</div>
-    <div class="header-date">
-      <div class="header-date-day" id="headerDate">2026年7月28日</div>
-      <div class="header-date-week" id="headerWeek">星期二</div>
+<!-- 右侧内容区 -->
+<div class="content-wrap">
+
+<!-- 顶部导航 -->
+<div class="topbar">
+  <div class="topbar-left">
+    <div>
+      <div class="logo">林夕夕的工作台</div>
+      <div class="logo-sub">创作者每日工作台</div>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <button class="btn-sync" onclick="syncToCloud()" title="上传到云端，手机端拉取" id="syncBtn">📤 同步到手机</button>
+    <button class="btn-sync" onclick="syncFromCloud()" title="从云端拉取手机端更新" id="pullBtn" style="background:var(--purple-light);color:var(--purple);">📥 从手机同步</button>
+    <div class="streak-badge" id="streakBadge">🔥 连续创作 0 天</div>
+    <div class="date-pill" id="datePill">加载中...</div>
+  </div>
+</div>
+
+<!-- Tab 导航（已隐藏，保留兼容） -->
+<div class="tabs" style="display:none;">
+  <div class="tab active" data-tab="tasks">
+    <span class="tab-icon">📋</span> 任务看板
+  </div>
+  <div class="tab" data-tab="trending">
+    <span class="tab-icon">🔥</span> 热点发现
+    <span class="tab-badge" id="trendingBadge">12</span>
+  </div>
+  <div class="tab" data-tab="review">
+    <span class="tab-icon">📊</span> 内容复盘
+  </div>
+  <div class="tab" data-tab="inspiration">
+    <span class="tab-icon">💡</span> 灵感库
+  </div>
+</div>
+
+<!-- 主内容区 -->
+<div class="main-content">
+
+  <!-- ===== 任务看板 ===== -->
+  <div class="panel active" id="panel-tasks">
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-icon">📝</div>
+        <div class="stat-value" id="statTotal">0</div>
+        <div class="stat-label">今日总任务</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">⏳</div>
+        <div class="stat-value" id="statDoing">0</div>
+        <div class="stat-label">进行中</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">✅</div>
+        <div class="stat-value" id="statDone">0</div>
+        <div class="stat-label">已完成</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">📈</div>
+        <div class="stat-value" id="statRate">0%</div>
+        <div class="stat-label">完成率</div>
+      </div>
+    </div>
+
+    <div class="kanban">
+      <div class="kanban-col col-todo" data-status="todo">
+        <div class="kanban-col-header">
+          <div class="kanban-col-title"><span class="col-dot"></span> 待办</div>
+          <span class="col-count" id="count-todo">0</span>
+        </div>
+        <div class="task-list" id="list-todo"></div>
+        <button class="add-task-btn" onclick="openTaskModal('todo')">+ 添加任务</button>
+      </div>
+      <div class="kanban-col col-doing" data-status="doing">
+        <div class="kanban-col-header">
+          <div class="kanban-col-title"><span class="col-dot"></span> 进行中</div>
+          <span class="col-count" id="count-doing">0</span>
+        </div>
+        <div class="task-list" id="list-doing"></div>
+        <button class="add-task-btn" onclick="openTaskModal('doing')">+ 添加任务</button>
+      </div>
+      <div class="kanban-col col-done" data-status="done">
+        <div class="kanban-col-header">
+          <div class="kanban-col-title"><span class="col-dot"></span> 已完成</div>
+          <span class="col-count" id="count-done">0</span>
+        </div>
+        <div class="task-list" id="list-done"></div>
+        <button class="add-task-btn" onclick="openTaskModal('done')">+ 添加任务</button>
+      </div>
     </div>
   </div>
 
-  <div class="content">
-    <!-- ========== 每日计划 ========== -->
-    <div class="page active" id="page-plan">
-      <div class="stats-row">
-        <div class="stat-card">
-          <div class="stat-icon">📋</div>
-          <div class="stat-value" id="statTotal">0</div>
-          <div class="stat-label">总任务</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon">✅</div>
-          <div class="stat-value" id="statDone">0</div>
-          <div class="stat-label">已完成</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon">📈</div>
-          <div class="stat-value" id="statRate">0%</div>
-          <div class="stat-label">完成率</div>
-        </div>
-      </div>
+  <!-- ===== 热点发现 ===== -->
+  <div class="panel" id="panel-trending">
+    <div class="section-title">🔥 护肤好物热点 & 二创机会 <button class="refresh-btn" style="float:right; margin-top:4px;" onclick="refreshTrending()">🔄 换一批</button></div>
+    <p class="section-desc">每日自动更新 · 来自抖音 & 小红书的护肤/美妆爆款趋势 · <span id="trendingDate"></span></p>
 
-      <div class="task-input-group">
-        <input type="text" class="task-input" id="taskInput" placeholder="添加新任务..." onkeypress="if(event.key==='Enter')addTask()">
-        <button class="task-add-btn" onclick="addTask()">+</button>
-      </div>
-
-      <div class="task-section">
-        <div class="task-section-header">
-          <div class="task-section-dot dot-todo"></div>
-          <span>待办</span>
-          <span class="task-section-count" id="countTodo">0</span>
-        </div>
-        <div id="listTodo"></div>
-      </div>
-
-      <div class="task-section">
-        <div class="task-section-header">
-          <div class="task-section-dot dot-doing"></div>
-          <span>进行中</span>
-          <span class="task-section-count" id="countDoing">0</span>
-        </div>
-        <div id="listDoing"></div>
-      </div>
-
-      <div class="task-section">
-        <div class="task-section-header">
-          <div class="task-section-dot dot-done"></div>
-          <span>已完成</span>
-          <span class="task-section-count" id="countDone">0</span>
-        </div>
-        <div id="listDone"></div>
-      </div>
+    <div class="trending-filters">
+      <div class="filter-chip active" data-filter="all">全部</div>
+      <div class="filter-chip" data-filter="douyin">抖音</div>
+      <div class="filter-chip" data-filter="xiaohongshu">小红书</div>
+      <div class="filter-chip" data-filter="collected">已收藏</div>
     </div>
 
-    <!-- ========== 选题灵感 ========== -->
-    <div class="page" id="page-inspo">
-      <div class="inspo-hero">
-        <div class="inspo-hero-title">✨ 今日创作灵感</div>
-        <div class="inspo-hero-text" id="dailyPrompt">...</div>
-        <div class="inspo-hero-sub" id="dailyPromptSub">...</div>
-        <button class="inspo-refresh" onclick="refreshPrompt()">🔄 换一个灵感</button>
-      </div>
+    <div class="trending-grid" id="trendingGrid"></div>
+  </div>
 
-      <div class="inspo-card">
-        <div class="inspo-card-header">
-          <div class="inspo-card-icon" style="background:var(--pink-light);">🎯</div>
-          <div class="inspo-card-title">极简护肤赛道趋势</div>
-        </div>
-        <ul class="inspo-card-body">
-          <li><strong>精简护肤</strong>：步骤砍到3步以内，成分党+懒人双杀</li>
-          <li><strong>情绪护肤</strong>：香氛疗愈+五感体验成新风口</li>
-          <li><strong>国货平替</strong>：百元内全肤质方案持续走热</li>
-          <li><strong>次抛/便携</strong>：小剂量精准护肤受年轻人追捧</li>
-          <li><strong>分区专护</strong>：T区/眼周/颈部分开护理</li>
-        </ul>
-      </div>
+  <!-- ===== 内容复盘 ===== -->
+  <div class="panel" id="panel-review">
+    <div class="section-title">📊 内容复盘 & 优化追踪</div>
+    <p class="section-desc">记录每次发布的好物分享/护肤内容数据，分析可优化点，持续迭代种草力</p>
 
-      <div class="inspo-card">
-        <div class="inspo-card-header">
-          <div class="inspo-card-icon" style="background:var(--blue-light);">📐</div>
-          <div class="inspo-card-title">爆款公式拆解</div>
-        </div>
-        <ul class="inspo-card-body">
-          <li><strong>3秒对比图</strong>：Before/After或素颜vs上妆</li>
-          <li><strong>场景化痛点</strong>："出差脸干到爆"而非"推荐面霜"</li>
-          <li><strong>缺陷营销</strong>：暴露真实缺点建立信任</li>
-          <li><strong>三段式推荐</strong>：平价→进阶→贵妇</li>
-          <li><strong>成分可视化</strong>：分子式/皮肤结构图说成分</li>
-        </ul>
-      </div>
-
-      <div class="inspo-card">
-        <div class="inspo-card-header">
-          <div class="inspo-card-icon" style="background:var(--yellow-light);">🔧</div>
-          <div class="inspo-card-title">二创改编思路</div>
-        </div>
-        <ul class="inspo-card-body">
-          <li><strong>步骤瘦身</strong>：把10步护肤砍到3步</li>
-          <li><strong>红黑榜</strong>：同品类横评+避雷</li>
-          <li><strong>空瓶记</strong>：真实用完才有说服力</li>
-          <li><strong>肤质分类</strong>：油皮/干皮/敏肌分开</li>
-          <li><strong>成分深扒</strong>：一个成分讲透讲深</li>
-          <li><strong>场景植入</strong>：旅行/熬夜/换季场景</li>
-        </ul>
-      </div>
-
-      <div class="inspo-card">
-        <div class="inspo-card-header">
-          <div class="inspo-card-icon" style="background:var(--purple-light);">📅</div>
-          <div class="inspo-card-title">近期营销日历</div>
-        </div>
-        <ul class="inspo-card-body">
-          <li><strong>立秋（8月7日）</strong>：换季护肤，防秋燥，精简routine</li>
-          <li><strong>七夕（8月29日）</strong>："爱自己"护肤礼盒/约会前急救</li>
-          <li><strong>开学季</strong>：学生党平价全套护肤</li>
-          <li><strong>暑期尾巴</strong>：晒后修复，度假护肤包</li>
-          <li><strong>三伏天</strong>：控油清洁，清爽护肤</li>
-        </ul>
-      </div>
-
-      <div class="checklist">
-        <div class="card-title">✅ 发布前检查清单</div>
-        <div class="checklist-item" onclick="toggleCheck(this)">
-          <div class="checklist-box"></div>
-          <span class="checklist-text">前3秒有对比图/素人脸直击痛点</span>
-        </div>
-        <div class="checklist-item" onclick="toggleCheck(this)">
-          <div class="checklist-box"></div>
-          <span class="checklist-text">标题含肤质关键词+数字（油皮3件套）</span>
-        </div>
-        <div class="checklist-item" onclick="toggleCheck(this)">
-          <div class="checklist-box"></div>
-          <span class="checklist-text">封面有真人出镜+产品展示</span>
-        </div>
-        <div class="checklist-item" onclick="toggleCheck(this)">
-          <div class="checklist-box"></div>
-          <span class="checklist-text">空瓶/使用痕迹实拍增加真实感</span>
-        </div>
-        <div class="checklist-item" onclick="toggleCheck(this)">
-          <div class="checklist-box"></div>
-          <span class="checklist-text">结尾有互动引导（你的肤质是？）</span>
-        </div>
-        <div class="checklist-item" onclick="toggleCheck(this)">
-          <div class="checklist-box"></div>
-          <span class="checklist-text">添加了2-3个相关话题标签</span>
-        </div>
-        <div class="checklist-item" onclick="toggleCheck(this)">
-          <div class="checklist-box"></div>
-          <span class="checklist-text">字幕/文案无错别字，节奏适配</span>
-        </div>
-        <div class="checklist-item" onclick="toggleCheck(this)">
-          <div class="checklist-box"></div>
-          <span class="checklist-text">内容有差异化，非纯搬运/同质化</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- ========== 爆款热点 ========== -->
-    <div class="page" id="page-trending">
-      <div style="display:flex; align-items:center; justify-content:space-between; padding:0 4px 8px;">
-        <span style="font-size:12px; color:var(--text-muted);" id="trendingDate">每日更新</span>
-        <button style="font-size:12px; padding:4px 12px; border-radius:16px; border:1px solid var(--border); background:var(--card); color:var(--text-secondary);" onclick="refreshTrending()">🔄 换一批</button>
-      </div>
-      <div class="filter-bar">
-        <button class="filter-chip active" data-filter="all" onclick="setFilter('all')">全部</button>
-        <button class="filter-chip" data-filter="douyin" onclick="setFilter('douyin')">抖音</button>
-        <button class="filter-chip" data-filter="xiaohongshu" onclick="setFilter('xiaohongshu')">小红书</button>
-        <button class="filter-chip" data-filter="collected" onclick="setFilter('collected')">已收藏</button>
-      </div>
-      <div id="trendingList"></div>
-    </div>
-
-    <!-- ========== 内容复盘 ========== -->
-    <div class="page" id="page-review">
+    <div class="review-layout">
+      <!-- 左侧表单 -->
       <div class="review-form">
-        <div class="card-title">📝 记录本次发布</div>
+        <h3 style="font-size:16px; font-weight:700; margin-bottom:16px;">✍️ 记录新内容</h3>
         <div class="form-group">
           <label class="form-label">内容标题</label>
-          <input type="text" class="form-input" id="rvTitle" placeholder="例如：油皮夏季精简护肤3件套">
+          <input type="text" class="form-input" id="rvTitle" placeholder="例如：极简护肤三件套实测分享">
         </div>
         <div class="form-row">
           <div class="form-group">
             <label class="form-label">发布平台</label>
             <select class="form-select" id="rvPlatform">
-              <option value="xiaohongshu">小红书</option>
               <option value="douyin">抖音</option>
+              <option value="xiaohongshu">小红书</option>
               <option value="both">双平台</option>
             </select>
           </div>
@@ -1344,59 +1467,59 @@ body {
           </div>
         </div>
         <div class="form-row-4">
-          <div class="form-group">
-            <label class="form-label">播放量</label>
-            <input type="number" class="form-input" id="rvViews" placeholder="0">
+          <div>
+            <div class="metric-label">播放/阅读</div>
+            <input type="number" class="form-input metric-input" id="rvViews" placeholder="0">
           </div>
-          <div class="form-group">
-            <label class="form-label">点赞</label>
-            <input type="number" class="form-input" id="rvLikes" placeholder="0">
+          <div>
+            <div class="metric-label">点赞</div>
+            <input type="number" class="form-input metric-input" id="rvLikes" placeholder="0">
           </div>
-          <div class="form-group">
-            <label class="form-label">评论</label>
-            <input type="number" class="form-input" id="rvComments" placeholder="0">
+          <div>
+            <div class="metric-label">评论</div>
+            <input type="number" class="form-input metric-input" id="rvComments" placeholder="0">
           </div>
-          <div class="form-group">
-            <label class="form-label">收藏</label>
-            <input type="number" class="form-input" id="rvSaves" placeholder="0">
+          <div>
+            <div class="metric-label">收藏</div>
+            <input type="number" class="form-input metric-input" id="rvSaves" placeholder="0">
           </div>
         </div>
         <div class="form-group">
-          <label class="form-label">自评星级</label>
-          <div class="star-group" id="starGroup">
-            <span class="star" data-val="1" onclick="setStar(1)">★</span>
-            <span class="star" data-val="2" onclick="setStar(2)">★</span>
-            <span class="star" data-val="3" onclick="setStar(3)">★</span>
-            <span class="star" data-val="4" onclick="setStar(4)">★</span>
-            <span class="star" data-val="5" onclick="setStar(5)">★</span>
+          <label class="form-label">内容自评</label>
+          <div class="rating-stars" id="ratingStars">
+            <span class="star" data-val="1">★</span>
+            <span class="star" data-val="2">★</span>
+            <span class="star" data-val="3">★</span>
+            <span class="star" data-val="4">★</span>
+            <span class="star" data-val="5">★</span>
           </div>
         </div>
         <div class="form-group">
           <label class="form-label">可优化点</label>
-          <textarea class="form-textarea" id="rvImprove" placeholder="例如：开头节奏慢、产品展示不够清晰、BGM音量过大"></textarea>
+          <textarea class="form-textarea" id="rvImprove" placeholder="例如：开头3秒不够抓人，标题缺少数字悬念，封面图对比度不够..."></textarea>
         </div>
         <div class="form-group">
           <label class="form-label">下次改进方向</label>
-          <textarea class="form-textarea" id="rvNext" placeholder="例如：前3秒加对比图、改用自然光拍摄、增加空瓶展示"></textarea>
+          <textarea class="form-textarea" id="rvNext" placeholder="例如：尝试悬念式开头，标题加入具体数字，使用高对比度封面..."></textarea>
         </div>
-        <button class="submit-btn" onclick="saveReview()">💾 保存复盘记录</button>
+        <button class="submit-btn" onclick="saveReview()">保存复盘记录</button>
       </div>
 
-      <div class="card">
-        <div class="card-title">📊 复盘统计</div>
-        <div class="stats-row" style="margin-top:14px;margin-bottom:0;">
+      <!-- 右侧列表 -->
+      <div>
+        <div class="stats-row" style="margin-bottom:16px;">
           <div class="stat-card">
-            <div class="stat-icon">📝</div>
+            <div class="stat-icon">📱</div>
             <div class="stat-value" id="rvStatTotal">0</div>
-            <div class="stat-label">总记录</div>
+            <div class="stat-label">已发布</div>
           </div>
           <div class="stat-card">
-            <div class="stat-icon">👁</div>
+            <div class="stat-icon">👀</div>
             <div class="stat-value" id="rvStatViews">0</div>
             <div class="stat-label">总播放</div>
           </div>
           <div class="stat-card">
-            <div class="stat-icon">👍</div>
+            <div class="stat-icon">❤️</div>
             <div class="stat-value" id="rvStatLikes">0</div>
             <div class="stat-label">总点赞</div>
           </div>
@@ -1406,155 +1529,577 @@ body {
             <div class="stat-label">平均评分</div>
           </div>
         </div>
+        <div class="review-list" id="reviewList"></div>
       </div>
+    </div>
+  </div>
 
-      <div id="reviewList"></div>
+  <!-- ===== 灵感库 ===== -->
+  <div class="panel" id="panel-inspiration">
+    <div class="daily-prompt">
+      <div class="daily-prompt-label">✨ 今日创作灵感</div>
+      <div class="daily-prompt-text" id="dailyPrompt">加载中...</div>
+      <div class="daily-prompt-sub" id="dailyPromptSub"></div>
+      <button class="refresh-btn" onclick="refreshPrompt()">🔄 换一个灵感</button>
     </div>
 
-    <!-- ========== 占位页面 ========== -->
+    <div class="inspiration-grid">
+      <div class="inspo-card c1">
+        <div class="inspo-header">
+          <span class="inspo-icon">🎯</span>
+          <span class="inspo-title">护肤赛道当月内容趋势</span>
+        </div>
+        <ul class="inspo-body">
+          <li><strong>精简护肤公式化</strong>：早C晚A+B、三步护肤法，消费者主动砍掉冗余步骤</li>
+          <li><strong>情绪护肤崛起</strong>：从"功效导向"到"感官疗愈"，精油/香氛/冰感面膜成新蓝海</li>
+          <li><strong>国货平替续航</strong>：至本/薇诺娜/珀莱雅等品牌持续刷屏，高成分+低价格成核心卖点</li>
+          <li><strong>次抛剂型爆发</strong>：独立包装解决活性流失痛点，精准契合极简+高效需求</li>
+          <li><strong>分区专护细分</strong>：T区/眼周/颈部独立护理，敏感肌混合肌分类方案需求旺盛</li>
+        </ul>
+        <span class="inspo-tag">#精简护肤</span>
+        <span class="inspo-tag">#情绪护肤</span>
+        <span class="inspo-tag">#国货平替</span>
+        <span class="inspo-tag">#次抛精华</span>
+      </div>
+
+      <div class="inspo-card c2">
+        <div class="inspo-header">
+          <span class="inspo-icon">📐</span>
+          <span class="inspo-title">护肤好物种草爆款公式</span>
+        </div>
+        <ul class="inspo-body">
+          <li><strong>场景化公式</strong>：具体时间+特定场景+行为动作+感官体验，避免"这个很保湿"</li>
+          <li><strong>对比图法则</strong>：妆前/妆后、使用前后、28天记录，效果可视化=最强信任</li>
+          <li><strong>缺陷营销</strong>：主动暴露1个小缺点反而提升真实感，"持妆6h鼻翼出油，补散粉撑3h"</li>
+          <li><strong>三段式推荐</strong>：优点+缺点+适合谁，形成可复用的种草模板</li>
+          <li><strong>成分可视化</strong>：不用只说"含烟酰胺"，画出成分如何渗透的示意图</li>
+        </ul>
+        <span class="inspo-tag">#场景化</span>
+        <span class="inspo-tag">#对比图</span>
+        <span class="inspo-tag">#三段式推荐</span>
+      </div>
+
+      <div class="inspo-card c3">
+        <div class="inspo-header">
+          <span class="inspo-icon">🔧</span>
+          <span class="inspo-title">极简护肤二创改编思路库</span>
+        </div>
+        <ul class="inspo-body">
+          <li><strong>步骤瘦身法</strong>：帮粉丝精简护肤流程，砍掉多余的→保留核心的→效果更好</li>
+          <li><strong>红黑榜模式</strong>：同品类产品真实横向对比，用个人实测代替官方参数</li>
+          <li><strong>空瓶记系列</strong>：用完一整瓶才推荐，展示空瓶使用痕迹，真实感拉满</li>
+          <li><strong>肤质分类测评</strong>：同一产品找不同肤质朋友实测，展示差异化效果</li>
+          <li><strong>护肤+生活Vlog融合</strong>：把产品使用融入起床/通勤/睡前等日常场景</li>
+          <li><strong>成分单集深扒</strong>：每期深度拆解一个成分（烟酰胺/神经酰胺/玻尿酸）</li>
+        </ul>
+        <span class="inspo-tag">#步骤瘦身</span>
+        <span class="inspo-tag">#红黑榜</span>
+        <span class="inspo-tag">#空瓶记</span>
+        <span class="inspo-tag">#成分深扒</span>
+      </div>
+
+      <div class="inspo-card c4">
+        <div class="inspo-header">
+          <span class="inspo-icon">📅</span>
+          <span class="inspo-title">8月护肤/美妆营销日历</span>
+        </div>
+        <ul class="inspo-body">
+          <li><strong>立秋（8月7日）</strong>：换季护肤指南、"防秋燥"保湿专题、夏→秋护肤过渡</li>
+          <li><strong>七夕（8月29日）</strong>：送自己/闺蜜的护肤好物、"爱自己"情绪护肤、约会急救妆容</li>
+          <li><strong>开学季（8月下旬）</strong>：学生党平价护肤套装、宿舍极简护肤方案</li>
+          <li><strong>三伏天尾巴</strong>：晒后修复专题、控油持久力测评、冰感护肤合集</li>
+          <li><strong>美妆扩张铺垫</strong>：从护肤到美妆的过渡内容，为后续美妆赛道做受众预热</li>
+        </ul>
+        <span class="inspo-tag">#立秋换季</span>
+        <span class="inspo-tag">#七夕护肤</span>
+        <span class="inspo-tag">#开学季</span>
+        <span class="inspo-tag">#晒后修复</span>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:8px;">
+      <div class="section-title">📝 创作检查清单</div>
+      <p class="section-desc">每次发布护肤好物内容前过一遍，确保种草力</p>
+      <div style="display:grid; grid-template-columns:repeat(2,1fr); gap:8px; font-size:14px;">
+        <label style="display:flex; align-items:center; gap:8px; cursor:pointer;"><input type="checkbox" style="accent-color:var(--accent-coral);"> 前3秒出现对比图/痛点场景/悬念钩子</label>
+        <label style="display:flex; align-items:center; gap:8px; cursor:pointer;"><input type="checkbox" style="accent-color:var(--accent-coral);"> 标题含具体数字或肤质关键词（油皮/敏肌等）</label>
+        <label style="display:flex; align-items:center; gap:8px; cursor:pointer;"><input type="checkbox" style="accent-color:var(--accent-coral);"> 封面有使用前后对比或产品实拍特写</label>
+        <label style="display:flex; align-items:center; gap:8px; cursor:pointer;"><input type="checkbox" style="accent-color:var(--accent-coral);"> 正文用"场景化公式"而非参数堆砌</label>
+        <label style="display:flex; align-items:center; gap:8px; cursor:pointer;"><input type="checkbox" style="accent-color:var(--accent-coral);"> 结尾引导评论提问（"你是什么肤质？"）</label>
+        <label style="display:flex; align-items:center; gap:8px; cursor:pointer;"><input type="checkbox" style="accent-color:var(--accent-coral);"> 添加#精简护肤 #好物分享等垂直标签</label>
+        <label style="display:flex; align-items:center; gap:8px; cursor:pointer;"><input type="checkbox" style="accent-color:var(--accent-coral);"> 诚实标注优缺点，避免纯硬广感</label>
+        <label style="display:flex; align-items:center; gap:8px; cursor:pointer;"><input type="checkbox" style="accent-color:var(--accent-coral);"> 展示真实使用痕迹（空瓶/购买记录/实测）</label>
+      </div>
+    </div>
   </div>
+
+  <!-- ===== 美食博主：每日固定执行任务 ===== -->
+  <div class="panel" id="panel-daily-food">
+    <div class="food-header"><h2>📋 每日固定执行任务</h2><p>Plog图文流程 / Vlog视频流程 · 勾选标记完成</p></div>
+    <div class="command-bar">
+      <div><h3>⚡ 开启今日工作台</h3><p>自动生成当日全套细分任务清单，Plog + Vlog 双流程已就绪</p></div>
+      <button class="btn-cmd" onclick="startFoodWorkbench()">开启今日 →</button>
+    </div>
+    <div class="task-flow">
+      <div class="flow-column">
+        <div class="flow-header plog">📸 Plog 流程（小红书图文为主）</div>
+        <div class="flow-body" id="plogFlow">
+          <div class="flow-step"><div class="step-checkbox" onclick="this.classList.toggle('checked');updateFoodProgress()"></div><div class="step-time">07:00-08:00</div><div class="step-content"><h4>早起筹备</h4><p>检查今日拍摄食材清单，确认道具/餐盘/背景布就位，查看小红书当日热门话题标签</p></div></div>
+          <div class="flow-step"><div class="step-checkbox" onclick="this.classList.toggle('checked');updateFoodProgress()"></div><div class="step-time">08:00-10:00</div><div class="step-content"><h4>拍摄时段</h4><p>利用自然光拍摄菜品制作过程，拍多角度成品图（俯拍+45°+特写），同步拍过程图9-12张</p></div></div>
+          <div class="flow-step"><div class="step-checkbox" onclick="this.classList.toggle('checked');updateFoodProgress()"></div><div class="step-time">10:00-11:30</div><div class="step-content"><h4>修图处理</h4><p>精选6-9张图，统一调色风格（暖色调/日系/复古）��加文字排版，封面图加标题大字</p></div></div>
+          <div class="flow-step"><div class="step-checkbox" onclick="this.classList.toggle('checked');updateFoodProgress()"></div><div class="step-time">11:30-13:00</div><div class="step-content"><h4>文案撰写</h4><p>小红书图文文案：氛围感开头→制作要点→小Tips→互动引导，配合15-20个标签</p></div></div>
+          <div class="flow-step"><div class="step-checkbox" onclick="this.classList.toggle('checked');updateFoodProgress()"></div><div class="step-time">13:00-14:00</div><div class="step-content"><h4>小红书排版发布</h4><p>封面+内图排序，标题优化（数字+痛点+emoji），定时发布或即时发布</p></div></div>
+          <div class="flow-step"><div class="step-checkbox" onclick="this.classList.toggle('checked');updateFoodProgress()"></div><div class="step-time">14:00-15:00</div><div class="step-content"><h4>评论维护</h4><p>回复前30分钟内评论，引导互动（提问式回复），关注同类博主笔记互动引流</p></div></div>
+          <div class="flow-step"><div class="step-checkbox" onclick="this.classList.toggle('checked');updateFoodProgress()"></div><div class="step-time">21:00-22:00</div><div class="step-content"><h4>数据复盘</h4><p>记录浏览/点赞/收藏/评论数据，分析封面点击率，总结爆点与改进点</p></div></div>
+        </div>
+      </div>
+      <div class="flow-column">
+        <div class="flow-header vlog">🎬 Vlog 流程（抖音短视频为主）</div>
+        <div class="flow-body" id="vlogFlow">
+          <div class="flow-step"><div class="step-checkbox" onclick="this.classList.toggle('checked');updateFoodProgress()"></div><div class="step-time">07:00-08:00</div><div class="step-content"><h4>早起筹备</h4><p>确认拍摄脚本和分镜，检查灯光/三脚架/收音设备，食材预处理到位</p></div></div>
+          <div class="flow-step"><div class="step-checkbox" onclick="this.classList.toggle('checked');updateFoodProgress()"></div><div class="step-time">08:00-11:00</div><div class="step-content"><h4>拍摄时段</h4><p>按分镜拍摄：食材展示→制作过程→成品展示，特写镜头+俯拍+过程跟拍，多拍素材备用</p></div></div>
+          <div class="flow-step"><div class="step-checkbox" onclick="this.classList.toggle('checked');updateFoodProgress()"></div><div class="step-time">11:00-14:00</div><div class="step-content"><h4>剪辑处理</h4><p>粗剪→精剪，控制在30-60秒，节奏紧凑，前3秒设钩子，加字幕+BGM+转场特效</p></div></div>
+          <div class="flow-step"><div class="step-checkbox" onclick="this.classList.toggle('checked');updateFoodProgress()"></div><div class="step-time">14:00-15:00</div><div class="step-content"><h4>文案撰写</h4><p>抖音口播文案：钩子开头（3秒抓人）→制作步骤→结尾引导关注，配合热门话题标签</p></div></div>
+          <div class="flow-step"><div class="step-checkbox" onclick="this.classList.toggle('checked');updateFoodProgress()"></div><div class="step-time">15:00-16:00</div><div class="step-content"><h4>抖音排版发布</h4><p>标题+话题标签选择，封面选最吸引帧，定时发布黄金时段</p></div></div>
+          <div class="flow-step"><div class="step-checkbox" onclick="this.classList.toggle('checked');updateFoodProgress()"></div><div class="step-time">16:00-17:00</div><div class="step-content"><h4>评论维护</h4><p>置顶神评论，回复高频问题（食材用量/步骤细节），引导关注和收藏</p></div></div>
+          <div class="flow-step"><div class="step-checkbox" onclick="this.classList.toggle('checked');updateFoodProgress()"></div><div class="step-time">21:00-22:00</div><div class="step-content"><h4>数据复盘</h4><p>记录播放量/完播率/点赞/评论/转发，分析前3秒留存率和完播率</p></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="card food-progress"><div class="section-title">📊 完成进度</div><span id="foodProgressText">今日待开始</span><div class="food-progress-bar"><div class="food-progress-fill" id="foodProgressBar"></div></div></div>
+  </div>
+
+  <!-- ===== 美食博主：内容选题库 ===== -->
+  <div class="panel" id="panel-food-topics">
+    <div class="food-header"><h2>📝 内容选题库</h2><p>持续积累选题灵感 · 标记状态 · 规划下周排期</p></div>
+    <div class="food-actions">
+      <button class="btn btn-primary-sm" onclick="openFoodTopicModal()">+ 新增选题</button>
+      <button class="btn btn-outline-sm" onclick="planFoodNextWeek()">📅 规划下周选题</button>
+    </div>
+    <div class="card">
+      <table class="topic-table"><thead><tr><th>选题名称</th><th>分类</th><th>类型</th><th>平台</th><th>状态</th><th>计划日期</th><th>操作</th></tr></thead>
+      <tbody id="foodTopicTable"></tbody></table>
+    </div>
+  </div>
+
+  <!-- ===== 美食博主：家常菜谱素材库 ===== -->
+  <div class="panel" id="panel-food-recipes">
+    <div class="food-header"><h2>🥘 家常菜谱素材库</h2><p>每道菜统一格式 · 优先家常菜/快手晚餐/一人食/减脂家常菜/简单烘焙</p></div>
+    <div class="food-filter-bar">
+      <button class="btn btn-primary-sm" onclick="openFoodRecipeModal()">+ 新增菜谱</button>
+      <select class="form-select" id="recipeFilter" style="width:150px;" onchange="renderFoodRecipes()">
+        <option value="">全部分类</option><option value="家常菜">家常菜</option><option value="荤菜">荤菜</option><option value="素菜">素菜</option><option value="凉拌菜">凉拌菜</option><option value="简易汤品">简易汤品</option><option value="快手晚餐">快手晚餐</option><option value="一人食">一人食</option><option value="减脂">减脂家常菜</option><option value="烘焙">简单烘焙</option>
+      </select>
+      <input class="form-input" id="recipeSearch" style="width:180px;" placeholder="搜索菜谱名称..." oninput="renderFoodRecipes()">
+    </div>
+    <div class="recipe-grid" id="foodRecipeGrid"></div>
+  </div>
+
+  <!-- ===== 美食博主：发布复盘清单 ===== -->
+  <div class="panel" id="panel-food-review">
+    <div class="food-header"><h2>📊 发布复盘清单</h2><p>分平台记录发布数据 · 小红书看氛围+互动 · 抖音看完播+钩子</p></div>
+    <div class="food-actions"><button class="btn btn-primary-sm" onclick="openFoodReviewModal()">+ 新增复盘</button></div>
+    <div class="card"><div class="section-title">📋 已发布内容复盘</div><div id="foodReviewList"></div></div>
+    <div class="card" style="margin-top:16px;"><div class="section-title">🔍 平台复盘要点对照</div>
+      <div class="review-compare">
+        <div class="review-compare-card xhs"><h4>📕 小红书复盘重点</h4><ul><li>封面点击率：标题+封面是否吸引</li><li>图文氛围感：调色风格是否统一</li><li>收藏率：内容实用性和收藏价值</li><li>评论互动：用户提问量和互动深度</li><li>标签效果：哪些标签带来更多曝光</li><li>发布时间：哪个时段数据更好</li></ul></div>
+        <div class="review-compare-card dy"><h4>🎬 抖音复盘重点</h4><ul><li>前3秒留存率：钩子是否够抓人</li><li>完播率：内容节奏是否紧凑</li><li>点赞率：内容共鸣和实用度</li><li>评论量：是否引发讨论和提问</li><li>转发率：内容传播价值</li><li>话题标签：热门话题带动效果</li></ul></div>
+      </div>
+    </div>
+  </div>
+
 </div>
 
-<!-- 底部标签栏 -->
-<nav class="tab-bar">
-  <button class="tab-item active" data-tab="plan" onclick="switchTab('plan')">
-    <span class="tab-icon">📋</span>
-    <span class="tab-label">计划</span>
-  </button>
-  <button class="tab-item" data-tab="inspo" onclick="switchTab('inspo')">
-    <span class="tab-icon">💡</span>
-    <span class="tab-label">灵感</span>
-  </button>
-  <button class="tab-item" data-tab="trending" onclick="switchTab('trending')">
-    <span class="tab-icon">🔥</span>
-    <span class="tab-label">热点</span>
-  </button>
-  <button class="tab-item" data-tab="review" onclick="switchTab('review')">
-    <span class="tab-icon">📊</span>
-    <span class="tab-label">复盘</span>
-  </button>
-  <button class="tab-item" data-tab="more" onclick="switchTab('more')">
-    <span class="tab-icon">⋯</span>
-    <span class="tab-label">更多</span>
-  </button>
-</nav>
+<!-- ===== 模态框：添加任务 ===== -->
+<div class="modal-overlay" id="taskModal">
+  <div class="modal">
+    <div class="modal-title" id="taskModalTitle">添加任务</div>
+    <div class="form-group">
+      <label class="form-label">任务标题</label>
+      <input type="text" class="form-input" id="taskTitle" placeholder="例如：拍摄夏日穿搭视频">
+    </div>
+    <div class="form-group">
+      <label class="form-label">任务描述（可选）</label>
+      <textarea class="form-textarea" id="taskDesc" placeholder="补充细节..."></textarea>
+    </div>
+    <div class="form-group">
+      <label class="form-label">优先级</label>
+      <select class="form-select" id="taskPriority">
+        <option value="high">🔴 高优先级</option>
+        <option value="medium" selected>🟡 中优先级</option>
+        <option value="low">🔵 低优先级</option>
+      </select>
+    </div>
+    <div class="modal-actions">
+      <button class="modal-btn btn-cancel" onclick="closeTaskModal()">取消</button>
+      <button class="modal-btn btn-confirm" onclick="confirmAddTask()">添加</button>
+    </div>
+  </div>
+</div>
 
 <!-- Toast -->
 <div class="toast" id="toast"></div>
 
+<!-- ===== 模态框：新增菜谱 ===== -->
+<div class="modal-overlay" id="foodRecipeModal">
+  <div class="modal" style="max-width:600px;">
+    <div class="modal-title">🥘 新增菜谱 — 7段标准格式</div>
+    <div class="form-row"><div class="form-group"><label class="form-label">菜品名称</label><input type="text" class="form-input" id="fr_name" placeholder="如：番茄炒蛋"></div>
+    <div class="form-group"><label class="form-label">分类</label><select class="form-select" id="fr_cat"><option value="家常菜">家常菜</option><option value="荤菜">荤菜</option><option value="素菜">素菜</option><option value="凉拌菜">凉拌菜</option><option value="简易汤品">简易汤品</option><option value="快手晚餐">快手晚餐</option><option value="一人食">一人食</option><option value="减脂">减脂家常菜</option><option value="烘焙">简单烘焙</option></select></div></div>
+    <div class="form-row"><div class="form-group"><label class="form-label">推荐烹饪时长</label><input type="text" class="form-input" id="fr_time" placeholder="如：15分钟"></div>
+    <div class="form-group"><label class="form-label">适合人数</label><input type="text" class="form-input" id="fr_serving" placeholder="如：1-2人"></div></div>
+    <div class="form-group"><label class="form-label">✅ 食材清单（用｜区分主料、辅料、调料）</label><textarea class="form-textarea" id="fr_ingr" placeholder="主料：番茄2个,鸡蛋3个｜辅料：葱花少许｜调料：盐半勺,糖1勺,食用油2勺" style="height:60px;"></textarea></div>
+    <div class="form-group"><label class="form-label">📝 详细分步做法（每步换行，标明火候时间）</label><textarea class="form-textarea" id="fr_steps" placeholder="1. 番茄顶部划十字，开水烫后去皮切块&#10;2. 鸡蛋打散加少许盐&#10;3. 热锅中大火多油，蛋液快速划散…"></textarea></div>
+    <div class="form-group"><label class="form-label">💡 美食博主专属小贴士（避坑/入味技巧/替换方案）</label><textarea class="form-textarea" id="fr_tips" placeholder="• 鸡蛋炒嫩的关键：大火快炒，刚凝固就盛出&#10;• 番茄一定要炒出汁再加其他…" style="height:60px;"></textarea></div>
+    <div class="form-group"><label class="form-label">📸 Plog图文拍摄建议</label><textarea class="form-textarea" id="fr_shoot_plog" placeholder="俯拍展示成品色彩，45°侧面拍过程，特写质感…" style="height:50px;"></textarea></div>
+    <div class="form-group"><label class="form-label">📸 Vlog视频重点镜头</label><textarea class="form-textarea" id="fr_shoot_vlog" placeholder="前3秒：食材准备俯拍｜中段：翻炒特写+油烟滋滋声｜结尾：成菜盛盘慢动作…" style="height:50px;"></textarea></div>
+    <div class="form-group"><label class="form-label">✍️ 小红书图文文案</label><textarea class="form-textarea" id="fr_copy_xhs" placeholder="🏠一个人也要好好吃饭呀～今天分享一道…"></textarea></div>
+    <div class="form-group"><label class="form-label">✍️ 抖音短视频钩子文案</label><textarea class="form-textarea" id="fr_copy_dy" placeholder="3秒教你做比饭店还好吃的…"></textarea></div>
+    <div class="form-row"><div class="form-group"><label class="form-label">🔖 小红书标签（逗号分隔）</label><input type="text" class="form-input" id="fr_tags_xhs" placeholder="#家常菜 #快手菜 #美食教程"></div>
+    <div class="form-group"><label class="form-label">🔖 抖音话题标签（逗号分隔）</label><input type="text" class="form-input" id="fr_tags_dy" placeholder="#美食教程 #家常菜 #下饭菜"></div></div>
+    <div class="modal-actions"><button class="modal-btn btn-cancel" onclick="closeFoodModal('foodRecipeModal')">取消</button><button class="modal-btn btn-confirm" onclick="saveFoodRecipe()">保存菜谱</button></div>
+  </div>
+</div>
+
+<!-- ===== 模态框：新增选题 ===== -->
+<div class="modal-overlay" id="foodTopicModal">
+  <div class="modal">
+    <div class="modal-title">💡 新增选题</div>
+    <div class="form-group"><label class="form-label">选题名称</label><input type="text" class="form-input" id="ft_name" placeholder="如：5道适合打工人的快手晚餐"></div>
+    <div class="form-row"><div class="form-group"><label class="form-label">分类</label><select class="form-select" id="ft_cat"><option value="家常菜">家常菜</option><option value="快手晚餐">快手晚餐</option><option value="一人食">一人食</option><option value="减脂">减脂家常菜</option><option value="烘焙">简单烘焙</option><option value="节日主题">节日主题</option><option value="挑战系列">挑战系列</option></select></div>
+    <div class="form-group"><label class="form-label">内容类型</label><select class="form-select" id="ft_type"><option value="Plog">Plog（图文）</option><option value="Vlog">Vlog（视频）</option><option value="双平台">双平台同步</option></select></div></div>
+    <div class="form-row"><div class="form-group"><label class="form-label">目标平台</label><select class="form-select" id="ft_plat"><option value="小红书">小红书</option><option value="抖音">抖音</option><option value="双平台">双平台</option></select></div>
+    <div class="form-group"><label class="form-label">计划日期</label><input type="date" class="form-input" id="ft_date"></div></div>
+    <div class="form-group"><label class="form-label">选题思路/备注</label><textarea class="form-textarea" id="ft_note" placeholder="选题灵感来源、参考内容、差异化卖点..."></textarea></div>
+    <div class="modal-actions"><button class="modal-btn btn-cancel" onclick="closeFoodModal('foodTopicModal')">取消</button><button class="modal-btn btn-confirm" onclick="saveFoodTopic()">保存选题</button></div>
+  </div>
+</div>
+
+<!-- ===== 模态框：新增复盘 ===== -->
+<div class="modal-overlay" id="foodReviewModal">
+  <div class="modal">
+    <div class="modal-title">📊 新增复盘</div>
+    <div class="form-group"><label class="form-label">内容标题</label><input type="text" class="form-input" id="frv_title" placeholder="如：番茄炒蛋教程"></div>
+    <div class="form-row"><div class="form-group"><label class="form-label">发布平台</label><select class="form-select" id="frv_plat" onchange="updateFoodReviewLabels()"><option value="小红书">小红书</option><option value="抖音">抖音</option></select></div>
+    <div class="form-group"><label class="form-label">内容类型</label><select class="form-select" id="frv_type"><option value="Plog">Plog（图文）</option><option value="Vlog">Vlog（视频）</option></select></div></div>
+    <div class="form-row"><div class="form-group"><label class="form-label" id="frv_l1">浏览量</label><input type="number" class="form-input" id="frv_m1" placeholder="0"></div>
+    <div class="form-group"><label class="form-label" id="frv_l2">点赞数</label><input type="number" class="form-input" id="frv_m2" placeholder="0"></div></div>
+    <div class="form-row"><div class="form-group"><label class="form-label" id="frv_l3">收藏数</label><input type="number" class="form-input" id="frv_m3" placeholder="0"></div>
+    <div class="form-group"><label class="form-label" id="frv_l4">评论数</label><input type="number" class="form-input" id="frv_m4" placeholder="0"></div></div>
+    <div class="form-group"><label class="form-label">复盘总结</label><textarea class="form-textarea" id="frv_sum" placeholder="什么做得好？可以怎么改进？下一步优化方向..."></textarea></div>
+    <div class="modal-actions"><button class="modal-btn btn-cancel" onclick="closeFoodModal('foodReviewModal')">取消</button><button class="modal-btn btn-confirm" onclick="saveFoodReview()">保存复盘</button></div>
+  </div>
+</div>
+
 <script>
-// ===== Data =====
-const STORE_KEY = 'linxixi_mobile_store';
-let store = { tasks:[], reviews:[], collected:[], streak:0, lastActiveDate:null };
-let currentFilter = 'all';
-let currentRating = 0;
-let currentStar = 0;
-
-const trendingData = [
-  { id:'t1', platform:'xiaohongshu', heat:'🔥 护肤第一大趋势', title:'精简护肤公式 — "早C晚A+B"成全网标配', desc:'消费者从"成分堆砌"转向"精准精简"，"早C晚A+B"科学公式席卷小红书和抖音。关键词：减少肌肤负担、一瓶多效、步骤≤3步。', tags:['精简护肤','早C晚A','科学护肤','成分党'], remix:'<strong>二创思路：</strong>做"你的护肤步骤该瘦身了"系列——帮粉丝诊断护肤流程、砍掉冗余步骤、设计3步精简方案，用"before/after步骤图"对比。' },
-  { id:'t2', platform:'douyin', heat:'🔥 月销TOP1', title:'次抛精华爆火 — 韩束白蛮腰成带货王', desc:'6月抖音护肤销量TOP1，聚焦"美白淡斑+提亮肤色"。独立包装解决活性流失痛点，"高活性+便捷体验"双优势，89%销售来自直播。', tags:['次抛精华','美白淡斑','剂型创新','直播带货'], remix:'<strong>二创思路：</strong>做"次抛VS正装"真实对比测评——从成分活性、使用便利性、性价比三维度实拍对比。' },
-  { id:'t3', platform:'xiaohongshu', heat:'🔥 平价国货崛起', title:'国货平替清单 — 30块洁面乳效果吊打大牌', desc:'至本极简氨基酸洁面乳（30元）、薇诺娜特护修护精华（50元）、珀莱雅红宝石面霜（60元）——这些平价国货因"高浓度成分+极致性价比"反复刷屏。', tags:['国货','平替','平价护肤','性价比'], remix:'<strong>二创思路：</strong>做"百元搞定全套护肤"挑战——100元预算搭配一套极简护肤，实测效果并横向对比大牌。' },
-  { id:'t4', platform:'douyin', heat:'🔥 场景化种草标杆', title:'场景化种草 — "出差酒店空调吹到脸干"式文案', desc:'爆款种草公式：具体时间+特定场景+行为动作+感官体验。不说"这个面霜很保湿"，而是说"出差住酒店空调吹得脸干到起皮，睡前厚敷第二天化妆没卡粉"。', tags:['场景化','种草文案','真实感','信任'], remix:'<strong>二创思路：</strong>选你正在用的护肤品，用"场景化公式"重写种草文案，拍前后对比真实使用视频。' },
-  { id:'t5', platform:'xiaohongshu', heat:'🔥 新趋势赛道', title:'情绪护肤 — 从"功效"到"感官疗愈"升级', desc:'2025护肤新风口：精油/香氛面膜/冰感/温感体验成蓝海。"睡眠氛围护肤""晨间五感唤醒仪式"搜索量飙升，消费者愿为"悦己体验"买单。', tags:['情绪护肤','五感疗愈','香氛','悦己经济'], remix:'<strong>二创思路：</strong>拍"沉浸式夜间护肤"视频——强调过程体验（温馨灯光+舒缓音乐+产品香氛+慢动作），做情绪价值输出。' },
-  { id:'t6', platform:'douyin', heat:'🔥 夏季刚需', title:'控油清洁类霸榜 — 夏季油皮护理需求巅峰', desc:'6月抖音护肤销量TOP10中控油清洁类占4席。夏季出油、毛孔、黑头是用户三大痛点。', tags:['控油','清洁','油皮','夏季护肤'], remix:'<strong>二创思路：</strong>做"油皮夏日护肤全攻略"——分早晚两个routine展示，每个产品只挑1个不能省的理由。' },
-  { id:'t7', platform:'xiaohongshu', heat:'🔥 K-beauty回归', title:'水凝胶面膜回潮 — K-beauty带动增长2200%', desc:'受韩国品牌推动，水凝胶面膜在TikTok周均观看量197K，同比增长2200%。果冻质地、降温感成为视觉传播利器。', tags:['水凝胶面膜','K-beauty','降温护肤','视觉传播'], remix:'<strong>二创思路：</strong>做"3款水凝胶面膜真实上脸测评"——对比贴合度、降温感、敷后效果，用高清特写展示果冻质地。' },
-  { id:'t8', platform:'douyin', heat:'🔥 精准细分趋势', title:'分区专护 — T区/眼周/颈部精细化护理爆发', desc:'"一刀切"式护肤被颠覆。T区控油、眼周提拉、颈部抗纹——分区专护成高增赛道。敏感肌和混合肌如何避免成分冲突成为核心话题。', tags:['分区护肤','T区护理','眼周','颈膜'], remix:'<strong>二创思路：</strong>做"一张脸为什么不能用一个产品"科普——用分区示意图+产品搭配方案，推荐你的分区方案。' },
-  { id:'t9', platform:'xiaohongshu', heat:'🔥 增长103%', title:'敏感肌修护赛道 — 屏障修护成年度关键词', desc:'植物智慧舒缓特护套装成霸榜产品，主打"无酒精无香精+敏感肌可用"。敏感肌人群已占护肤消费者40%+。', tags:['敏感肌','屏障修护','温和护肤','医美后可'], remix:'<strong>二创思路：</strong>做"敏感肌避雷指南"——列出实测过的慎用成分和产品红黑榜，用踩雷经历+替代方案的真实故事种草。' },
-  { id:'t10', platform:'douyin', heat:'🔥 对比图=流量密码', title:'素人实测对比图 — 28天换脸式记录成涨粉神器', desc:'小红书美妆护肤封面第一法则：妆前/妆后对比图、使用前后对比图。效果可视化+数据化呈现是护肤内容最强的信任建立方式。', tags:['对比图','28天记录','效果可视化','实测'], remix:'<strong>二创思路：</strong>选一款核心护肤品，开启"28天打卡记录"——每天同一光线同一角度拍摄，做成时间轴对比图合集。' },
-  { id:'t11', platform:'xiaohongshu', heat:'🔥 种草新范式', title:'"缺陷营销"种草法 — 暴露小缺点反而更真实', desc:'博主人设转型趋势：不再"完美种草"，而是主动暴露产品小缺点——"持妆6小时鼻翼轻微出油，补个散粉又能撑3小时"。诚实反而提升信任度和互动率。', tags:['缺陷营销','真实测评','信任','种草'], remix:'<strong>二创思路：</strong>做"我会回购但必须说实话"系列——每个推荐品附带1个真实缺点，形成"优点+缺点+适合谁"三段式推荐体。' },
-  { id:'t12', platform:'douyin', heat:'🔥 品牌投放风向', title:'美妆博主Vlog化 — "护肤+生活方式"融合成趋势', desc:'消费者偏好从博主护肤Vlog中种草下单，品牌投放也从纯产品评测转向生活方式植入。', tags:['护肤Vlog','生活方式','种草','品牌合作'], remix:'<strong>二创思路：</strong>把护肤内容融入日常生活——"周末起床护肤全流程""加班熬夜后的急救护肤"，让粉丝在生活场景中自然被种草。' },
-  { id:'t13', platform:'douyin', heat:'🔥 搜索暴涨54%', title:'凉感美护大爆发 — "冰感降温"成夏季第一关键词', desc:'抖音"凉感"关键词搜索量上半年近千万，同比增长54.43%。防晒喷雾独占23.27%份额，冰沙质地面霜成爆款。', tags:['凉感护肤','冰沙质地','防晒喷雾','夏季刚需'], remix:'<strong>二创思路：</strong>做"凉感护肤真实上脸体验"——对比普通面霜和冰沙质地面霜肤感，用红外温度计实测降温效果。' },
-  { id:'t14', platform:'douyin', heat:'🔥 爆品公式', title:'面膜溯源直播 — "达人探厂+专场"成冲榜神器', desc:'7月抖音美妆日榜Top10中面膜占4席。溯源内容+专场机制解决信任和价格力两大痛点，成面膜品类爆款公式。', tags:['面膜','溯源直播','信任背书','专场机制'], remix:'<strong>二创思路：</strong>做"护肤品牌工厂探秘"风格内容——拍国货品牌实验室探秘或成分溯源，用可视化展示研发实力。' },
-  { id:'t15', platform:'xiaohongshu', heat:'🔥 87.2%首选', title:'清爽型高保湿成刚需 — "不闷不搓泥"超越功效成第一决策', desc:'87.2%消费者将"清爽不黏腻"列为水乳首选标准。"既要功效又要清爽肤感"成刚需。', tags:['清爽护肤','高保湿','不搓泥','肤感优先'], remix:'<strong>二创思路：</strong>做"夏季水乳清爽度盲测"——选5款热门水乳蒙眼上脸只评肤感，用"清爽度排名"做选题。' },
-  { id:'t16', platform:'xiaohongshu', heat:'🔥 搜索暴涨11600%', title:'挂件美妆配饰化 — 口红/护手霜挂包上成新潮流', desc:'#挂件气垫搜索同比暴涨11600%，带链条挂饰美妆热度涨86%。美妆从"包里藏"变成"包外挂"。', tags:['挂件美妆','配饰化','近场消费','迷你装'], remix:'<strong>二创思路：</strong>做"我的包包挂件大揭秘"——展示挂在包上的迷你护肤品，分享通勤补妆便利。' },
-  { id:'t17', platform:'xiaohongshu', heat:'🔥 趋势升级', title:'情绪护肤2.0 — 从"悦己"走向"愈己"', desc:'小红书2026上半年报告：美妆从"悦己消费"升级到"愈己消费"。疗愈型和释放型两条线并行。', tags:['情绪护肤','愈己经济','疗愈型','释放型'], remix:'<strong>二创思路：</strong>做"护肤情绪日记"——每天用一款护肤品对应一种情绪，把护肤变成情绪管理仪式。' },
-  { id:'t18', platform:'xiaohongshu', heat:'🔥 万篇笔记', title:'原生美学 — "为本色上妆"颠覆无瑕底妆叙事', desc:'小红书累积万篇笔记的"原生美学"：保留真实质感和可见瑕疵，目标是"辨识度"而非"修正"。', tags:['原生美学','本色上妆','辨识度','真实质感'], remix:'<strong>二创思路：</strong>做"只遮一处"挑战——全脸只遮一个部位，其余保持原生状态，对比全妆vs原生美学。' },
-  { id:'t19', platform:'douyin', heat:'🔥 黑马爆品', title:'白番茄面膜 — "焕亮+熬夜"概念成面膜新增长点', desc:'7月抖音美妆榜白番茄面膜多次上榜，主打白番茄焕亮+熬夜急救。面膜从补水进阶到具体功效标签。', tags:['白番茄','焕亮面膜','熬夜急救','功效进阶'], remix:'<strong>二创思路：</strong>做"熬夜后急救面膜横评"——选3款熬夜焕亮面膜实测对比，用前后对比图展示差异。' },
-  { id:'t20', platform:'douyin', heat:'🔥 持妆赛道', title:'气垫雨衣化 — "防水防汗持妆"成夏季底妆核心卖点', desc:'烙色雨衣气垫2.0单日GMV百万+。"防水防汗""控油不脱妆"成最强转化关键词。', tags:['气垫','防水防汗','持妆','夏季底妆'], remix:'<strong>二创思路：</strong>做"暴汗持妆6小时实测"——选3款热门气垫运动后拍持妆效果，做硬核测评。' },
-  { id:'t21', platform:'xiaohongshu', heat:'🔥 氛围感神器', title:'液态腮红爆火 — "由内透出好气色"成新手首选', desc:'液态腮红因由内透出的好气色和新手不易翻车成爆款。紫色眼影、唇线笔、灰粉综合盘同步走红。', tags:['液态腮红','氛围感','新手友好','一盘全妆'], remix:'<strong>二创思路：</strong>做"极简护肤后3分钟快速妆容"——护肤完用液态腮红+唇线笔+睫毛膏3个单品完成全妆。' },
-  { id:'t22', platform:'xiaohongshu', heat:'🔥 高识别词', title:'韩女水光肌 — "由内而外的通透感"持续霸榜', desc:'"韩女水光肌"仍是高识别妆效词，承接底妆、妆前、提亮类产品需求。', tags:['水光肌','韩系底妆','通透感','妆前打底'], remix:'<strong>二创思路：</strong>做"极简护肤→水光肌底妆"教程——护肤后只用妆前乳+气垫两步打造韩女水光肌。' },
-  { id:'t23', platform:'xiaohongshu', heat:'🔥 新星成分', title:'蓝玉簪龙胆 — 敏感肌草本修护成年度黑马成分', desc:'青藏高原蓝玉簪龙胆完成药监局新原料备案。核心龙胆苦苷可下调TRPV1受体灵敏度，从源头改善泛红。', tags:['蓝玉簪龙胆','敏感肌','草本修护','褪红'], remix:'<strong>二创思路：</strong>做"2026护肤新成分科普"——用大白话+示意图讲清楚蓝玉簪龙胆为什么能褪红。' },
-  { id:'t24', platform:'douyin', heat:'🔥 技术突破', title:'四重胶原纳米渗透 — "涂抹式胶原针"成夏日抗老新方案', desc:'丸美小金针精华四重胶原体系，纳米包裹粒径仅18.92nm。夏季不宜频繁医美，无创居家胶原针成热门替代。', tags:['四重胶原','纳米渗透','居家抗老','无创胶原'], remix:'<strong>二创思路：</strong>做"夏季不能做医美怎么抗老"科普——对比破皮医美vs涂抹式胶原针，展示纳米渗透技术。' },
-  { id:'t25', platform:'xiaohongshu', heat:'🔥 硬指标', title:'持证美白成硬杠杠 — 国妆特字成消费者筛选门槛', desc:'2026年合规化成为行业主旋律，"国妆特字"认证成美白产品硬指标。消费者从看营销转向看证书。', tags:['持证美白','国妆特字','合规化','成分安全'], remix:'<strong>二创思路：</strong>做"教你查护肤品资质"教程——教粉丝在药监局官网查国妆特字，建立专业人设。' },
-  { id:'t26', platform:'douyin', heat:'🔥 品效合一', title:'男士护肤破圈 — 韩束联手央广网切入男性赛道', desc:'韩束男士控油精华和小白泥洗面奶双双上榜抖音美妆Top10。差异化渠道+男性细分需求=新增长路径。', tags:['男士护肤','控油','差异化渠道','品效合一'], remix:'<strong>二创思路：</strong>做"给男朋友的极简护肤指南"——3步搞定男生护肤，拓展受众群体。' },
-  { id:'t27', platform:'xiaohongshu', heat:'🔥 即时修护', title:'即时修护诉求上扬最快 — 晒后/医美后修护成刚需', desc:'"即时修护"成为上扬最快的护肤诉求。夏季紫外线+高温+空调房交替，屏障受损成高频问题。', tags:['即时修护','晒后修复','屏障受损','医美后'], remix:'<strong>二创思路：</strong>做"晒后急救72小时护肤方案"——分3阶段推荐核心产品，做急救指南系列。' },
-  { id:'t28', platform:'xiaohongshu', heat:'🔥 精简升级', title:'精简护肤+轻感修护 — "少，但更对"成夏季核心理念', desc:'近七成消费者将"不闷肤、不搓泥"列为夏季护肤首选。功效适配度首次超越品牌溢价成硬通货。', tags:['精简护肤','轻感修护','功效适配','肤感优先'], remix:'<strong>二创思路：</strong>做"夏季极简护肤3步法"挑战——只留洁面+精华+防晒3步，连续7天记录皮肤变化。' }
-];
-
-const prompts = [
-  { text:'做一期"你的护肤步骤该瘦身了"', sub:'帮粉丝诊断护肤流程、砍掉冗余步骤，设计3步精简方案，用对比图展示' },
-  { text:'开启"28天打卡记录"挑战', sub:'同一光线同一角度每天拍摄，做成时间轴对比图，真实记录皮肤变化' },
-  { text:'拍一条"百元搞定全套护肤"视频', sub:'洁面+水+乳/霜，实测效果并横向对比大牌平替' },
-  { text:'做"敏感肌避雷指南"红黑榜', sub:'列出实测过的慎用成分+踩雷产品+替代方案，建立你的专业人设' },
-  { text:'沉浸式夜间护肤Vlog', sub:'温馨灯光+舒缓音乐+产品香氛+慢动作，强调过程体验的情绪价值' },
-  { text:'做一期"我会回购但必须说实话"', sub:'每个推荐品附带一个真实缺点，形成优点+缺点+适合谁三段式推荐' },
-  { text:'做"油皮夏日护肤全攻略"', sub:'早晚两个routine，每个产品只挑1个不能省的理由，主打精简有效' },
-  { text:'用"场景化公式"重写一条种草文案', sub:'具体时间+特定场景+行为动作+感官体验，前后对比展示差异' },
-  { text:'做"次抛VS正装"真实对比测评', sub:'成分活性+使用便利+性价比三维度，展示次抛剂型对极简护肤的意义' },
-  { text:'拍一条"分区护肤"科普视频', sub:'用示意图展示T区/眼周/颈部分别需要什么产品，打破一刀切观念' },
-  { text:'做"水凝胶面膜上脸实测"合集', sub:'果冻质地+降温感+贴合度对比，用高清特写拍出治愈视觉感' },
-  { text:'做一期"护肤平替天花板"合集', sub:'国货品牌（至本/薇诺娜/珀莱雅等）真实测评，主打高性价比' },
-  { text:'拍"一周不护肤"挑战', sub:'停用所有护肤品记录皮肤变化，再展示精简护肤如何快速修复' },
-  { text:'做"成分党入门"系列第一集', sub:'选一个热门成分（烟酰胺/玻尿酸/神经酰胺），用大白话+示意图讲清楚' },
-  { text:'记录你的一天护肤+生活Vlog', sub:'将护肤融入起床/通勤/午休/睡前等生活场景，让种草自然发生' },
-  { text:'做"从护肤到美妆"过渡内容', sub:'极简护肤后的快速妆容流程，衔接你的美妆赛道扩张计划' },
-  { text:'做"空瓶记"系列', sub:'用完一整瓶才推荐，展示空瓶+使用痕迹，用真实感建立信任' },
-  { text:'做"不同肤质同款产品实测"', sub:'邀请不同肤质的朋友试同一产品，展示差异化的真实效果' },
-  { text:'做"情绪护肤"主题', sub:'如何在护肤过程中加入五感体验（香氛/冰感/温热/音乐），做情绪输出' },
-  { text:'做七夕专题"送给自己的护肤仪式"', sub:'结合8月七夕热点，打"爱自己从护肤开始"的情绪方向' }
-];
-
-const pageTitles = {
-  plan:'每日计划', inspo:'选题每日灵感', trending:'爆款热点视频/二创',
-  review:'内容复盘'
+// ===== 数据存储 =====
+const STORE_KEY = 'linxixi_workbench';
+let store = {
+  tasks: [],
+  reviews: [],
+  collected: [],
+  streak: 0,
+  lastActiveDate: null,
+  foodRecipes: [],
+  foodTopics: [],
+  foodReviews: [],
+  nextFoodRecipeId: 4,
+  nextFoodTopicId: 5,
+  nextFoodReviewId: 1
 };
+
+// 预填充热点数据 — 极简护肤 / 好物分享 赛道
+const trendingData = [
+  {
+    id: 't1', platform: 'xiaohongshu', heat: '🔥 护肤第一大趋势',
+    title: '精简护肤公式 — "早C晚A+B"成全网标配',
+    desc: '消费者从"成分堆砌"转向"精准精简"，"早C晚A+B"科学公式席卷小红书和抖音。关键词：减少肌肤负担、一瓶多效、步骤≤3步。用户不再追求10步护肤，而是3瓶搞定全部。',
+    tags: ['精简护肤', '早C晚A', '科学护肤', '成分党'],
+    remix: '<strong>二创思路：</strong>做"你的护肤步骤该瘦身了"系列——帮粉丝诊断护肤流程、砍掉冗余步骤、设计3步精简方案，用"before/after步骤图"对比展示。'
+  },
+  {
+    id: 't2', platform: 'douyin', heat: '🔥 月销TOP1',
+    title: '次抛精华爆火 — 韩束白蛮腰成带货王',
+    desc: '6月抖音护肤销量TOP1 — 韩束亮白棒白蛮腰次抛精华，聚焦"美白淡斑+提亮肤色"。独立包装解决活性流失痛点，兼具"高活性+便捷体验"双优势，89%销售来自直播。',
+    tags: ['次抛精华', '美白淡斑', '剂型创新', '直播带货'],
+    remix: '<strong>二创思路：</strong>做"次抛VS正装"真实对比测评——从成分活性、使用便利性、性价比三个维度实拍对比，重点展示次抛剂型对极简护肤的意义。'
+  },
+  {
+    id: 't3', platform: 'xiaohongshu', heat: '🔥 平价国货崛起',
+    title: '国货平替清单 — 30块洁面乳效果吊打大牌',
+    desc: '至本极简氨基酸洁面乳（30元）、薇诺娜特护修护精华（50元）、珀莱雅红宝石面霜（60元）——这些平价国货因"高浓度成分+极致性价比"在小红书反复刷屏，成学生党/打工人挚爱。',
+    tags: ['国货', '平替', '平价护肤', '性价比'],
+    remix: '<strong>二创思路：</strong>做"百元搞定全套护肤"挑战——100元预算搭配一套极简护肤（洁面+水+乳），实测效果并横向对比大牌，主打"穷精致也能好皮肤"。'
+  },
+  {
+    id: 't4', platform: 'douyin', heat: '🔥 场景化种草标杆',
+    title: '场景化种草 — "出差酒店空调吹到脸干"式文案',
+    desc: '小红书爆款种草公式：具体时间+特定场景+行为动作+感官体验。不再说"这个面霜很保湿"，而是说"上周出差住酒店，空调吹得脸干到起皮，睡前厚敷这款面霜，第二天化妆居然没卡粉"。',
+    tags: ['场景化', '种草文案', '真实感', '信任建立'],
+    remix: '<strong>二创思路：</strong>选你正在用的护肤品，用"场景化公式"重写种草文案——具体到"什么时间/什么地方/什么感受"，拍一条前后对比的真实使用视频。'
+  },
+  {
+    id: 't5', platform: 'xiaohongshu', heat: '🔥 新趋势赛道',
+    title: '情绪护肤 — 从"功效"到"感官疗愈"升级',
+    desc: '2025护肤新风口：情绪护肤市场呈平价化趋势，精油/香氛面膜/冰感/温感体验成蓝海。"睡眠氛围护肤""晨间五感唤醒仪式"等概念在小红书搜索量飙升，消费者愿为"悦己体验"买单。',
+    tags: ['情绪护肤', '五感疗愈', '香氛', '悦己经济'],
+    remix: '<strong>二创思路：</strong>拍一条"沉浸式夜间护肤"视频——不再介绍产品功效，而是强调过程体验（温馨灯光+舒缓音乐+产品香氛+慢动作涂抹），做情绪价值的输出。'
+  },
+  {
+    id: 't6', platform: 'douyin', heat: '🔥 夏季刚需',
+    title: '控油清洁类霸榜 — 夏季油皮护理需求巅峰',
+    desc: '6月抖音护肤销量TOP10中控油清洁类占4席：倾颜控油洗面奶、BUV绿泥控油洗面奶、eLL壬二酸清洁泥膜、C咖氨基酸洗面奶。夏季出油、毛孔、黑头是用户的三大痛点。',
+    tags: ['控油', '清洁', '油皮', '夏季护肤'],
+    remix: '<strong>二创思路：</strong>做"油皮夏日护肤全攻略"——分早晚两个routine展示，早上轻保湿控油、晚上深层清洁修护，每个产品只挑1个不能省的理由。'
+  },
+  {
+    id: 't7', platform: 'xiaohongshu', heat: '🔥 K-beauty回归',
+    title: '水凝胶面膜回潮 — K-beauty带动增长2200%',
+    desc: '受韩国品牌April Skin、COSRX、Purito推动，水凝胶面膜在TikTok周均观看量197K，同比增长2200%。果冻质地、降温感、透明贴片效果成为视觉传播利器。#蜗牛粘液 等成分标签同步出圈。',
+    tags: ['水凝胶面膜', 'K-beauty', '降温护肤', '视觉传播'],
+    remix: '<strong>二创思路：</strong>做"3款水凝胶面膜真实上脸测评"——对比普通面膜和水凝胶面膜的贴合度、降温感、敷后效果，用高清特写展示果冻质地的"治愈感"。'
+  },
+  {
+    id: 't8', platform: 'douyin', heat: '🔥 精准细分趋势',
+    title: '分区专护 — T区/眼周/颈部精细化护理爆发',
+    desc: '2025年"一刀切"式护肤被颠覆。T区控油、眼周提拉、颈部抗纹、法令纹贴——分区专护成高增赛道。敏感肌和混合肌如何避免成分冲突成为核心话题。',
+    tags: ['分区护肤', 'T区护理', '眼周', '颈膜'],
+    remix: '<strong>二创思路：</strong>做"一张脸为什么不能用一个产品"科普——用分区示意图+产品搭配方案，讲清楚不同区域需要不同产品的原因，顺便推荐你的分区方案。'
+  },
+  {
+    id: 't9', platform: 'xiaohongshu', heat: '🔥 增长103%',
+    title: '敏感肌修护赛道 — 屏障修护成年度关键词',
+    desc: '植物智慧舒缓特护套装（上海家化旗下）成小红书霸榜产品，主打"无酒精无香精+敏感肌可用"。屏障修护、褪红、镇静类产品需求持续走高。敏感肌人群已占护肤消费者40%+。',
+    tags: ['敏感肌', '屏障修护', '温和护肤', '医美后可'],
+    remix: '<strong>二创思路：</strong>做"敏感肌避雷指南"——列出你实测过的敏感肌慎用成分和产品红黑榜，用"踩雷经历+替代方案"的真实故事种草，信任感远超纯推荐。'
+  },
+  {
+    id: 't10', platform: 'douyin', heat: '🔥 对比图=流量密码',
+    title: '素人实测对比图 — 28天换脸式记录成涨粉神器',
+    desc: '小红书美妆护肤赛道封面第一法则：妆前/妆后对比图、使用前后对比图。效果可视化+数据化呈现（28天记录、色号变化、水油数据）是护肤内容最强的信任建立方式。',
+    tags: ['对比图', '28天记录', '效果可视化', '实测'],
+    remix: '<strong>二创思路：</strong>选一款你最近在用的核心护肤品，开启"28天打卡记录"——每天同一光线同一角度拍摄，标记皮肤变化，用时间轴做成对比图合集。'
+  },
+  {
+    id: 't11', platform: 'xiaohongshu', heat: '🔥 种草新范式',
+    title: '"缺陷营销"种草法 — 暴露小缺点反而更真实',
+    desc: '博主人设转型趋势：不再"完美种草"，而是主动暴露产品小缺点——"持妆6小时鼻翼轻微出油，补个散粉又能撑3小时"。这种诚实反而提升信任度和互动率。',
+    tags: ['缺陷营销', '真实测评', '信任建立', '种草'],
+    remix: '<strong>二创思路：</strong>做一期"我会回购但必须说实话"系列——每个推荐产品附带1个你发现的真实缺点，形成"优点+缺点+适合谁"三段式推荐体，打造你独特的测评人设。'
+  },
+  {
+    id: 't12', platform: 'douyin', heat: '🔥 品牌投放风向',
+    title: '美妆博主Vlog化 — "护肤+生活方式"融合成趋势',
+    desc: '抖音电商护肤白皮书指出：消费者偏好从博主护肤Vlog中种草下单，关注"护肤Vlog+趋势解读+真实使用"三位一体内容。品牌投放也从纯产品评测转向生活方式植入。',
+    tags: ['护肤Vlog', '生活方式', '种草', '品牌合作'],
+    remix: '<strong>二创思路：</strong>把护肤内容融入你的日常生活——"周末起床护肤全流程""加班熬夜后的急救护肤""约会前的快速变美步骤"，让粉丝在生活场景中自然被种草。'
+  },
+  {
+    id: 't13', platform: 'douyin', heat: '🔥 搜索暴涨54%',
+    title: '凉感美护大爆发 — "冰感降温"成夏季第一关键词',
+    desc: '抖音"凉感"关键词搜索量上半年近千万，同比增长54.43%。防晒喷雾独占23.27%份额，冰沙质地面霜、薄荷醇身体喷雾成爆款。面部护理走"物理凉感"路线（冰沙质地触肤降温），个护走"化学凉感"（薄荷醇即时冷感）。',
+    tags: ['凉感护肤', '冰沙质地', '防晒喷雾', '夏季刚需'],
+    remix: '<strong>二创思路：</strong>做"凉感护肤真实上脸体验"——对比普通面霜和冰沙质地面霜的肤感差异，用红外温度计实测降温效果，主打"夏天护肤也能降温5°"的视觉冲击。'
+  },
+  {
+    id: 't14', platform: 'douyin', heat: '🔥 爆品公式',
+    title: '面膜溯源直播 — "达人探厂+专场机制"成短期冲榜神器',
+    desc: '7月抖音美妆日榜Top10中面膜占4席。朱梓骁韩国溯源专场带美迪惠尔面膜冲至第1，单日GMV超百万。"溯源内容+专场机制"解决信任和价格力两大痛点，成面膜品类爆款公式。',
+    tags: ['面膜', '溯源直播', '信任背书', '专场机制'],
+    remix: '<strong>二创思路：</strong>做"护肤品牌工厂探秘"风格内容——即使不能去韩国，也可以拍"国货品牌实验室探秘"或"成分溯源"，用可视化展示产品背后的研发实力。'
+  },
+  {
+    id: 't15', platform: 'xiaohongshu', heat: '🔥 87.2%首选',
+    title: '清爽型高保湿成刚需 — "不闷不搓泥"超越功效成第一决策',
+    desc: '2026春夏护肤趋势报告：87.2%消费者将"清爽不黏腻"列为水乳首选标准，夏季"外油内干"困扰超72%人群。"既要功效又要清爽肤感"成刚需，持证美白+清爽质地=现象级单品。',
+    tags: ['清爽护肤', '高保湿', '不搓泥', '肤感优先'],
+    remix: '<strong>二创思路：</strong>做"夏季水乳清爽度盲测"——选5款热门水乳，蒙眼上脸只评肤感（黏腻度/吸收速度/搓泥测试），用"清爽度排名"做选题，戳中夏日痛点。'
+  },
+  {
+    id: 't16', platform: 'xiaohongshu', heat: '🔥 搜索暴涨11600%',
+    title: '挂件美妆配饰化 — 口红/护手霜挂包上成新潮流',
+    desc: '小红书#挂件气垫搜索同比暴涨11600%，带链条的挂饰美妆热度涨86%。Rhode唇釉手机壳25分钟售罄，国内挂链护手霜单店卖2万+。美妆从"包里藏"变成"包外挂"，进入"近场时代"。',
+    tags: ['挂件美妆', '配饰化', '近场消费', '迷你装'],
+    remix: '<strong>二创思路：</strong>做"我的包包挂件大揭秘"——展示你挂在包上的迷你护肤品/口红/护手霜，分享"通勤补妆不用翻包"的便利体验，顺便种草迷你装产品。'
+  },
+  {
+    id: 't17', platform: 'xiaohongshu', heat: '🔥 趋势升级',
+    title: '情绪护肤2.0 — 从"悦己"走向"愈己"',
+    desc: '小红书2026上半年报告：美妆个护从"悦己消费"升级到"愈己消费"。疗愈型（柔和质地+平静之力）和释放型（大胆色彩+外化情绪）两条线并行。品牌需同时经营"抚慰"和"点燃"两种情绪。',
+    tags: ['情绪护肤', '愈己经济', '疗愈型', '释放型'],
+    remix: '<strong>二创思路：</strong>做"护肤情绪日记"系列——每天用一款护肤品对应一种情绪（焦虑→镇静精华、疲惫→提亮面膜、开心→香氛身体乳），把护肤变成情绪管理仪式。'
+  },
+  {
+    id: 't18', platform: 'xiaohongshu', heat: '🔥 万篇笔记',
+    title: '原生美学 — "为本色上妆"颠覆无瑕底妆叙事',
+    desc: '小红书累积万篇笔记的"原生美学"趋势：不是素颜淡妆，而是"为本色上妆"——保留真实质感和可见瑕疵，目标是"辨识度"而非"修正"。妆感+骨相+气韵三位一体，持续高热非骤起骤落。',
+    tags: ['原生美学', '本色上妆', '辨识度', '真实质感'],
+    remix: '<strong>二创思路：</strong>做"只遮一处"挑战——全脸只遮一个你最在意的部位（黑眼圈/痘印/泛红），其余保持原生状态出镜，对比"全妆vs原生美学"的真实感差异。'
+  },
+  {
+    id: 't19', platform: 'douyin', heat: '🔥 黑马爆品',
+    title: '白番茄面膜 — "焕亮+熬夜"概念成面膜新增长点',
+    desc: '7月抖音美妆榜白番茄面膜多次上榜，主打"白番茄焕亮+熬夜急救"。面膜品类从"补水"进阶到"DNA钠水光胶原""白番茄焕亮"等具体功效标签，VEIRFOO蛋白膜单日GMV超百万。',
+    tags: ['白番茄', '焕亮面膜', '熬夜急救', '功效进阶'],
+    remix: '<strong>二创思路：</strong>做"熬夜后急救面膜横评"——选3款主打"熬夜焕亮"的面膜（白番茄/DNA钠/常规补水），连续熬夜后实测对比，用前后对比图展示差异。'
+  },
+  {
+    id: 't20', platform: 'douyin', heat: '🔥 持妆赛道',
+    title: '气垫雨衣化 — "防水防汗持妆"成夏季底妆核心卖点',
+    desc: '烙色雨衣气垫2.0通过达人专场单日GMV百万+，花间颂粉饼同步上榜。夏季底妆赛道"防水防汗""控油不脱妆"成最强转化关键词，气垫+定妆组合成夏季标配。',
+    tags: ['气垫', '防水防汗', '持妆', '夏季底妆'],
+    remix: '<strong>二创思路：</strong>做"暴汗持妆6小时实测"——选3款热门气垫，运动/出汗后拍摄持妆效果，用"防水测试+补妆对比"做硬核测评，戳中夏季脱妆痛点。'
+  },
+  {
+    id: 't21', platform: 'xiaohongshu', heat: '🔥 氛围感神器',
+    title: '液态腮红爆火 — "由内透出好气色"成新手首选',
+    desc: '小红书美妆热门：液态腮红因"由内透出的好气色"和"新手少量多次不易翻车"成爆款品类。紫色眼影（消肿试色）、唇线笔（改唇形+锁色）、灰粉综合盘（一盘搞定全妆）同步走红。',
+    tags: ['液态腮红', '氛围感', '新手友好', '一盘全妆'],
+    remix: '<strong>二创思路：</strong>做"极简护肤后的3分钟快速妆容"——护肤完直接用液态腮红+唇线笔+睫毛膏3个单品完成全妆，衔接你的"护肤到美妆"赛道扩张计划。'
+  },
+  {
+    id: 't22', platform: 'xiaohongshu', heat: '🔥 高识别词',
+    title: '韩女水光肌 — "由内而外的通透感"持续霸榜',
+    desc: '"韩女水光肌"仍是小红书高识别妆效词，承接底妆、妆前、提亮类产品需求。与"原生美学"形成互补——水光肌追求通透光泽，原生美学追求真实质感，两条路线都有受众。',
+    tags: ['水光肌', '韩系底妆', '通透感', '妆前打底'],
+    remix: '<strong>二创思路：</strong>做"极简护肤→水光肌底妆"教程——护肤后只用妆前乳+气垫两步打造韩女水光肌，展示"好皮肤是最好的底妆"理念，自然种草护肤+底妆。'
+  },
+  {
+    id: 't23', platform: 'xiaohongshu', heat: '🔥 新星成分',
+    title: '蓝玉簪龙胆 — 敏感肌草本修护成年度黑马成分',
+    desc: '青藏高原海拔2500米以上的蓝玉簪龙胆完成国家药监局新原料备案。核心活性物龙胆苦苷可下调TRPV1受体灵敏度，从源头改善神经源性泛红，被誉为敏感肌"天然灭火器"。',
+    tags: ['蓝玉簪龙胆', '敏感肌', '草本修护', '褪红'],
+    remix: '<strong>二创思路：</strong>做"2026护肤新成分科普"——用大白话+示意图讲清楚蓝玉簪龙胆为什么能褪红，对比传统敏感肌成分（神经酰胺/积雪草），做成分党进阶内容。'
+  },
+  {
+    id: 't24', platform: 'douyin', heat: '🔥 技术突破',
+    title: '四重胶原纳米渗透 — "涂抹式胶原针"成夏日抗老新方案',
+    desc: '丸美小金针精华推出四重胶原体系（I/III/IV/VII型），纳米级包裹粒径仅18.92nm（毛孔1/4228），渗透速度提升2倍。夏季不宜频繁医美，"无创居家胶原针"成热门替代方案。',
+    tags: ['四重胶原', '纳米渗透', '居家抗老', '无创胶原'],
+    remix: '<strong>二创思路：</strong>做"夏季不能做医美怎么抗老"科普——对比破皮医美vs涂抹式胶原针的优劣，重点展示纳米渗透技术（用色素水演示渗透速度），自然种草精华产品。'
+  },
+  {
+    id: 't25', platform: 'xiaohongshu', heat: '🔥 硬指标',
+    title: '持证美白成硬杠杠 — 国妆特字成消费者筛选门槛',
+    desc: '2026年合规化成为行业主旋律，"国妆特字"认证成美白产品硬指标。谷雨极光甘草次抛获国妆特字G202412001，泊紫汀兰双国妆特字认证。消费者从"看营销"转向"看证书"。',
+    tags: ['持证美白', '国妆特字', '合规化', '成分安全'],
+    remix: '<strong>二创思路：</strong>做"教你查护肤品资质"教程——教粉丝在国家药监局官网查国妆特字，顺便测评你用过的持证美白产品，用"持证上岗"建立专业人设和信任。'
+  },
+  {
+    id: 't26', platform: 'douyin', heat: '🔥 品效合一',
+    title: '男士护肤破圈 — 韩束联手央广网切入男性赛道',
+    desc: '韩束男士控油精华和小白泥洗面奶双双上榜抖音美妆Top10，主推渠道为"央广网"而非传统美妆达人。差异化渠道+男性细分需求+权威媒体背书=避开价格战的新增长路径。',
+    tags: ['男士护肤', '控油', '差异化渠道', '品效合一'],
+    remix: '<strong>二创思路：</strong>做"给男朋友/老公的极简护肤指南"——3步搞定男生护肤（洁面+水乳+防晒），用"男生也需要精简护肤"切入，拓展你的受众群体。'
+  },
+  {
+    id: 't27', platform: 'xiaohongshu', heat: '🔥 即时修护',
+    title: '即时修护诉求上扬最快 — 晒后/医美后修护成刚需',
+    desc: '小红书2026美妆趋势报告："即时修护"成为上扬最快的护肤诉求。夏季紫外线+高温+空调房交替，屏障受损、泛红、敏感成高频问题。可复美次抛、敷尔佳积雪草等修护产品持续走热。',
+    tags: ['即时修护', '晒后修复', '屏障受损', '医美后'],
+    remix: '<strong>二创思路：</strong>做"晒后急救72小时护肤方案"——分3个阶段（0-6h降温镇静/6-24h修护屏障/24-72h深度滋养），每个阶段推荐1个核心产品，做"急救指南"系列。'
+  },
+  {
+    id: 't28', platform: 'xiaohongshu', heat: '🔥 精简升级',
+    title: '精简护肤+轻感修护 — "少，但更对"成夏季核心理念',
+    desc: '近七成消费者将"不闷肤、不搓泥"列为夏季护肤首选。功效适配度首次超越品牌溢价成硬通货。精简≠不护肤，而是"减掉多余步骤+减掉厚重质地+保留核心有效成分+保留修护力"。',
+    tags: ['精简护肤', '轻感修护', '功效适配', '肤感优先'],
+    remix: '<strong>二创思路：</strong>做"夏季极简护肤3步法"挑战——只留洁面+精华+防晒3步，连续7天记录皮肤状态变化，用"少即是多"理念戳中过度护肤人群痛点。'
+  }
+];
+
+// 灵感库 — 极简护肤/好物分享赛道专属
+const prompts = [
+  { text: '做一期"你的护肤步骤该瘦身了"', sub: '帮粉丝诊断护肤流程、砍掉冗余步骤，设计3步精简方案，用对比图展示' },
+  { text: '开启"28天打卡记录"挑战', sub: '同一光线同一角度每天拍摄，做成时间轴对比图，真实记录皮肤变化' },
+  { text: '拍一条"百元搞定全套护肤"视频', sub: '洁面+水+乳/霜，实测效果并横向对比大牌平替' },
+  { text: '做"敏感肌避雷指南"红黑榜', sub: '列出实测过的慎用成分+踩雷产品+替代方案，建立你的专业人设' },
+  { text: '沉浸式夜间护肤Vlog', sub: '温馨灯光+舒缓音乐+产品香氛+慢动作，强调过程体验的情绪价值' },
+  { text: '做一期"我会回购但必须说实话"', sub: '每个推荐品附带一个真实缺点，形成优点+缺点+适合谁的三段式推荐' },
+  { text: '做"油皮夏日护肤全攻略"', sub: '早晚两个routine，每个产品只挑1个不能省的理由，主打精简有效' },
+  { text: '用"场景化公式"重写一条种草文案', sub: '具体时间+特定场景+行为动作+感官体验，前后对比展示差异' },
+  { text: '做"次抛VS正装"真实对比测评', sub: '成分活性+使用便利+性价比三维度，展示次抛剂型对极简护肤的意义' },
+  { text: '拍一条"分区护肤"科普视频', sub: '用示意图展示T区/眼周/颈部分别需要什么产品，打破一刀切观念' },
+  { text: '做"水凝胶面膜上脸实测"合集', sub: '果冻质地+降温感+贴合度对比，用高清特写拍出治愈视觉感' },
+  { text: '做一期"护肤平替天花板"合集', sub: '国货品牌（至本/薇诺娜/珀莱雅等）真实测评，主打高性价比' },
+  { text: '拍"一周不护肤"挑战', sub: '停用所有护肤品记录皮肤变化，再展示精简护肤如何快速修复' },
+  { text: '做"成分党入门"系列第一集', sub: '选一个热门成分（烟酰胺/玻尿酸/神经酰胺），用大白话+示意图讲清楚' },
+  { text: '记录你的一天护肤+生活Vlog', sub: '将护肤融入起床/通勤/午休/睡前等生活场景，让种草自然发生' },
+  { text: '做"从护肤到美妆"过渡内容', sub: '极简护肤后的快速妆容流程，衔接你的美妆赛道扩张计划' },
+  { text: '做"空瓶记"系列', sub: '用完一整瓶才推荐，展示空瓶+使用痕迹，用真实感建立信任' },
+  { text: '做"不同肤质同款产品实测"', sub: '邀请不同肤质的朋友试同一产品，展示差异化的真实效果' },
+  { text: '做"情绪护肤"主题', sub: '如何在护肤过程中加入五感体验（香氛/冰感/温热/音乐），做情绪输出' },
+  { text: '做七夕专题"送给自己的护肤仪式"', sub: '结合8月七夕热点，打"爱自己从护肤开始"的情绪方向' }
+];
 
 // ===== 每日任务模板 =====
 const dailyTaskTemplates = [
-  { title: '浏览今日护肤热点，筛选2个二创方向', desc: '在「热点」中查看最新护肤/美妆趋势', priority: 'high' },
+  { title: '浏览今日护肤热点，筛选2个二创方向', desc: '在「热点发现」中查看最新护肤/美妆趋势', priority: 'high' },
   { title: '拍摄/剪辑1条极简护肤内容', desc: '产品测评/红黑榜/场景化种草', priority: 'high' },
   { title: '回复粉丝评论，收集选题灵感', desc: '关注评论区高频问题和肤质需求', priority: 'medium' },
 ];
 
 const weeklyTaskTemplates = [
-  { day: 1, title: '复盘上周内容数据，制定本周计划', desc: '分析播放/互动/涨粉趋势', priority: 'medium' },
-  { day: 2, title: '研究本周护肤新品和爆款成分', desc: '关注新品发布、热门成分动态', priority: 'medium' },
-  { day: 3, title: '与粉丝深度互动，参与热门话题', desc: '评论区互动+平台话题活动', priority: 'low' },
-  { day: 4, title: '拍摄产品对比/测评素材', desc: '准备对比图、实测素材', priority: 'medium' },
-  { day: 5, title: '发布本周核心内容，优化标题封面', desc: '检查标签、标题、封面对比度', priority: 'high' },
+  { day: 1, title: '复盘上周内容数据，制定本周计划', desc: '分析播放/互动/涨粉趋势，优化选题方向', priority: 'medium' },
+  { day: 2, title: '研究本周护肤新品和爆款成分', desc: '关注新品发布、热门成分、品牌动态', priority: 'medium' },
+  { day: 3, title: '与粉丝深度互动，参与热门话题', desc: '评论区互动+平台话题活动+合拍挑战', priority: 'low' },
+  { day: 4, title: '拍摄产品对比/测评素材', desc: '准备对比图、实测素材、使用前后记录', priority: 'medium' },
+  { day: 5, title: '发布本周核心内容，优化标题封面', desc: '检查标签、标题数字、封面对比度', priority: 'high' },
   { day: 6, title: '互动涨粉，参与平台挑战赛', desc: '参与热门挑战、合拍、话题打卡', priority: 'low' },
-  { day: 0, title: '整理本周复盘，规划下周方向', desc: '记录数据到「复盘」，制定下周计划', priority: 'medium' },
+  { day: 0, title: '整理本周复盘，规划下周方向', desc: '记录数据到「内容复盘」，制定下周计划', priority: 'medium' },
 ];
 
-// 每日任务用固定语义ID，确保同步时正确匹配、不会重复
+// 每日任务用固定语义ID，同步时不会因日期变化而重复
 const dailyFixedIds = ['daily-browse-hotspots','daily-shoot-content','daily-reply-comments'];
 
 function generateDailyTasks() {
   const today = new Date();
   const dayOfWeek = today.getDay();
   const dateStr = today.toDateString();
+
   // 建立当日新任务的语义 key 集合
   var newKeys = new Set();
   dailyTaskTemplates.forEach(function(t) { var k = getTaskSemanticKey(t.title); if (k) newKeys.add(k); });
   var weeklyTask = weeklyTaskTemplates.find(function(w) { return w.day === dayOfWeek; });
   if (weeklyTask) { var wk = getTaskSemanticKey(weeklyTask.title); if (wk) newKeys.add(wk); }
+
   // 移除旧的每日任务：isDaily 标记 + 旧版 ID + 语义撞车的残留任务
   store.tasks = store.tasks.filter(function(t) {
     if (t.isDaily) return false;
     if (t.id && (t.id.startsWith('daily-20') || t.id.startsWith('weekly-20'))) return false;
-    // 语义撞车：老任务（非 isDaily）的标题语义和当天新任务相同 → 也会被替换
     if (!t.isDaily) {
       var oldKey = getTaskSemanticKey(t.title);
       if (oldKey && newKeys.has(oldKey)) return false;
     }
     return true;
   });
+
+  // 添加每日固定任务（使用固定语义ID）
   dailyTaskTemplates.forEach((t, i) => {
-    store.tasks.push({ id:dailyFixedIds[i], title:t.title, desc:t.desc, status:'todo', priority:t.priority, isDaily:true, createdAt:Date.now() });
+    store.tasks.push({
+      id: dailyFixedIds[i],
+      title: t.title,
+      desc: t.desc,
+      status: 'todo',
+      priority: t.priority,
+      isDaily: true,
+      createdAt: Date.now()
+    });
   });
+
+  // 添加本周特定任务
   if (weeklyTask) {
-    store.tasks.push({ id:'daily-weekly-task', title:weeklyTask.title, desc:weeklyTask.desc, status:'todo', priority:weeklyTask.priority, isDaily:true, createdAt:Date.now() });
+    store.tasks.push({
+      id: 'daily-weekly-task',
+      title: weeklyTask.title,
+      desc: weeklyTask.desc,
+      status: 'todo',
+      priority: weeklyTask.priority,
+      isDaily: true,
+      createdAt: Date.now()
+    });
   }
+
   store.lastTaskDate = dateStr;
   saveData();
 }
@@ -1573,7 +2118,7 @@ function getTaskSemanticKey(title) {
   return null;
 }
 
-// 智能去重：按标题关键词分组，保留最新的那个
+// 智能去重：按标题核心关键词分组，合并高度相似的任务
 function dedupSimilarTasks() {
   if (!store.tasks || store.tasks.length <= 1) return;
   var keyMap = {};
@@ -1583,7 +2128,6 @@ function dedupSimilarTasks() {
     if (!key) return;
     var existing = keyMap[key];
     if (!existing) { keyMap[key] = t; return; }
-    // 存在同义任务：保留 isDaily 或更新、或 ID 更规范的
     if (t.isDaily && !existing.isDaily) { toRemove.push(existing.id); keyMap[key] = t; }
     else if (!t.isDaily && existing.isDaily) { toRemove.push(t.id); }
     else if ((t.createdAt||0) > (existing.createdAt||0)) { toRemove.push(existing.id); keyMap[key] = t; }
@@ -1599,10 +2143,11 @@ function dedupSimilarTasks() {
 // ===== 每日热点轮播 =====
 function getDailyTrending(manualSeed) {
   const today = new Date();
-  const seed = manualSeed !== undefined ? manualSeed : today.getFullYear()*10000+(today.getMonth()+1)*100+today.getDate();
+  const seed = manualSeed !== undefined ? manualSeed : today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate();
+  // 用日期做种子打乱顺序，每天展示不同的12条
   const shuffled = [...trendingData];
-  for (let i = shuffled.length-1; i > 0; i--) {
-    const hash = (shuffled[i].id.charCodeAt(0)*31 + shuffled[i].id.charCodeAt(1)*17 + seed) % (i+1);
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const hash = (shuffled[i].id.charCodeAt(0) * 31 + shuffled[i].id.charCodeAt(1) * 17 + seed) % (i + 1);
     [shuffled[i], shuffled[hash]] = [shuffled[hash], shuffled[i]];
   }
   return shuffled.slice(0, 12);
@@ -1610,21 +2155,43 @@ function getDailyTrending(manualSeed) {
 
 let currentTrendingSeed = undefined;
 
-// ===== Utils =====
-function uid() { return Date.now().toString(36)+Math.random().toString(36).substr(2,5); }
-function esc(s) { const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
-function fmtNum(n) { if(n>=10000)return(n/10000).toFixed(1)+'w'; if(n>=1000)return(n/1000).toFixed(1)+'k'; return n; }
+// ===== 初始化 =====
+function init() {
+  loadData();
+  updateDate();
+  updateStreak();
+  renderTasks();
+  renderTrending('all');
+  renderReviews();
+  setRandomPrompt();
+  setupTabs();
+  setupFilters();
+  setupDragDrop();
+  setupRating();
+  setDefaultDate();
+  // 显示热点更新日期
+  const today = new Date();
+  const trendingDateEl = document.getElementById('trendingDate');
+  if (trendingDateEl) trendingDateEl.textContent = `${today.getMonth()+1}月${today.getDate()}日更新`;
+  // 更新侧边栏热点数量
+  const sidebarBadge = document.getElementById('sidebarBadge');
+  if (sidebarBadge) sidebarBadge.textContent = getDailyTrending(currentTrendingSeed).length;
+}
 
 function loadData() {
   try {
     const saved = localStorage.getItem(STORE_KEY);
-    if(saved) store = { ...store, ...JSON.parse(saved) };
-    // 迁移旧随机ID的默认任��� → 固定ID
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      store = { ...store, ...parsed };
+    }
+    // 迁移旧随机ID的默认任务 → 固定ID
     const DEFAULT_TASKS = {
       '浏览今日护肤热点，筛选2个二创方向': 'default-task-1',
       '拍摄/剪辑1条极简护肤内容': 'default-task-2',
       '复盘上次发布的内容数据': 'default-task-3',
-      '回复粉丝评论，收集下期选题': 'default-task-4'
+      '回复粉丝评论，收集下期选题': 'default-task-4',
+      '回复粉丝评论，收集下期选题灵感': 'default-task-4'
     };
     if (store.tasks && store.tasks.length > 0) {
       let migrated = false;
@@ -1643,90 +2210,159 @@ function loadData() {
     if (!store.tasks || store.tasks.length === 0) {
       generateDailyTasks();
     }
-  } catch(e){}
+    // 美食博主数据迁移：检测旧格式菜谱（无cooking_time字段）自动升级
+    if (store.foodRecipes && store.foodRecipes.length > 0 && !store.foodRecipes[0].cooking_time) {
+      store.foodRecipes = [];
+      store.nextFoodRecipeId = 1;
+    }
+    // 美食博主预填充数据
+    if (!store.foodRecipes || store.foodRecipes.length === 0) {
+      store.foodRecipes = [
+        {id:1,name:"番茄炒蛋",category:"家常菜",cooking_time:"10分钟",serving:"2人",ingredients:"主料：番茄2个,鸡蛋3个｜辅料：葱花少许,蒜末1瓣｜调料：盐半勺,糖1勺,食用油2勺,番茄酱半勺(可选)",steps:"1. 番茄顶部划十字，开水烫30秒去皮，切滚刀块\n2. 鸡蛋打入碗中加少许盐，筷子充分打散至起泡\n3. 热锅中大火，倒2勺油烧至微微冒烟\n4. 倒入蛋液快速划散，凝固即盛出（大火约20秒）\n5. 锅中留底油，下蒜末爆香，倒入番茄块中火翻炒\n6. 用铲子按压番茄帮助出汁，炒到汤汁浓稠\n7. 加糖1勺、盐半勺、番茄酱半勺调味\n8. 倒回鸡蛋翻炒均匀10秒，撒葱花出锅",tips:"• 鸡蛋嫩滑关键：大火快炒，刚凝固就盛出，久炒会老\n• 番茄出汁技巧：用铲子边炒边按压，去皮后更易出汁\n• 番茄偏酸可多加半勺糖平衡酸甜\n• 想做盖饭版本：汤汁不要收太干，多留汁拌饭\n• 鸡蛋替换：鸭蛋/鹅蛋均可，口感略有不同",shoot_plog:"俯拍成品：白色圆盘盛装，红黄配色+绿色葱花点缀，自然光侧逆光；45°俯拍番茄切块过程，刀工展示；特写：蛋花裹满番茄汁的质感，筷子夹起拉丝瞬间",shoot_vlog:"前3秒：鸡蛋入热油锅快速划散（治愈音效+滋滋声）| 中段：番茄块入锅炒出红色汤汁的过程，铲子按压特写 | 重点：鸡蛋回锅翻炒慢动作，撒葱花收尾 | 结尾：成菜盛盘，白盘+木桌，用筷子夹起展示",copy_xhs:"🍅 家家都做的番茄炒蛋，为什么饭店的更好吃？\n\n今天分享零失败配方，酸甜浓郁汤汁拌饭能炫两碗👇\n\n🥚 鸡蛋3个打散+盐，大火热油快速划散（嫩滑关键！）\n🍅 番茄2个去皮切块，中火炒出浓汁\n✨ 加1勺糖提鲜+半勺番茄酱增色\n🍳 鸡蛋回锅翻炒10秒出锅\n\n💡 Tips：番茄一定要炒出汁！加糖是灵魂！\n\n拌米饭吃真的太绝了，一人食也能很快乐✨\n\n#番茄炒蛋 #家常菜 #快手菜 #美食教程 #一人食 #下饭菜",copy_dy:"3秒告诉你，为什么饭店做的番茄炒蛋比你做的好吃！鸡蛋大火快炒嫩了就盛出，番茄一定要炒出汁再加糖和番茄酱，最后鸡蛋回锅翻两下就出锅。酸甜开胃，汤汁拌饭绝了！收藏今晚就试试～",tags_xhs:"#番茄炒蛋 #家常菜 #快手菜 #美食教程 #一人食 #下饭菜 #厨房小白",tags_dy:"#美食教程 #番茄炒蛋 #家常菜 #下饭菜 #厨房小白也OK"},
+        {id:2,name:"可乐鸡翅",category:"荤菜",cooking_time:"25分钟",serving:"2-3人",ingredients:"主料：鸡中翅10个,可乐1罐(330ml)｜辅料：姜片5片,葱结1个｜调料：生抽2勺,老抽半勺,料酒1勺,盐少许",steps:"1. 鸡翅洗净，两面各划2刀方便入味\n2. 冷水下锅加姜片、料酒1勺，煮沸撇去浮沫，捞出冲洗沥干\n3. 热锅少油，鸡翅皮面朝下，中小火煎至两面金黄（每面约2分钟）\n4. 倒入可乐没过鸡翅，加生抽2勺、老抽半勺、葱结\n5. 大火烧开后转中小火炖15分钟\n6. 开盖转大火收汁，不停翻动防止粘锅，汤汁浓稠裹匀鸡翅即可\n7. 夹出葱姜，装盘撒白芝麻",tips:"• 鸡翅必须焯水去腥，这一步不能省\n• 煎鸡翅时皮面先下锅，煎出焦香更入味\n• 老抽不要多，否则颜色太深像焦了\n• 收汁收8成，留一点汤汁拌饭超赞\n• 可乐可用无糖可乐代替，味道差别不大\n• 加几个干辣椒段可做微辣版",shoot_plog:"成品特写：深色大盘盛装，可乐色酱汁油亮反光，白芝麻点缀；侧面低角度展示鸡翅的焦糖色泽；筷子夹起一只，酱汁滴落的瞬间抓拍",shoot_vlog:"前3秒：鸡翅入煎锅金黄滋滋声，油花特写 | 中段：可乐倒入锅中沸腾冒泡的壮观画面 | 重点：收汁最后阶段浓稠酱汁裹匀鸡翅的慢动作 | 结尾：筷子撕开鸡翅，嫩肉带汁水特写",copy_xhs:"🍗 零失败可乐鸡翅！厨房小白也能惊艳全家！\n\n灵魂酱汁裹满鸡翅，一抿就脱骨，比饭店还好吃👇\n\n🥤 可乐1罐+生抽2勺+老抽半勺=神仙酱汁\n🔥 鸡翅先煎至两面金黄，锁住肉汁\n⏰ 中小火慢炖15分钟，大火收汁是关键\n🌟 出锅撒白芝麻，颜值直接拉满\n\n💡 收汁一定要有耐心，翻动防粘锅！\n\n做一盘秒光，朋友来了当拿手菜超有面子～\n\n#可乐鸡翅 #零失败食谱 #厨房小白 #家常菜 #拿手菜 #快手美食",copy_dy:"厨房小白也能做的可乐鸡翅！就三步：鸡翅焯水去腥，煎到两面金黄，倒入可乐加生抽炖15分钟收汁。酱汁浓郁裹满鸡翅，一抿就脱骨！简单到男朋友/女朋友都说绝了！",tags_xhs:"#可乐鸡翅 #零失败食谱 #厨房小白 #家常菜 #拿手菜 #快手美食",tags_dy:"#可乐鸡翅 #美食教程 #家常菜 #厨房小白 #零失败"},
+        {id:3,name:"麻婆豆腐",category:"家常菜",cooking_time:"15分钟",serving:"2人",ingredients:"主料：嫩豆腐1块(约400g),猪肉末100g｜辅料：蒜末3瓣,姜末少许,葱花｜调料：郫县豆瓣酱1.5勺,花椒粉半勺,生抽1勺,淀粉1勺(勾芡),食用油2勺",steps:"1. 嫩豆腐切2cm小方块，开水加少许盐，焯水1分钟捞出沥干\n2. 热锅冷油，下肉末中火炒至变色出油\n3. 下豆瓣酱炒出红油，加蒜末姜末爆香\n4. 倒入豆腐块，轻轻推匀，不要用力翻炒以免碎\n5. 加生抽1勺+小半碗水，大火烧开转中小火煮3分钟入味\n6. 淀粉加水调成水淀粉，沿锅边淋入，轻轻推动收浓汤汁\n7. 出锅装盘，撒花椒粉和葱花",tips:"• 豆腐选嫩豆腐口感最好，但下锅后不要搅动，用推的方式\n• 焯水加盐让豆腐更紧实不易碎\n• 豆瓣酱已经咸了，最后试味再决定是否加盐\n• 花椒粉要最后撒，提前煮香味会散\n• 喜欢肉感：肉末多放50g，煸到微焦更香\n• 素食版：肉末换香菇丁",shoot_plog:"成品俯拍：红色汤汁+白色豆腐+绿色葱花三色对比，深色陶碗增质感；45°侧面展示豆腐块裹满红油的细节；桌上放一碗白米饭制造「下饭」氛围",shoot_vlog:"前3秒：热锅豆瓣酱炒出红油的特写，油色由浅变深的渐变过程 | 中段：豆腐块入锅的慢动作，汤汁沸腾咕嘟咕嘟声 | 重点：淋水淀粉后汤汁变浓稠裹匀豆腐的过程 | 结尾：成菜装盘撒花椒粉葱花的慢镜头",copy_xhs:"🌶️ 比川菜馆还好吃的麻婆豆腐！麻辣鲜香嫩，一锅搞定！\n\n学会这6步，豆腐不碎不腥，拌饭能吃三碗👇\n\n🫘 嫩豆腐切块焯水1分钟（紧实不碎的秘密）\n🥩 肉末煸到微焦出油，豆瓣酱炒出红油\n🧊 豆腐入锅只推不炒（不碎的关键！）\n🍲 中小火煮3分钟入味，水淀粉勾芡收汁\n\n💡 Tips：豆瓣酱要炒出红油香味才出来 / 花椒粉要出锅前撒！\n\n麻辣鲜香嫩滑入味，配一碗白米饭太满足了！\n\n#麻婆豆腐 #川菜 #下饭菜 #家常菜 #美食教程 #快手菜",copy_dy:"在家做出比饭店还好吃的麻婆豆腐！豆腐焯水1分钟不碎，肉末煸出油再放豆瓣酱，豆腐只推不炒，最后勾芡撒花椒粉。麻辣嫩滑，拌饭能吃三碗！",tags_xhs:"#麻婆豆腐 #川菜 #下饭菜 #家常菜 #美���教程 #快手菜 #拌饭神器",tags_dy:"#麻婆豆腐 #川菜 #下饭菜 #家常菜教程 #拌饭神器"},
+        {id:4,name:"蒜蓉西兰花",category:"减脂",cooking_time:"8分钟",serving:"1-2人",ingredients:"主料：西兰花1颗(约300g)｜辅料：蒜4瓣,小米辣1个(可选)｜调料：盐半勺,蚝油1勺,橄榄油1勺,食用油几滴(焯水用)",steps:"1. 西兰花掰小朵，淡盐水浸泡10分钟去虫卵\n2. 烧一大锅水，加盐半勺+食用油几滴\n3. 水开后下西兰花焯水1分钟，捞出立即过凉水（保持翠绿）\n4. 蒜切末，越细越好\n5. 热锅倒橄榄油，小火爆香蒜末至微微金黄\n6. 下西兰花大火快炒30秒\n7. 加蚝油1勺调味，翻炒均匀出锅",tips:"• 焯水加油盐是保持翠绿的秘诀，过凉水同样关键\n• 蒜末要小火慢炸到金黄，焦了会苦\n• 炒的过程不超过1分钟，保持脆嫩\n• 怕生加小米辣一起炒，配色也好看\n• 西兰花可换花菜/芦笋，做法通用",shoot_plog:"俯拍翠绿成品，白色圆盘+浅木桌布突出绿色，自然光逆光拍出光泽感；45°俯拍蒜蓉金黄附着花蕾的细节质感；旁边放几颗完整蒜增加画面层次",shoot_vlog:"前3秒：西兰花入沸水瞬间的鲜明绿色对比 | 中段：蒜末入油锅冒出金黄色泡的特写 | 重点：大火快炒西兰花翻锅的动感画面 | 结尾：成菜装盘，筷子夹起一瓣西兰花滴水翠绿",copy_xhs:"🥦 减脂期最怕吃水煮菜？这道蒜蓉西兰花让你爱上吃草！\n\n5分钟搞定，脆嫩爽口，低卡又好吃👇\n\n🧂 焯水加盐和油——保持翠绿的秘密武器\n🧊 捞出过凉水——锁住脆嫩口感\n🧄 蒜末4瓣，小火炸到金黄，蒜香扑鼻\n🔥 大火快炒30秒，加蚝油调味\n\n💡 全程不超过8分钟，比水煮好吃100倍！\n\n减脂期每天吃都不腻，超适合带便当🍱\n\n#减脂餐 #低卡食谱 #西兰花做法 #快手菜 #健康饮食 #便当菜",copy_dy:"减脂期别再吃水煮菜了！5分钟蒜蓉西兰花，焯水时加盐和油保持翠绿，蒜末爆香后大火快炒30秒，脆嫩爽口比肉还好吃！减脂姐妹收藏起来～",tags_xhs:"#减脂餐 #低卡食谱 #西兰花 #快手菜 #健康饮食 #便当菜 #减脂期必备",tags_dy:"#减脂餐 #西兰花做法 #快手菜 #低卡美食 #减脂期"},
+        {id:5,name:"凉拌黄瓜",category:"凉拌菜",cooking_time:"10分钟",serving:"2人",ingredients:"主料：黄瓜2根｜辅料：蒜末3瓣,香菜少许,小米辣1个｜调料：陈醋2勺,生抽1.5勺,白糖半勺,盐半勺,香油半勺,辣椒油1勺(可选)",steps:"1. 黄瓜洗净，用刀背拍裂后切段（拍过的黄瓜更入味）\n2. 黄瓜段放碗中加盐半勺抓匀，腌5分钟杀出水分\n3. 倒掉腌出的水，黄瓜不用再洗\n4. 调酱汁：蒜末+陈醋2勺+生抽1.5勺+糖半勺+香油+辣椒油拌匀\n5. 酱汁倒入黄瓜碗中，充分翻拌均匀\n6. 撒香菜碎和小米辣圈即可上桌",tips:"• 用刀背拍比刀切更入味，断面不规则更容易裹酱汁\n• 腌黄瓜杀水是关键，否则拌出来汤汁太多味道淡\n• 陈醋比白醋更好，口感更醇厚\n• 放冰箱冷藏15分钟再吃，清凉爽脆更绝\n• 不吃辣可不放辣椒油，酸爽版照样好吃",shoot_plog:"俯拍成品：透明玻璃碗装凉拌黄瓜，绿色黄瓜+红色辣椒+绿色香菜色彩层次；加一双筷子夹起黄瓜段，酱汁滴落的细节；旁边放冰镇饮料增加夏日清凉感",shoot_vlog:"前3秒：刀背拍黄瓜的「啪」声清脆画面 | 中段：秘制酱汁倒入碗中，筷子翻拌黄瓜裹满酱汁 | 重点：夹起一块黄瓜段，酱汁流淌的慢镜头 | 结尾：整碗成品+冒冷气的饮料，清凉夏日感",copy_xhs:"🥒 夏天没胃口？学会这道万能凉拌汁，秒杀路边摊！\n\n酸辣爽脆，5分钟搞定，吃完胃口大开👇\n\n🔪 黄瓜用刀背拍——入味的关键！\n🧂 加盐腌5分钟杀水——口感才脆\n🥣 万能凉拌汁：陈醋+生抽+糖+蒜+香油\n❄️ 冰箱冷藏15分钟再吃——冰凉爽脆绝了\n\n💡 这个万能汁可以做任何凉拌菜！\n\n配稀饭、当开胃菜、解腻神器，夏天就要吃凉拌！\n\n#凉拌黄瓜 #夏日开胃菜 #凉拌菜 #快手菜 #懒人食谱 #一人食",copy_dy:"夏天没胃口？5分钟酸辣凉拌黄瓜，比路边摊还好吃！关键两步：黄瓜用刀背拍入味，腌5分钟杀水更脆。万能凉拌汁配方记好了：陈醋2勺+生抽1.5勺+糖半勺+蒜末，拌啥都好吃！",tags_xhs:"#凉拌黄瓜 #夏日开胃菜 #凉拌菜 #快手菜 #懒人食谱 #开胃小菜",tags_dy:"#凉拌黄瓜 #夏日美食 #凉拌菜 #开胃小菜 #懒人食谱"},
+        {id:6,name:"紫菜蛋花汤",category:"简易汤品",cooking_time:"5分钟",serving:"2人",ingredients:"主料：干紫菜1小片,鸡蛋2个｜辅料：葱花香菜少许,虾皮1小把(可选)｜调料：盐半勺,白胡椒粉少许,香油几滴,水500ml",steps:"1. 紫菜撕小块泡清水2分钟，洗净沥干\n2. 鸡蛋打散搅匀，加入几滴水让蛋花更嫩\n3. 锅中烧水，水开后放入紫菜和虾皮\n4. 水再次沸腾后转小火，沿着筷子将蛋液细流倒入\n5. 倒完蛋液后不要搅动，等蛋花自然浮起\n6. 加盐、白胡椒调味，关火\n7. 盛入碗中淋几滴香油，撒葱花",tips:"• 蛋花漂亮的秘诀：转小火、沿筷子细流倒入、倒完不搅\n• 紫菜不要久煮，1-2分钟即可\n• 白胡椒粉是点睛之笔，不要省略\n• 虾皮提升鲜味层次，没有可跳过\n• 可加一小块嫩豆腐一起煮，变紫菜豆腐汤",shoot_plog:"俯拍成品：白色汤碗盛汤，蛋花金黄、紫菜墨绿、葱花翠绿，三色分明；热气袅袅上升的瞬间抓拍；旁边放一把中式白瓷勺增加生活感",shoot_vlog:"前3秒：蛋液沿筷子细流倒入沸水的过程，蛋花绽放慢动作 | 中段：锅中蛋花紫菜翻滚沸腾的画面 | 重点：汤盛入碗中，热气升腾、淋香油的特写 | 结尾：勺子舀起一勺，蛋花紫菜随汤汁流下的镜头",copy_xhs:"🍲 5分钟搞定一碗神仙紫菜蛋花汤！蛋花又嫩又好看！\n\n每次去饭店必点的汤，在家做才5块钱👇\n\n🥚 蛋液沿筷子细流倒入——蛋花变丝的秘密\n⏸️ 倒完不要搅——让蛋花自然浮起\n🌿 出锅撒白胡椒粉+葱花+香油——灵魂三件套\n\n💡 蛋花漂亮的秘诀就两步：小火、不搅！\n\n比饭店还好喝，配什么菜都解腻！厨房小白也能学会✨\n\n#紫菜蛋花汤 #快手汤 #厨房小白 #家常菜 #美食教程 #5分钟食谱",copy_dy:"饭店的紫菜蛋花汤为什么蛋花又嫩又好看？秘密就是：蛋液沿着筷子细流倒入小火沸水中，倒完不要搅！出锅加白胡椒和香油，5分钟搞定，比饭店好喝！",tags_xhs:"#紫菜蛋花汤 #快手汤 #厨房小白也OK #家常菜 #5分钟食谱 #解腻汤",tags_dy:"#紫菜蛋花汤 #快手汤 #家常美食 #厨房小白 #蛋花做法"},
+        {id:7,name:"青椒肉丝",category:"快手晚餐",cooking_time:"12分钟",serving:"2人",ingredients:"主料：猪里脊200g,青椒2个｜辅料：姜丝少许,蒜2瓣｜腌肉料：生抽1勺,料酒半勺,淀粉半勺,食用油半勺｜调料：生抽1勺,蚝油半勺,盐少许,食用油2勺",steps:"1. 猪里脊切细丝，加生抽、料酒、淀粉抓匀，最后加油锁水，腌10分钟\n2. 青椒去籽切细丝，蒜切片\n3. 热锅中大火，倒油烧热，下肉丝快速划散至变色（约30秒），盛出\n4. 锅内留底油，爆香姜蒜，下青椒丝大火翻炒1分钟\n5. 倒回肉丝，加生抽、蚝油、盐快速翻炒30秒\n6. 出锅装盘",tips:"• 肉丝一定要先腌后加油锁水，这样炒出来才嫩\n• 肉丝变色就盛出，久炒会柴\n• 青椒全程大火快炒，保持脆感\n• 里脊可用鸡胸肉替代，做法相同\n• 想加辣用螺丝椒替代普通青椒\n• 本道菜灵魂是「快」，全程不超过3分钟上灶时间",shoot_plog:"俯拍成品：白色或浅色圆盘，绿青椒+浅色肉丝的配色清爽；侧面低角度展示肉丝和青椒丝的刀工细腻；筷子夹起一撮肉丝和青椒的混合色泽",shoot_vlog:"前3秒：热锅大火，肉丝滑入油锅快速划散的动感画面+滋滋声 | 中段：青椒入锅大火翻炒冒烟的快节奏画面 | 重点：肉丝回锅和青椒快速翻拌均匀的过程 | 结尾：成菜装盘，筷子夹起展示肉丝嫩滑质感",copy_xhs:"🥢 每个中国胃都爱吃的青椒肉丝！12分钟搞定一顿饭！\n\n打工人下班必学的快手菜，超级下饭👇\n\n🥩 肉丝先腌后加油锁水——嫩滑的关键！\n🔥 全程大火快炒，肉变色就盛出——不柴的秘诀\n🌶️ 青椒炒1分钟，保持脆爽口感\n⏱️ 从切到上桌12分钟，比外卖还快\n\n💡 加1勺豆瓣酱就是鱼香肉丝！一菜两吃！\n\n一碗白米饭配这盘青椒肉丝，满足到不想点外卖✨\n\n#青椒肉丝 #快手晚餐 #打工人食谱 #下饭菜 #家常菜 #快手菜",copy_dy:"打工人下班必学的青椒肉丝！12分钟搞定比外卖还快！肉丝先腌后炒锁住嫩滑，全程大火快炒，青椒脆爽还带锅气。一碟菜一碗饭，再也不想点外卖了！",tags_xhs:"#青椒肉丝 #快手晚餐 #打工人食谱 #下饭菜 #家常菜 #快手菜 #10分钟美食",tags_dy:"#青椒肉丝 #打工人美食 #快手菜 #下饭菜 #家常菜教程"},
+        {id:8,name:"干煸四季豆",category:"素菜",cooking_time:"20分钟",serving:"2-3人",ingredients:"主料：四季豆300g,猪肉末50g｜辅料：干辣椒段5个,花椒1小勺,蒜末3瓣,姜末少许｜调料：生抽1勺,盐半勺,白糖少许,食用油3勺",steps:"1. 四季豆去头尾和筋，掰成5cm段，洗净用厨房纸擦干（必做，防溅油）\n2. 热锅中大火，倒2勺油，四季豆下锅\n3. 中小火慢慢煸炒，不停翻动，煸到四季豆表面起皱、出现焦斑（约8-10分钟）\n4. 煸好后盛出备用\n5. 锅中补1勺油，下肉末中小火煸到微焦出油\n6. 下干辣椒、花椒、蒜姜末爆香\n7. 倒回四季豆，加生抽、盐、糖大火快速翻炒1分钟出锅",tips:"• 四季豆一定要煸到熟透（起皱带焦斑），半生有毒\n• 煸豆前必须擦干水分，否则下锅油花四溅\n• 耐心煸10分钟，不要心急，这才是「干煸」的精髓\n• 不喜欢肉末可省略，素版干煸同样好吃\n• 四季豆可换豇豆/豆角，做法同理\n• 花椒和干辣椒比例可调，按喜好控制麻辣度",shoot_plog:"俯拍成品：黑色/深色盘子对比四季豆的深绿色和焦斑，肉末红棕色点缀；侧面低角度展示四季豆表面起皱的焦斑质感；筷子夹起一根四季豆，干辣椒和花椒在盘中的细节",shoot_vlog:"前3秒：四季豆入热油锅，水分炸开的滋滋声+冒烟画面 | 中段：中小火慢煸四季豆，8-10分钟表面起皱的渐变过程（可快放）| 重点：干辣椒花椒入锅爆香冒烟的瞬间 | 结尾：大火翻炒出锅，装盘展示干煸焦香成品",copy_xhs:"🔥 饭店必点的干煸四季豆！在家做出川菜馆的味道！\n\n香辣入味，表面微焦里面脆嫩，超下饭👇\n\n🫘 四季豆擦干水分下锅（防溅油！）\n⏰ 中小火耐心煸10分钟——煸到表面起皱焦黄\n🥩 肉末单独煸到微焦出油，香上加香\n🌶️ 干辣椒+花椒爆香，川味灵魂！\n🔥 最后大火翻炒1分钟出锅\n\n💡 四季豆一定要煸透！起皱带焦斑说明熟了！\n\n这道菜配啤酒也超绝，朋友聚餐必上的一道硬菜🍺\n\n#干煸四季豆 #川菜 #下饭菜 #素菜做法 #家常菜 #聚餐硬菜",copy_dy:"饭店的干煸四季豆为什么那么香？记住三招：四季豆擦干水分再下锅，中小火耐心煸10分钟到起皱焦黄，肉末单独煸出油再加花椒干辣椒！香辣焦香超下饭，一学就会～",tags_xhs:"#干煸四季豆 #川菜做法 #下饭菜 #素菜 #家常菜 #聚餐硬菜 #四季豆做法",tags_dy:"#干煸四季豆 #川菜 #下饭菜 #家常菜教程 #素菜也有春天"},
+        {id:9,name:"手撕包菜",category:"素菜",cooking_time:"10分钟",serving:"2人",ingredients:"主料：包菜半个(约300g)｜辅料：干辣椒段5个,花椒少许,蒜3瓣,五花肉薄片50g(可选)｜调料：生抽1.5勺,陈醋1勺,蚝油半勺,盐少许,食用油1勺",steps:"1. 包菜用手撕成大片（不用刀切，手撕更入味），洗净沥干\n2. 蒜拍碎，干辣椒切段\n3. 热锅中大火，不放油，下包菜干煸1分钟去生味，盛出\n4. 锅中倒油，下五花肉片煸出油（素版此步跳过直接下一步）\n5. 下干辣椒、花椒、蒜爆香\n6. 倒回包菜，大火快速翻炒\n7. 沿锅边淋生抽、陈醋、蚝油，大火翻炒30秒出锅",tips:"• 手撕不刀切：断面不规则更容易裹汁入味\n• 先干煸去生味：无水无油先炒1分钟，包菜更脆\n• 用五花肉片煸出猪油炒，香味提升一个档次\n• 醋沿锅边淋，高温激发醋香而不过酸\n• 全程大火快炒，包菜才脆不软塌",shoot_plog:"俯拍成品：深色盘中浅黄包菜+红辣椒段+焦黄肉片，色彩饱满；侧面展示手撕包菜不规则边缘裹满酱汁的质感；桌面摆一碗白米饭+筷子，生活气息满满",shoot_vlog:"前3秒：热锅无油干煸包菜，蒸汽升腾的画面 | 中段：五花肉片入锅煸出油的滋滋声和焦黄变化 | 重点：酱油沿锅边淋入的冒泡瞬间+大火翻炒快节奏 | 结尾：成菜装盘，热气腾腾",copy_xhs:"🥬 比肉还好吃的手撕包菜！10分钟搞定，酸辣脆爽太过瘾！\n\n学会饭店同款手撕包菜，比荤菜还下饭👇\n\n👋 用手撕不用刀切——更入味！\n🔥 先干煸1分钟去生味——更脆爽！\n🥓 加五花肉煸油炒——灵魂所在！\n🌶️ 干辣椒+花椒+蒜爆香——川味勾魂！\n🍶 醋沿锅边淋——高温激出酸香！\n\n💡 全程大火快炒，从下锅到出锅不超过5分钟！\n\n一盘菜两碗饭，打工人一周吃三次都不腻～\n\n#手撕包菜 #下饭菜 #川菜 #快手菜 #打工人食谱 #家常菜",copy_dy:"饭店的手撕包菜为什么又脆又香？记住这四点：手撕不用刀切更入味，先无水干煸1分钟更脆，五花肉煸出猪油炒更香，醋沿锅边淋高温激出香味！10分钟搞定，好吃到舔盘～",tags_xhs:"#手撕包菜 #下饭菜 #川菜 #快手菜 #打工人食谱 #家常菜 #包菜做法",tags_dy:"#手撕包菜 #下饭菜 #快手菜 #川菜教程 #家常菜"},
+        {id:10,name:"照烧鸡腿饭",category:"一人食",cooking_time:"25分钟",serving:"1人",ingredients:"主料：鸡腿1个(去骨)｜辅料：西兰花几朵,胡萝卜几片(装饰)｜照烧汁：生抽2勺,料酒1勺,蜂蜜1.5勺(或白糖1勺),蚝油半勺,清水2勺｜调料：食用油1勺,白芝麻少许",steps:"1. 鸡腿去骨，用刀背轻拍几下让厚度均匀\n2. 调照烧汁：生抽+料酒+蜂蜜+蚝油+清水搅匀\n3. 热锅不放油，鸡皮朝下，中小火煎至金黄（约5分钟）\n4. 翻面再煎2分钟\n5. 倒入照烧汁，中火煮，不停用勺子舀汁浇在鸡腿表面\n6. 煮到汤汁浓稠，鸡腿裹满酱汁（约5分钟）\n7. 取出切厚片装盘，淋上锅中剩余酱汁\n8. 西兰花胡萝卜焯水摆盘，撒白芝麻",tips:"• 鸡腿去骨后刀背拍平，煎的时候受热均匀不会卷曲\n• 鸡皮朝下先煎出油，全程不用额外放油\n• 照烧汁煮的时候一定要不断浇汁到鸡皮上，入味又上色\n• 蜂蜜比白糖光泽更好看，适合拍照\n• 鸡腿可用鸡胸替代（煎的时间缩短）\n• 酱汁多留一点，拌米饭才是灵魂",shoot_plog:"精品一人食俯拍：日式方盘盛饭+照烧鸡腿切片+西兰花+胡萝卜，酱汁光泽照人；侧面45°展示鸡腿切面的嫩度和酱汁厚度；桌布浅色/木色，旁边放一杯日式茶增加氛围",shoot_vlog:"前3秒：鸡皮朝下入锅煎出金黄滋滋声特写 | 中段：照烧汁倒入锅中沸腾+勺子反复浇汁鸡皮的慢动作 | 重点：取出切厚片刀切慢动作，酱汁淋浇鸡腿 | 结尾：完整一人食摆盘呈现，诱人光泽",copy_xhs:"🍗 比日料店还好吃的照烧鸡腿饭！一人食的幸福感拉满！\n\n酱汁浓郁鸡肉嫩滑，配一碗饭真的太治愈了👇\n\n🐔 鸡腿去骨拍平，受热更均匀\n🍳 鸡皮朝下煎出金黄焦香（不用放油！）\n🥣 自制照烧汁：生抽+蜂蜜+蚝油+料酒\n🔥 中火熬汁反复浇淋——入味又上色！\n🍚 米饭淋满酱汁，一口鸡腿一口饭\n\n💡 蜂蜜让酱汁有光泽，拍照超出片！\n\n一个人也要好好吃饭，周末犒劳自己的仪式感✨\n\n#照烧鸡腿饭 #一人食 #日式料理 #治愈系美食 #周末做饭 #美食教程",copy_dy:"3分钟学会日料店同款照烧鸡腿饭！鸡腿去骨拍平，不用放油鸡皮朝下煎到金黄，倒入自制照烧汁熬到浓稠。鸡肉嫩滑裹满酱汁，一碗饭根本不够吃！",tags_xhs:"#照烧鸡腿饭 #一人食 #日式料理 #治愈系美食 #周末做饭 #美食教程 #一人食记",tags_dy:"#照烧鸡腿饭 #一人食 #美食教程 #日料 #周末治愈计划"},
+        {id:11,name:"红烧排骨",category:"荤菜",cooking_time:"45分钟",serving:"3-4人",ingredients:"主料：猪小排500g｜辅料：姜5片,大葱1段,八角1个,桂皮1小块,香叶1片｜调料：生抽2勺,老抽半勺,料酒1勺,冰糖10颗(或白糖2勺),盐适量,食用油1勺",steps:"1. 排骨冷水下锅，加姜片、料酒焯水，煮沸撇沫，捞出温水冲洗沥干\n2. 热锅冷油，下冰糖小火慢炒至融化变成焦糖色（不停搅动防糊）\n3. 糖色变琥珀色冒小泡时，迅速倒入排骨翻炒上色\n4. 加姜葱八角桂皮香叶翻炒出香味\n5. 加生抽、老抽，倒入开水没过排骨（一定要热水！）\n6. 大火烧开转小火，盖盖炖35-40分钟\n7. 开盖尝味加盐，转大火收汁至浓稠挂满排骨",tips:"• 炒糖色是红烧的灵魂，冰糖小火慢炒，变琥珀色立刻下排骨\n• 炖排骨一定要加热水，加冷水肉会收紧变柴\n• 焯水后用温水冲洗，冷水遇热肉收缩\n• 收汁不要收太干，留一点汤汁拌饭\n• 高压锅版本：上汽后压15分钟，开盖后收汁\n• 加1个土豆或几块胡萝卜同炖，一锅出更省事",shoot_plog:"俯拍成品：深色大盘装红烧排骨，酱红色排骨裹满浓汁，油光发亮；侧面低角度突出排骨的厚度和酱汁质感；盘边放一双筷子+一碗白米饭，日常温馨",shoot_vlog:"前3秒：冰糖入锅小火炒化成琥珀色焦糖的特写 | 中段：排骨入锅翻炒均匀裹上糖色的过程 | 重点：开盖大火收汁，汤汁浓稠翻滚的慢镜头 | 结尾：成菜装盘，筷子夹起一块排骨展示软烂脱骨",copy_xhs:"🍖 红烧排骨零失败做法！软烂脱骨，酱汁浓郁巨下饭！\n\n过年过节、招待朋友必备硬菜，学会超有面子👇\n\n🍬 冰糖小火炒到琥珀色=红烧的灵魂\n🥩 排骨焯水后加热水炖——肉不柴！\n⏰ 小火慢炖40分钟，肉烂到脱骨\n🔥 最后大火收汁，酱汁浓稠裹满排骨\n\n💡 炒糖色火候最关键：变色立刻下锅，过一会就糊了！\n\n配一碗白米饭淋满酱汁，幸福感直接拉满✨\n\n#红烧排骨 #硬菜 #家常菜 #零失败食谱 #聚餐必备 #美食教程",copy_dy:"厨房小白也能做红烧排骨！冰糖小火炒到琥珀色，排骨倒进去翻炒上色，加热水炖40分钟，大火收汁浓稠挂满每一块。软烂脱骨酱汁浓郁，请客做这道菜直接封神！",tags_xhs:"#红烧排骨 #���菜 #零失败食谱 #聚餐必备 #家常菜 #美食教程 #拿手菜",tags_dy:"#红烧排骨 #硬菜 #厨房小白 #家常菜教程 #下饭神菜"},
+        {id:12,name:"糖醋里脊",category:"荤菜",cooking_time:"25分钟",serving:"2-3人",ingredients:"主料：猪里脊250g｜腌肉料：料酒1勺,盐少许,鸡蛋1个｜裹粉：玉米淀粉适量｜糖醋汁：番茄酱3勺,白糖2勺,白醋1.5勺,生抽半勺,清水3勺,淀粉半勺｜调料：食用油(炸),白芝麻少许",steps:"1. 里脊切1cm粗条，加料酒、盐抓匀腌10分钟\n2. 腌好的里脊加1个鸡蛋抓匀，再逐条裹满玉米淀粉\n3. 调糖醋汁：番茄酱+糖+醋+生抽+水+淀粉搅匀备用\n4. 油温六成热（筷子插入冒密集小泡），逐条下里脊\n5. 中小火炸3-4分钟至金黄，捞出\n6. 油温升至八成热，复炸30秒至酥脆捞出\n7. 锅中留少许底油，倒入糖醋汁中小火熬至冒泡浓稠\n8. 倒入炸好的里脊快速翻拌均匀，撒白芝麻出锅",tips:"• 复炸是酥脆的关键：第一遍炸熟，第二遍炸脆\n• 糖醋汁比例是灵魂：番茄酱:糖:醋≈3:2:1.5\n• 裹粉要抖掉多余淀粉，不然炸出来硬壳太厚\n• 最后拌汁要快，里脊在汁里太久就不脆了\n• 猪肉可换鸡胸肉做糖醋鸡柳\n• 喜欢菠萝版可加几块菠萝一起炒",shoot_plog:"俯拍成品：白色圆盘装橙红色糖醋里脊，色泽鲜艳，白芝麻点缀+几片绿色香菜/薄荷叶配色；侧面展示里脊条表面的酥脆外壳和挂汁光泽；筷子夹起一根酱汁拉丝",shoot_vlog:"前3秒：里脊裹满淀粉下油锅，气泡翻滚的治愈画面 | 中段：复炸时高温油锅中里脊变金黄酥脆 | 重点：倒入糖醋汁沸腾熬浓稠的过程+里脊翻拌裹汁慢动作 | 结尾：成菜装盘撒芝麻，拉丝展示",copy_xhs:"🍊 酸甜酥脆巨好吃的糖醋里脊！比饭店还绝，一盘秒光！\n\n小朋友和男朋友都馋哭的万能糖醋汁配方来了👇\n\n🥩 里脊切条先腌后裹蛋液再裹淀粉——层层入味\n🍳 复炸是酥脆的秘密——第一遍炸熟，第二遍炸脆\n🥣 万能糖醋汁：番茄酱3:白糖2:白醋1.5（黄金比例！）\n🔥 最后拌汁要快——保持酥脆口感\n\n💡 这个糖醋汁可以做任何糖醋菜！\n\n外酥里嫩酸甜开胃，一盘根本不够吃，全家抢着夹✨\n\n#糖醋里脊 #万能糖醋汁 #拿手菜 #家常菜 #美食教程 #下饭菜",copy_dy:"全家人抢着吃的糖醋里脊！记住黄金糖醋汁比例：3勺番茄酱+2勺白糖+1.5勺白醋，里脊条裹蛋液再裹淀粉复炸两遍，外酥里嫩酸甜开胃！一上桌就被秒光～",tags_xhs:"#糖醋里脊 #万能糖醋汁 #拿手菜 #家常菜 #美食教程 #下饭菜 #酸甜可口",tags_dy:"#糖醋里脊 #糖醋汁配方 #家常菜 #拿手菜 #下饭神菜"},
+        {id:13,name:"西兰花炒鸡胸肉",category:"减脂",cooking_time:"15分钟",serving:"1-2人",ingredients:"主料：鸡胸肉1块(约150g),西兰花半颗(约150g)｜腌肉料：料酒半勺,生抽半勺,淀粉半勺,黑胡椒少许｜辅料：蒜2瓣｜调料：盐少许,蚝油半勺,橄榄油2勺",steps:"1. 鸡胸肉切小块，加腌肉料抓匀，腌10分钟\n2. 西兰花掰小朵，淡盐水泡5分钟，焯水1分钟捞出过凉水\n3. 热锅倒橄榄油，中火下腌好的鸡胸肉\n4. 翻炒至鸡肉表面变白（约2分钟）\n5. 下蒜末爆香，倒入焯好的西兰花\n6. 加蚝油半勺、黑胡椒、盐少许大火翻炒1分钟出锅",tips:"• 鸡胸肉关键是要嫩：先腌+中火快炒变色就放西兰花，炒久了柴\n• 西兰花先焯水过凉，颜色翠绿口感脆\n• 腌制时加淀粉锁水，鸡胸肉就不会干\n• 减脂版不加蚝油，换盐+黑胡椒+柠檬汁\n• 鸡胸肉可换虾仁，西兰花炒虾仁同样低卡",shoot_plog:"俯拍成品：白色餐盒/盘装，绿色西兰花+白嫩的鸡胸肉，颜色清新；侧面展示食材的新鲜感和低油质感；旁边放一杯柠檬水、一双筷子，打造减脂餐氛围",shoot_vlog:"前3秒：腌好的鸡胸肉入锅翻炒变白的过程 | 中段：西兰花入锅与鸡胸肉大火翻炒 | 重点：成菜装便当盒的摆盘过程 | 结尾：打开便当盒展示成品+健身房场景或身材管理暗示",copy_xhs:"🥗 减脂期最爱的鸡胸肉做法！清爽不柴，一周吃5次都不腻！\n\n告别水煮鸡胸，15分钟做出嫩滑好吃的减脂餐👇\n\n🐔 鸡胸肉先腌10分钟+加淀粉锁水——嫩滑秘诀\n🥦 西兰花焯水过凉——翠绿脆嫩\n🔥 中火快炒，肉变色就下蔬菜——不柴！\n🧂 调味用黑胡椒+蚝油——低卡又有味\n\n💡 分装便当盒，带去公司微波炉热一下就能吃！\n\n减脂期绝对的王牌便当菜，营养均衡好做好吃～\n\n#减脂餐 #鸡胸肉做法 #减脂便当 #低卡美食 #西兰花 #健身餐 #掉秤食谱",copy_dy:"减脂期别再吃水煮鸡胸了！学会这个做法，鸡胸肉嫩滑不柴，15分钟搞定！先腌后炒、加淀粉锁水，配上西兰花清爽低卡又饱腹。一周吃五次都不腻！",tags_xhs:"#减脂餐 #鸡胸肉做法 #减脂便当 #低卡美食 #健身餐 #掉秤食谱 #快手减脂菜",tags_dy:"#减脂餐 #鸡胸肉做法 #低卡美食 #健身餐 #减脂期必备"},
+        {id:14,name:"番茄菌菇汤",category:"简易汤品",cooking_time:"15分钟",serving:"2-3人",ingredients:"主料：番茄2个,金针菇1把,蟹味菇1把｜辅料：嫩豆腐半块,鸡蛋1个,香葱少许｜调料：盐半勺,番茄酱1勺,白胡椒粉少许,香油几滴,食用油1勺",steps:"1. 番茄去皮切小块，金针菇去根撕散，蟹味菇洗净去根，豆腐切小块\n2. 热锅倒油，下番茄块中火炒到出汁变软\n3. 加番茄酱1勺翻炒均匀，倒入热水约600ml\n4. 水开后放入金针菇、蟹味菇，中火煮3分钟\n5. 下豆腐块再煮2分钟\n6. 鸡蛋打散沿筷子细流倒入，等蛋花浮起\n7. 加盐、白胡椒粉调味，关火淋香油撒葱花",tips:"• 番茄炒出汁再加水，汤底才浓郁\n• 菌菇不要煮太久，3分钟足够，烂了没口感\n• 蛋花在关火前最后放，保持鲜嫩\n• 不吃豆腐可换其他食材：粉丝、虾仁、火腿均可\n• 多点菌菇种类更丰富：香菇、白玉菇、平菇都可以\n• 适合当减脂期晚餐：一碗汤+一块杂粮面包就够了",shoot_plog:"俯拍成品：白色大碗装红汤+白色豆腐+各色菌菇，色彩温暖治愈；热气腾腾的瞬间抓拍；旁边放勺子+面包/馒头，天冷时节氛围感拉满",shoot_vlog:"前3秒：番茄块入锅炒出红色汤汁的嗡嗡声+油花 | 中段：各种菌菇入锅沸腾翻滚的画面 | 重点：蛋液沿筷子细流倒入汤中的优美慢动作 | 结尾：成汤装碗热气升腾，勺子舀起满满菌菇和豆腐",copy_xhs:"🍅 15分钟搞定一锅暖胃番茄菌菇汤！低脂饱腹超好喝！\n\n天冷就想喝热汤？这碗神仙汤只需15分钟👇\n\n🍅 番茄炒出汁+番茄酱——汤底浓郁的关键\n🍄 双菇搭配——口感丰富还很鲜\n🥚 蛋花最后放——嫩滑加分\n🧂 白胡椒粉点睛——喝完暖全身\n\n💡 减脂期当晚餐喝完超满足，热量还很低！\n\n配一块杂粮面包就是一餐，暖身又掉秤～\n\n#番茄菌菇汤 #暖汤 #减脂汤品 #快手汤 #低卡食谱 #治愈系美食",copy_dy:"减脂期晚餐喝什么？15分钟番茄菌菇汤！番茄炒出汁加双菇煮3分钟，不加一滴味精鲜掉眉毛！低脂饱腹喝完暖暖的，减脂期一定要试试～",tags_xhs:"#番茄菌菇汤 #暖汤 #减脂汤品 #快手汤 #低卡食谱 #治愈系美食 #菌菇汤",tags_dy:"#番茄菌菇汤 #减脂汤 #快手汤 #低脂低卡 #美味汤品"},
+        {id:15,name:"零失败香蕉马芬",category:"烘焙",cooking_time:"30分钟",serving:"6个",ingredients:"主料：熟香蕉2根(越熟越甜),低筋面粉100g,鸡蛋1个｜辅料：牛奶40ml,黄油30g(融化)｜调料：白糖20g(可减半,香蕉自带甜味),泡打粉4g(必加),坚果碎或巧克力豆少许(装饰)",steps:"1. 香蕉去皮放碗中用叉子碾成泥（留一些小块更有口感）\n2. 黄油隔水融化或微波30秒融化，放凉\n3. 鸡蛋打散倒入香蕉泥中搅拌均匀\n4. 加入融化的黄油、牛奶、白糖搅拌至均匀\n5. 面粉+泡打粉过筛倒入液体中，用刮刀切拌到无干粉（不要画圈搅拌！）\n6. 面糊倒入马芬纸杯中，7-8分满\n7. 表面撒坚果碎或巧克力豆\n8. 烤箱180°C预热，中层烤18-20分钟\n9. 插入牙签取出干净即熟，出炉放凉",tips:"• 香蕉越熟越好，表皮有黑点的最甜，可以少放糖\n• 搅拌手法是成败关键：切拌不要画圈，画圈搅拌起筋就不松软了\n• 泡打粉一定要加，马芬蓬松全靠它\n• 没有低筋面粉可用中筋面粉+20%玉米淀粉替代\n• 烤箱不同火力不同，18分钟开始盯，用牙签测试\n• 空气炸锅版：160°C烤15分钟",shoot_plog:"俯拍成品：暖色木桌上6个金黄马芬一字排开，近景侧面特写马芬内部蓬松气孔和香蕉果肉纹理；旁边放一杯咖啡+餐巾布，美式乡村风格；逆光拍摄金黄色的光泽感",shoot_vlog:"前3秒：香蕉碾泥+所有湿料搅匀的特写 | 中段：面粉过筛落下+刮刀切拌面糊的过程 | 重点：面糊倒入纸杯/挤入模具的简洁画面，撒上坚果碎 | 结尾：烤箱门打开，热气腾腾金黄马芬出炉的治愈画面",copy_xhs:"🍌 零失败香蕉马芬！不用打发超简单，烤箱新手也能一次成功！\n\n香蕉的天然甜香+松软蓬松的口感，太太太治愈了👇\n\n🍌 香蕉碾成泥（留点小块更有口感）\n🥣 所有材料搅一搅（不用打发！）\n⚠️ 搅拌手法：切拌！不要画圈！（不松软的元凶）\n🔥 180°C烤18-20分钟\n\n💡 香蕉越熟越甜，减半糖都没问题！\n\n周末烤一炉，周一当早餐，微波炉热15秒跟刚出炉一样香！\n\n#香蕉马芬 #零失败烘焙 #烤箱新手 #烘焙教程 #下午茶 #一人食烘焙",copy_dy:"小白也能烤出咖啡馆级别的香蕉马芬！熟香蕉捣成泥，所有材料拌一拌不用打发，关键是搅拌要用切拌手法不要画圈！180°C烤18分钟，出炉蓬松柔软香到邻居都来敲门～",tags_xhs:"#香蕉马芬 #零失败烘焙 #烤箱新手 #烘焙教程 #下午茶 #一人食烘焙 #新手友好",tags_dy:"#香蕉马芬 #烘焙小白 #零失败蛋糕 #甜品教程 #新手友好烘焙"}
+      ];
+      store.nextFoodRecipeId = 16;
+    }
+    if (!store.foodTopics || store.foodTopics.length === 0) {
+      store.foodTopics = [
+        {id:1,name:"5道适合打工人的快手晚餐合集",category:"快手晚餐",type:"双平台",platform:"双平台",status:"策划中",date:"",note:"面向上班族，10-15分钟搞定的晚餐系列"},
+        {id:2,name:"减脂期一周家常菜打卡",category:"减脂",type:"Vlog",platform:"抖音",status:"灵感",date:"",note:"连续7天打卡减脂家常菜，记录体重变化"},
+        {id:3,name:"一个人住也要好好吃饭系列",category:"一人食",type:"Plog",platform:"小红书",status:"已完成",date:"2026-08-01",note:"小红书图文系列，氛围感+实用菜谱"},
+        {id:4,name:"用空气炸锅做简单烘焙",category:"烘焙",type:"Vlog",platform:"双平台",status:"拍摄中",date:"2026-08-05",note:"空气炸锅甜品系列，零基础也能做"}
+      ];
+      store.nextFoodTopicId = 5;
+    }
+  } catch(e) { console.error('Load error:', e); }
 }
-function saveData() { localStorage.setItem(STORE_KEY, JSON.stringify(store)); }
+
+function saveData() {
+  localStorage.setItem(STORE_KEY, JSON.stringify(store));
+}
 
 function syncToCloud() {
-  showToast('⏳ 正在上传到云端...');
-  var TOKEN = String.fromCharCode(103,104,112,95,109,84,103,57,87,68,118,56,57,54,49,116,117,51,49,72,114,117,48,80,108,51,104,74,121,99,87,99,54,87,50,80,99,55,70,104);
-  var REPO = 'linxixi-he/linxixi-he.github.io';
-  var apiUrl = 'https://api.github.com/repos/' + REPO + '/contents/sync-data.json';
-  var headers = {
-    'Authorization': 'token ' + TOKEN,
-    'Accept': 'application/vnd.github.v3+json',
-    'Content-Type': 'application/json'
-  };
-  // Step 1: Get current SHA
-  fetch(apiUrl, { headers: headers })
-    .then(function(r) { return r.json(); })
-    .then(function(data) {
-      var sha = data.sha;
-      var content = btoa(unescape(encodeURIComponent(JSON.stringify(store))));
-      // Step 2: PUT new content
-      return fetch(apiUrl, {
-        method: 'PUT',
-        headers: headers,
-        body: JSON.stringify({
-          message: 'mobile sync ' + (store.lastActiveDate || ''),
-          content: content,
-          sha: sha
-        })
-      });
-    })
-    .then(function(r) { return r.json(); })
-    .then(function(result) {
-      if (result.content) {
-        showToast('✅ 已同步到电脑！电脑端点「从手机同步」即可');
+  const btn = document.getElementById('syncBtn');
+  if (!btn) return;
+  const origText = btn.textContent;
+  btn.textContent = '⏳ 同步中...';
+  btn.disabled = true;
+
+  // 同源用相对路径，跨域用绝对路径（CORS代理已设置 Allow-Origin:*）
+  const apiUrl = (location.hostname === '127.0.0.1' || location.hostname === 'localhost')
+    ? '/sync'
+    : 'http://localhost:8765/sync';
+
+  fetch(apiUrl, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(store)
+  })
+  .then(function(r) {
+    if (!r.ok) return r.json().then(function(d) { throw new Error(d.error || 'HTTP ' + r.status); });
+    return r.json();
+  })
+  .then(function(result) {
+    if (result.ok) {
+      showToast('✅ 同步成功！手机端点「从电脑同步」即可拉取');
+    } else {
+      showToast('❌ ' + (result.error || '同步失败'));
+    }
+  })
+  .catch(function(err) {
+    var msg = err.message || '同步失败';
+    if (msg.includes('Failed to fetch')) {
+      if (location.protocol === 'file:') {
+        msg = '请双击项目文件夹中的「林夕夕工作台.vbs」启动（不要直接打开HTML文件）';
       } else {
-        showToast('❌ 上传失败：' + (result.message || '未知错误'));
+        msg = '同步代理未启动，请双击「林夕夕工作台.vbs」';
       }
-    })
-    .catch(function(err) {
-      showToast('❌ 同步失败，请检查网络');
-    });
+    }
+    showToast('❌ ' + msg);
+  })
+  .finally(function() {
+    btn.textContent = origText;
+    btn.disabled = false;
+  });
 }
 
 function syncFromCloud() {
-  showToast('⏳ 正在从云端拉取数据...');
-  fetch('https://linxixi-he.github.io/sync-data.json?t=' + Date.now())
-    .then(r => { if (!r.ok) throw new Error('网络错误'); return r.json(); })
-    .then(imported => {
-      if (!imported.tasks && !imported.reviews) throw new Error('无效数据');
-      // Upsert tasks: update existing by id, add new
-      const taskMap = new Map(store.tasks.map(t => [t.id, t]));
-      (imported.tasks || []).forEach(t => { taskMap.set(t.id, t); });
+  var btn = document.getElementById('pullBtn');
+  var sidebarBtn = document.getElementById('sidebarPullBtn');
+  var origText = btn ? btn.textContent : '';
+  if (btn) { btn.textContent = '⏳ 拉取中...'; btn.disabled = true; }
+  if (sidebarBtn) { sidebarBtn.textContent = '⏳ 拉取中...'; sidebarBtn.disabled = true; }
+
+  var apiUrl = (location.hostname === '127.0.0.1' || location.hostname === 'localhost')
+    ? '/pull'
+    : 'http://localhost:8765/pull';
+
+  fetch(apiUrl)
+    .then(function(r) {
+      if (!r.ok) return r.json().then(function(d) { throw new Error(d.error || 'HTTP ' + r.status); });
+      return r.json();
+    })
+    .then(function(imported) {
+      if (!imported.tasks && !imported.reviews) throw new Error('云端数据为空');
+      // Upsert tasks
+      var taskMap = new Map(store.tasks.map(function(t) { return [t.id, t]; }));
+      (imported.tasks || []).forEach(function(t) { taskMap.set(t.id, t); });
       store.tasks = Array.from(taskMap.values());
-      // Deduplicate tasks with same title (keep fixed-ID or newer)
-      const titleMap = new Map();
-      store.tasks.forEach(t => {
-        const old = titleMap.get(t.title);
+      // Dedup by title
+      var titleMap = new Map();
+      store.tasks.forEach(function(t) {
+        var old = titleMap.get(t.title);
         if (!old) { titleMap.set(t.title, t); return; }
-        const oldFixed = old.id && old.id.startsWith('default-task-');
-        const newFixed = t.id && t.id.startsWith('default-task-');
+        var oldFixed = old.id && old.id.startsWith('default-task-');
+        var newFixed = t.id && t.id.startsWith('default-task-');
         if (newFixed && !oldFixed) titleMap.set(t.title, t);
-        else if (!newFixed && oldFixed) {} // keep old
+        else if (!newFixed && oldFixed) {}
         else if ((t.createdAt||0) > (old.createdAt||0)) titleMap.set(t.title, t);
       });
       store.tasks = Array.from(titleMap.values());
-      // 智能去重：合并高度相似的任务（如不同日期生成的同质任务）
+      // 智能去重：合并高度相似的任务
       dedupSimilarTasks();
-      // Upsert reviews: update existing by id, add new
-      const reviewMap = new Map(store.reviews.map(r => [r.id, r]));
-      (imported.reviews || []).forEach(r => { reviewMap.set(r.id, r); });
+      // Upsert reviews
+      var reviewMap = new Map(store.reviews.map(function(r) { return [r.id, r]; }));
+      (imported.reviews || []).forEach(function(r) { reviewMap.set(r.id, r); });
       store.reviews = Array.from(reviewMap.values());
+      // Merge collected
       store.collected = [...new Set([...store.collected, ...(imported.collected || [])])];
       if (imported.streak > store.streak) store.streak = imported.streak;
       if (imported.lastActiveDate) store.lastActiveDate = imported.lastActiveDate;
       saveData();
       renderTasks(); renderReviews();
-      showToast('✅ 同步成功！数据已更新');
+      showToast('✅ 已从手机同步！数据已更新');
     })
-    .catch(err => {
-      showToast('❌ 同步失败，请检查网络后重试');
+    .catch(function(err) {
+      var msg = err.message || '拉取失败';
+      if (msg.includes('Failed to fetch')) {
+        if (location.protocol === 'file:') {
+          msg = '请双击「林夕夕工作台.vbs」启动后再同步';
+        } else {
+          msg = '同步代理未启动，请双击「林夕夕工作台.vbs」';
+        }
+      }
+      showToast('❌ ' + msg);
+    })
+    .finally(function() {
+      if (btn) { btn.textContent = origText; btn.disabled = false; }
+      if (sidebarBtn) { sidebarBtn.textContent = '📥 从手机同步'; sidebarBtn.disabled = false; }
     });
 }
 
+// 保留导出功能（右键或console使用）
 function exportData() {
   const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
   const blob = new Blob([JSON.stringify(store, null, 2)], { type: 'application/json' });
@@ -1734,7 +2370,7 @@ function exportData() {
   a.href = URL.createObjectURL(blob);
   a.download = `linxixi-backup-${timestamp}.json`;
   a.click();
-  showToast('✅ 已导出！发送到电脑 → 电脑版导入');
+  showToast('✅ 数据已导出');
 }
 
 function importData(input) {
@@ -1744,272 +2380,368 @@ function importData(input) {
   reader.onload = function(e) {
     try {
       const imported = JSON.parse(e.target.result);
-      if (!imported.tasks && !imported.reviews) throw new Error('无效文件');
-      const existingIds = new Set(store.tasks.map(t => t.id));
-      const newTasks = (imported.tasks || []).filter(t => !existingIds.has(t.id));
-      store.tasks = [...store.tasks, ...newTasks];
-      const existingRvIds = new Set(store.reviews.map(r => r.id));
-      const newReviews = (imported.reviews || []).filter(r => !existingRvIds.has(r.id));
-      store.reviews = [...store.reviews, ...newReviews];
+      if (!imported.tasks && !imported.reviews) throw new Error('无效的数据文件');
+      // Upsert tasks: update existing by id, add new
+      const taskMap = new Map(store.tasks.map(t => [t.id, t]));
+      (imported.tasks || []).forEach(t => { taskMap.set(t.id, t); });
+      store.tasks = Array.from(taskMap.values());
+      // Upsert reviews: update existing by id, add new
+      const reviewMap = new Map(store.reviews.map(r => [r.id, r]));
+      (imported.reviews || []).forEach(r => { reviewMap.set(r.id, r); });
+      store.reviews = Array.from(reviewMap.values());
+      // 合并收藏和连续天数
       store.collected = [...new Set([...store.collected, ...(imported.collected || [])])];
       if (imported.streak > store.streak) store.streak = imported.streak;
       saveData();
       renderTasks(); renderReviews();
-      showToast(`✅ 导入 ${newTasks.length} 任务 + ${newReviews.length} 复盘`);
+      showToast('✅ 已导入！数据已更新');
     } catch(err) {
-      showToast('❌ 导入失败，请检查文件');
+      showToast('❌ 导入失败，请检查文件格式');
     }
   };
   reader.readAsText(file);
   input.value = '';
 }
 
-// ===== Navigation =====
-let currentPage = 'plan';
-
-function toggleSidebar() {
-  document.getElementById('sidebar').classList.toggle('open');
-  document.getElementById('sidebarOverlay').classList.toggle('active');
-}
-
-function navFromSidebar(page) {
-  switchTab(page);
-  toggleSidebar();
-}
-
-function switchTab(tab) {
-  if(tab==='more'){ toggleSidebar(); return; }
-  currentPage = tab;
-
-  // 切换页面
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  const target = document.getElementById('page-'+tab);
-  if(target) target.classList.add('active');
-
-  // 更新底部标签栏
-  document.querySelectorAll('.tab-item').forEach(t=>t.classList.remove('active'));
-  const tabBtn = document.querySelector(`.tab-item[data-tab="${tab}"]`);
-  if(tabBtn) tabBtn.classList.add('active');
-
-  // 更新标题
-  document.getElementById('pageTitle').textContent = pageTitles[tab] || '林夕夕的工作台';
-
-  // 更新侧边栏高亮
-  document.querySelectorAll('.sidebar-item').forEach(i=>i.classList.remove('active'));
-  const sideItem = document.querySelector(`.sidebar-item[data-page="${tab}"]`);
-  if(sideItem) sideItem.classList.add('active');
-
-  // 滚动到顶部
-  window.scrollTo({ top:0, behavior:'smooth' });
-}
+function uid() { return Date.now().toString(36) + Math.random().toString(36).substr(2, 5); }
 
 function updateDate() {
-  const d = new Date();
-  const weeks = ['星期日','星期一','星期二','星期三','星期四','星期五','星期六'];
-  document.getElementById('headerDate').textContent = d.getFullYear()+'年'+(d.getMonth()+1)+'月'+d.getDate()+'日';
-  document.getElementById('headerWeek').textContent = weeks[d.getDay()];
+  const now = new Date();
+  const days = ['周日','周一','周二','周三','周四','周五','周六'];
+  document.getElementById('datePill').textContent = `${now.getMonth()+1}月${now.getDate()}日 ${days[now.getDay()]}`;
 }
 
 function updateStreak() {
   const today = new Date().toDateString();
-  if(store.lastActiveDate !== today) {
-    const yesterday = new Date(Date.now()-86400000).toDateString();
-    if(store.lastActiveDate === yesterday) store.streak = (store.streak||0)+1;
-    else if(store.lastActiveDate !== today) store.streak = 1;
+  if (store.lastActiveDate !== today) {
+    const yesterday = new Date(Date.now() - 86400000).toDateString();
+    if (store.lastActiveDate === yesterday) {
+      store.streak = (store.streak || 0) + 1;
+    } else if (store.lastActiveDate !== today) {
+      store.streak = 1;
+    }
     store.lastActiveDate = today;
     saveData();
   }
+  document.getElementById('streakBadge').textContent = `🔥 连续创作 ${store.streak || 0} 天`;
 }
 
-// ===== Tasks =====
-function addTask() {
-  const input = document.getElementById('taskInput');
-  const title = input.value.trim();
-  if(!title){ showToast('请输入任务内容'); return; }
-  store.tasks.push({ id:uid(), title, desc:'', status:'todo', priority:'medium', createdAt:Date.now() });
+// ===== Tab / Sidebar 切换 =====
+function switchPanel(tabName) {
+  document.querySelectorAll('.sidebar-item').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+
+  const sidebarItem = document.querySelector('.sidebar-item[data-tab="' + tabName + '"]');
+  if (sidebarItem) sidebarItem.classList.add('active');
+
+  const tab = document.querySelector('.tab[data-tab="' + tabName + '"]');
+  if (tab) tab.classList.add('active');
+
+  document.getElementById('panel-' + tabName).classList.add('active');
+}
+
+function setupTabs() {
+  // Sidebar 点击
+  document.querySelectorAll('.sidebar-item[data-tab]').forEach(item => {
+    item.addEventListener('click', () => switchPanel(item.dataset.tab));
+  });
+  // 兼容旧的 tab（已隐藏）
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => switchPanel(tab.dataset.tab));
+  });
+}
+
+// ===== 任务管理 =====
+let currentTaskStatus = 'todo';
+
+function openTaskModal(status) {
+  currentTaskStatus = status;
+  document.getElementById('taskModal').classList.add('show');
+  document.getElementById('taskTitle').focus();
+}
+
+function closeTaskModal() {
+  document.getElementById('taskModal').classList.remove('show');
+  document.getElementById('taskTitle').value = '';
+  document.getElementById('taskDesc').value = '';
+  document.getElementById('taskPriority').value = 'medium';
+}
+
+function confirmAddTask() {
+  const title = document.getElementById('taskTitle').value.trim();
+  if (!title) { showToast('请输入任务标题'); return; }
+  const desc = document.getElementById('taskDesc').value.trim();
+  const priority = document.getElementById('taskPriority').value;
+  store.tasks.push({ id: uid(), title, desc, status: currentTaskStatus, priority, createdAt: Date.now() });
   saveData();
   renderTasks();
-  input.value = '';
+  closeTaskModal();
   showToast('任务已添加 ✓');
 }
 
 function deleteTask(id) {
-  store.tasks = store.tasks.filter(t=>t.id!==id);
+  store.tasks = store.tasks.filter(t => t.id !== id);
   saveData();
   renderTasks();
-  showToast('已删除');
+  showToast('任务已删除');
 }
 
 function moveTask(id, status) {
-  const task = store.tasks.find(t=>t.id===id);
-  if(task){ task.status = status; saveData(); renderTasks(); }
+  const task = store.tasks.find(t => t.id === id);
+  if (task) { task.status = status; saveData(); renderTasks(); }
 }
 
 function renderTasks() {
-  const statuses = ['todo','doing','done'];
-  const labels = { todo:'待办', doing:'进行中', done:'已完成' };
-  let total=0, doneCount=0;
-
-  statuses.forEach(status=>{
-    const tasks = store.tasks.filter(t=>t.status===status);
-    total += tasks.length;
-    if(status==='done') doneCount = tasks.length;
-
-    let html = '';
-    tasks.forEach(t=>{
-      const isDone = status==='done';
-      html += `<div class="task-item">
-        <div class="task-checkbox ${isDone?'checked':''}" onclick="moveTask('${t.id}','${isDone?'todo':'done'}')">${isDone?'✓':''}</div>
-        <div class="task-text ${isDone?'done':''}">${esc(t.title)}</div>
-        <span class="task-priority priority-${t.priority}">${t.priority==='high'?'高':t.priority==='medium'?'中':'低'}</span>
-        <div class="task-actions">
-          ${status==='todo'?`<button class="task-btn" onclick="moveTask('${t.id}','doing')" title="开始">▶</button>`:''}
-          ${status==='doing'?`<button class="task-btn" onclick="moveTask('${t.id}','done')" title="完成">✓</button>`:''}
-          ${status==='doing'?`<button class="task-btn" onclick="moveTask('${t.id}','todo')" title="退回">↩</button>`:''}
-          ${status==='done'?`<button class="task-btn" onclick="moveTask('${t.id}','todo')" title="重做">↺</button>`:''}
-          <button class="task-btn danger" onclick="deleteTask('${t.id}')" title="删除">✕</button>
+  const statuses = ['todo', 'doing', 'done'];
+  let total = 0, doing = 0, done = 0;
+  statuses.forEach(status => {
+    const tasks = store.tasks.filter(t => t.status === status);
+    const list = document.getElementById('list-' + status);
+    document.getElementById('count-' + status).textContent = tasks.length;
+    list.innerHTML = tasks.map(t => `
+      <div class="task-card priority-${t.priority}" draggable="true" data-id="${t.id}">
+        <div class="task-title">${escapeHtml(t.title)}</div>
+        ${t.desc ? `<div class="task-desc">${escapeHtml(t.desc)}</div>` : ''}
+        <div class="task-meta">
+          <span class="task-priority">${t.priority === 'high' ? '高' : t.priority === 'medium' ? '中' : '低'}</span>
+          <div class="task-actions">
+            ${status !== 'todo' ? `<button class="task-btn" onclick="moveTask('${t.id}','todo')" title="移到待办">←</button>` : ''}
+            ${status === 'todo' ? `<button class="task-btn" onclick="moveTask('${t.id}','doing')" title="开始">▶</button>` : ''}
+            ${status === 'doing' ? `<button class="task-btn" onclick="moveTask('${t.id}','done')" title="完成">✓</button>` : ''}
+            <button class="task-btn delete" onclick="deleteTask('${t.id}')" title="删除">✕</button>
+          </div>
         </div>
-      </div>`;
-    });
-    document.getElementById('list'+status.charAt(0).toUpperCase()+status.slice(1)).innerHTML = html;
-    document.getElementById('count'+status.charAt(0).toUpperCase()+status.slice(1)).textContent = tasks.length;
+      </div>
+    `).join('');
+    total += tasks.length;
+    if (status === 'doing') doing = tasks.length;
+    if (status === 'done') done = tasks.length;
   });
-
   document.getElementById('statTotal').textContent = total;
-  document.getElementById('statDone').textContent = doneCount;
-  document.getElementById('statRate').textContent = total>0 ? Math.round(doneCount/total*100)+'%' : '0%';
+  document.getElementById('statDoing').textContent = doing;
+  document.getElementById('statDone').textContent = done;
+  document.getElementById('statRate').textContent = total > 0 ? Math.round(done/total*100) + '%' : '0%';
+  // 重新绑定拖拽
+  setupDragDrop();
 }
 
-// ===== Trending =====
-function setFilter(f) {
-  currentFilter = f;
-  document.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active'));
-  document.querySelector(`.filter-chip[data-filter="${f}"]`).classList.add('active');
-  renderTrending();
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+// ===== 拖拽 =====
+function setupDragDrop() {
+  let draggedId = null;
+  document.querySelectorAll('.task-card').forEach(card => {
+    card.addEventListener('dragstart', (e) => {
+      draggedId = card.dataset.id;
+      card.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+    });
+    card.addEventListener('dragend', () => {
+      card.classList.remove('dragging');
+    });
+  });
+  document.querySelectorAll('.kanban-col').forEach(col => {
+    col.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+    });
+    col.addEventListener('drop', (e) => {
+      e.preventDefault();
+      if (draggedId) {
+        moveTask(draggedId, col.dataset.status);
+        draggedId = null;
+      }
+    });
+  });
+}
+
+// ===== 热点发现 =====
+function setupFilters() {
+  document.querySelectorAll('.filter-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      renderTrending(chip.dataset.filter);
+    });
+  });
+}
+
+function renderTrending(filter) {
+  const grid = document.getElementById('trendingGrid');
+  let dailyItems = getDailyTrending(currentTrendingSeed);
+  let items = dailyItems;
+  if (filter === 'douyin') items = dailyItems.filter(t => t.platform === 'douyin');
+  else if (filter === 'xiaohongshu') items = dailyItems.filter(t => t.platform === 'xiaohongshu');
+  else if (filter === 'collected') items = dailyItems.filter(t => store.collected.includes(t.id));
+
+  if (items.length === 0) {
+    grid.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📭</div><p>暂无内容，去收藏一些热点吧</p></div>';
+    return;
+  }
+
+  grid.innerHTML = items.map(t => {
+    const isCollected = store.collected.includes(t.id);
+    return `
+      <div class="trending-card">
+        <div class="trending-card-header">
+          <span class="platform-tag platform-${t.platform}">${t.platform === 'douyin' ? '抖音' : '小红书'}</span>
+          <span class="heat-tag">${t.heat}</span>
+        </div>
+        <div class="trending-card-body">
+          <div class="trending-title">${t.title}</div>
+          <div class="trending-desc">${t.desc}</div>
+          <div class="trending-tags">${t.tags.map(tag => `<span class="trend-tag">#${tag}</span>`).join('')}</div>
+          <div class="trending-remix">${t.remix}</div>
+        </div>
+        <div class="trending-card-footer">
+          <button class="remix-btn btn-collect ${isCollected ? 'collected' : ''}" onclick="toggleCollect('${t.id}')">${isCollected ? '★ 已收藏' : '☆ 收藏'}</button>
+          <button class="remix-btn btn-remix" onclick="addToTaskFromTrend('${t.id}')">📋 加入任务</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  document.getElementById('trendingBadge').textContent = getDailyTrending(currentTrendingSeed).length;
 }
 
 function refreshTrending() {
   currentTrendingSeed = Math.floor(Math.random() * 1000000);
-  renderTrending();
+  const activeFilter = document.querySelector('.filter-chip.active');
+  renderTrending(activeFilter ? activeFilter.dataset.filter : 'all');
   showToast('🔄 已刷新热点内容');
-}
-
-function renderTrending() {
-  let dailyItems = getDailyTrending(currentTrendingSeed);
-  let items = dailyItems;
-  if(currentFilter==='douyin') items = items.filter(t=>t.platform==='douyin');
-  else if(currentFilter==='xiaohongshu') items = items.filter(t=>t.platform==='xiaohongshu');
-  else if(currentFilter==='collected') items = items.filter(t=>store.collected.includes(t.id));
-
-  if(!items.length){
-    document.getElementById('trendingList').innerHTML = '<div class="empty"><div class="empty-icon">📭</div><div class="empty-text">暂无内容</div></div>';
-    return;
-  }
-
-  document.getElementById('trendingList').innerHTML = items.map(t=>{
-    const collected = store.collected.includes(t.id);
-    return `<div class="trend-card">
-      <div class="trend-top">
-        <span class="trend-platform platform-${t.platform}">${t.platform==='douyin'?'抖音':'小红书'}</span>
-        <span class="trend-heat">${t.heat}</span>
-      </div>
-      <div class="trend-title">${t.title}</div>
-      <div class="trend-desc">${t.desc}</div>
-      <div class="trend-tags">${t.tags.map(tg=>`<span class="trend-tag">#${tg}</span>`).join('')}</div>
-      <div class="trend-remix">${t.remix}</div>
-      <div class="trend-actions">
-        <button class="trend-btn ${collected?'collected':''}" onclick="toggleCollect('${t.id}')">${collected?'★ 已收藏':'☆ 收藏'}</button>
-        <button class="trend-btn primary" onclick="addToTaskFromTrend('${t.id}')">📋 加入任务</button>
-      </div>
-    </div>`;
-  }).join('');
 }
 
 function toggleCollect(id) {
   const idx = store.collected.indexOf(id);
-  if(idx>-1){ store.collected.splice(idx,1); showToast('已取消收藏'); }
-  else { store.collected.push(id); showToast('已收藏 ★'); }
+  if (idx > -1) { store.collected.splice(idx, 1); showToast('已取消收藏'); }
+  else { store.collected.push(id); showToast('已收藏 ✓'); }
   saveData();
-  renderTrending();
+  const activeFilter = document.querySelector('.filter-chip.active').dataset.filter;
+  renderTrending(activeFilter);
 }
 
 function addToTaskFromTrend(id) {
-  const trend = trendingData.find(t=>t.id===id);
-  if(!trend) return;
-  store.tasks.push({ id:uid(), title:'二创：'+trend.title.substring(0,20)+'...', desc:trend.remix.replace(/<[^>]+>/g,''), status:'todo', priority:'medium', createdAt:Date.now() });
+  const trend = trendingData.find(t => t.id === id);
+  if (!trend) return;
+  store.tasks.push({
+    id: uid(),
+    title: '二创：' + trend.title.substring(0, 20) + '...',
+    desc: trend.remix.replace(/<[^>]+>/g, ''),
+    status: 'todo',
+    priority: 'medium',
+    createdAt: Date.now()
+  });
   saveData();
   renderTasks();
   showToast('已加入待办任务 ✓');
 }
 
-// ===== Review =====
-function setStar(n) {
-  currentStar = n;
-  document.querySelectorAll('#starGroup .star').forEach((s,i)=>{
-    s.classList.toggle('active', i < n);
+// ===== 内容复盘 =====
+let currentRating = 0;
+
+function setupRating() {
+  document.querySelectorAll('#ratingStars .star').forEach(star => {
+    star.addEventListener('click', () => {
+      currentRating = parseInt(star.dataset.val);
+      updateStars();
+    });
+    star.addEventListener('mouseenter', () => {
+      const val = parseInt(star.dataset.val);
+      document.querySelectorAll('#ratingStars .star').forEach(s => {
+        s.classList.toggle('active', parseInt(s.dataset.val) <= val);
+      });
+    });
+  });
+  document.getElementById('ratingStars').addEventListener('mouseleave', updateStars);
+}
+
+function updateStars() {
+  document.querySelectorAll('#ratingStars .star').forEach(s => {
+    s.classList.toggle('active', parseInt(s.dataset.val) <= currentRating);
   });
 }
 
 function setDefaultDate() {
-  document.getElementById('rvDate').value = new Date().toISOString().split('T')[0];
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('rvDate').value = today;
 }
 
 function saveReview() {
   const title = document.getElementById('rvTitle').value.trim();
-  if(!title){ showToast('请输入内容标题'); return; }
-  store.reviews.unshift({
-    id:uid(), title,
-    platform:document.getElementById('rvPlatform').value,
-    date:document.getElementById('rvDate').value,
-    views:parseInt(document.getElementById('rvViews').value)||0,
-    likes:parseInt(document.getElementById('rvLikes').value)||0,
-    comments:parseInt(document.getElementById('rvComments').value)||0,
-    saves:parseInt(document.getElementById('rvSaves').value)||0,
-    rating:currentStar,
-    improve:document.getElementById('rvImprove').value.trim(),
-    next:document.getElementById('rvNext').value.trim()
-  });
+  if (!title) { showToast('请输入内容标题'); return; }
+  const review = {
+    id: uid(),
+    title,
+    platform: document.getElementById('rvPlatform').value,
+    date: document.getElementById('rvDate').value,
+    views: parseInt(document.getElementById('rvViews').value) || 0,
+    likes: parseInt(document.getElementById('rvLikes').value) || 0,
+    comments: parseInt(document.getElementById('rvComments').value) || 0,
+    saves: parseInt(document.getElementById('rvSaves').value) || 0,
+    rating: currentRating,
+    improve: document.getElementById('rvImprove').value.trim(),
+    next: document.getElementById('rvNext').value.trim()
+  };
+  store.reviews.unshift(review);
   saveData();
   renderReviews();
-  ['rvTitle','rvViews','rvLikes','rvComments','rvSaves','rvImprove','rvNext'].forEach(id=>document.getElementById(id).value='');
-  currentStar=0; setStar(0); setDefaultDate();
+  // 清空表单
+  document.getElementById('rvTitle').value = '';
+  document.getElementById('rvViews').value = '';
+  document.getElementById('rvLikes').value = '';
+  document.getElementById('rvComments').value = '';
+  document.getElementById('rvSaves').value = '';
+  document.getElementById('rvImprove').value = '';
+  document.getElementById('rvNext').value = '';
+  currentRating = 0;
+  updateStars();
+  setDefaultDate();
   showToast('复盘记录已保存 ✓');
 }
 
 function deleteReview(id) {
-  store.reviews = store.reviews.filter(r=>r.id!==id);
+  store.reviews = store.reviews.filter(r => r.id !== id);
   saveData();
   renderReviews();
-  showToast('已删除');
+  showToast('记录已删除');
 }
 
 function renderReviews() {
   const list = document.getElementById('reviewList');
-  if(!store.reviews.length){
-    list.innerHTML = '<div class="empty"><div class="empty-icon">📊</div><div class="empty-text">还没有复盘记录</div></div>';
+  if (store.reviews.length === 0) {
+    list.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📊</div><p>还没有复盘记录<br>在左侧记录你发布的第一条内容吧</p></div>';
     updateReviewStats();
     return;
   }
-  const names = { douyin:'抖音', xiaohongshu:'小红书', both:'双平台' };
-  list.innerHTML = store.reviews.map(r=>`
-    <div class="review-item">
-      <div class="review-item-header">
-        <div class="review-item-title">${esc(r.title)}</div>
-        <div class="review-item-meta">
-          <span class="review-platform">${names[r.platform]||r.platform}</span>
+  const platformNames = { douyin: '抖音', xiaohongshu: '小红书', both: '双平台' };
+  list.innerHTML = store.reviews.map(r => `
+    <div class="review-card">
+      <div class="review-card-header">
+        <div class="review-title">
+          <span class="platform-tag platform-${r.platform === 'both' ? 'douyin' : r.platform}">${platformNames[r.platform]}</span>
+          ${escapeHtml(r.title)}
+        </div>
+        <div style="display:flex; align-items:center; gap:12px;">
+          <div class="review-stars-display">
+            ${[1,2,3,4,5].map(i => `<span class="review-star-display ${i <= r.rating ? 'active' : ''}">★</span>`).join('')}
+          </div>
           <span class="review-date">${r.date}</span>
-          <button class="review-delete" onclick="deleteReview('${r.id}')">✕</button>
+          <button class="task-btn delete" onclick="deleteReview('${r.id}')">✕</button>
         </div>
       </div>
-      <div class="review-stars">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</div>
       <div class="review-metrics">
-        <div class="review-metric"><div class="review-metric-value">${fmtNum(r.views)}</div><div class="review-metric-label">播放</div></div>
-        <div class="review-metric"><div class="review-metric-value">${fmtNum(r.likes)}</div><div class="review-metric-label">点赞</div></div>
-        <div class="review-metric"><div class="review-metric-value">${fmtNum(r.comments)}</div><div class="review-metric-label">评论</div></div>
-        <div class="review-metric"><div class="review-metric-value">${fmtNum(r.saves)}</div><div class="review-metric-label">收藏</div></div>
+        <div class="metric-item"><div class="metric-value">${formatNum(r.views)}</div><div class="metric-name">播放/阅读</div></div>
+        <div class="metric-item"><div class="metric-value">${formatNum(r.likes)}</div><div class="metric-name">点赞</div></div>
+        <div class="metric-item"><div class="metric-value">${formatNum(r.comments)}</div><div class="metric-name">评论</div></div>
+        <div class="metric-item"><div class="metric-value">${formatNum(r.saves)}</div><div class="metric-name">收藏</div></div>
       </div>
-      ${r.improve?`<div class="review-section issue"><div class="review-section-title">⚠️ 可优化点</div><div class="review-section-content">${esc(r.improve)}</div></div>`:''}
-      ${r.next?`<div class="review-section improve"><div class="review-section-title">→ 下次改进方向</div><div class="review-section-content">${esc(r.next)}</div></div>`:''}
+      ${r.improve ? `<div class="review-section"><div class="review-section-title">⚠️ 可优化点</div><div class="review-section-content improve">${escapeHtml(r.improve)}</div></div>` : ''}
+      ${r.next ? `<div class="review-section"><div class="review-section-title">→ 下次改进方向</div><div class="review-section-content next">${escapeHtml(r.next)}</div></div>` : ''}
     </div>
   `).join('');
   updateReviewStats();
@@ -2017,86 +2749,259 @@ function renderReviews() {
 
 function updateReviewStats() {
   const reviews = store.reviews;
-  const t=reviews.length, v=reviews.reduce((s,r)=>s+r.views,0), l=reviews.reduce((s,r)=>s+r.likes,0);
-  const avg = t>0 ? (reviews.reduce((s,r)=>s+r.rating,0)/t).toFixed(1) : 0;
-  document.getElementById('rvStatTotal').textContent = t;
-  document.getElementById('rvStatViews').textContent = fmtNum(v);
-  document.getElementById('rvStatLikes').textContent = fmtNum(l);
-  document.getElementById('rvStatAvg').textContent = avg;
+  const total = reviews.length;
+  const views = reviews.reduce((s, r) => s + r.views, 0);
+  const likes = reviews.reduce((s, r) => s + r.likes, 0);
+  const avgRating = total > 0 ? (reviews.reduce((s, r) => s + r.rating, 0) / total).toFixed(1) : 0;
+  document.getElementById('rvStatTotal').textContent = total;
+  document.getElementById('rvStatViews').textContent = formatNum(views);
+  document.getElementById('rvStatLikes').textContent = formatNum(likes);
+  document.getElementById('rvStatAvg').textContent = avgRating;
 }
 
-// ===== Inspiration =====
+function formatNum(n) {
+  if (n >= 10000) return (n / 10000).toFixed(1) + 'w';
+  if (n >= 1000) return (n / 1000).toFixed(1) + 'k';
+  return n;
+}
+
+// ===== 灵感库 =====
 function setRandomPrompt() {
-  const p = prompts[Math.floor(Math.random()*prompts.length)];
-  document.getElementById('dailyPrompt').textContent = p.text;
-  document.getElementById('dailyPromptSub').textContent = p.sub;
+  const prompt = prompts[Math.floor(Math.random() * prompts.length)];
+  document.getElementById('dailyPrompt').textContent = prompt.text;
+  document.getElementById('dailyPromptSub').textContent = prompt.sub;
 }
-function refreshPrompt() { setRandomPrompt(); showToast('已换一个灵感 🎲'); }
 
-// ===== Checklist =====
-function toggleCheck(el) {
-  const box = el.querySelector('.checklist-box');
-  const text = el.querySelector('.checklist-text');
-  box.classList.toggle('checked');
-  if(text) text.classList.toggle('checked');
-  if(box.classList.contains('checked')) {
-    box.innerHTML = '✓';
-  } else {
-    box.innerHTML = '';
-  }
+function refreshPrompt() {
+  setRandomPrompt();
+  showToast('已换一个灵感 🎲');
 }
 
 // ===== Toast =====
-let toastTimer;
+let toastTimer = null;
 function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.classList.add('show');
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(()=>t.classList.remove('show'), 2200);
+  toastTimer = setTimeout(() => toast.classList.remove('show'), 2500);
 }
 
-// ===== PWA =====
-function setupPWA() {
-  const iconBase = 'https://linxixi-he.github.io';
-  const manifest = {
-    name:'林夕夕的工作台', short_name:'林夕夕',
-    start_url:'.', display:'standalone', scope:'.',
-    background_color:'#faf7f5', theme_color:'#ffb7c5',
-    icons:[
-      {src:iconBase+'/icon-192.png', sizes:'192x192', type:'image/png', purpose:'any maskable'},
-      {src:iconBase+'/icon-512.png', sizes:'512x512', type:'image/png', purpose:'any maskable'}
-    ]
-  };
-  const blob = new Blob([JSON.stringify(manifest)],{type:'application/json'});
-  const link = document.createElement('link');
-  link.rel = 'manifest';
-  link.href = URL.createObjectURL(blob);
-  document.head.appendChild(link);
-
-  // 注册 Service Worker — 真正的文件，不是 blob URL
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./sw.js').catch(()=>{});
+// ===== 键盘快捷键 =====
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeTaskModal();
+  if (e.key === 'Enter' && document.getElementById('taskModal').classList.contains('show') && e.target.id === 'taskTitle') {
+    confirmAddTask();
   }
+});
+
+// 点击模态框外部关闭
+document.getElementById('taskModal').addEventListener('click', (e) => {
+  if (e.target.id === 'taskModal') closeTaskModal();
+});
+
+// ===== 美食博主：菜谱素材库 =====
+function renderFoodRecipes() {
+  var filter = document.getElementById('recipeFilter') ? document.getElementById('recipeFilter').value : '';
+  var search = (document.getElementById('recipeSearch') ? document.getElementById('recipeSearch').value : '').toLowerCase();
+  var grid = document.getElementById('foodRecipeGrid');
+  var items = (store.foodRecipes || []).filter(function(r) {
+    return (!filter || r.category === filter) && (!search || r.name.toLowerCase().indexOf(search) >= 0);
+  });
+  if (!items.length) { grid.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🥘</div><p>暂无菜谱，点击「新增菜谱」开始积累</p></div>'; return; }
+
+  grid.innerHTML = items.map(function(r) {
+    // 兼容旧数据
+    var time = r.cooking_time || '';
+    var serving = r.serving || '';
+    var tips = r.tips || '';
+    var shootPlog = r.shoot_plog || r.shoot || '';
+    var shootVlog = r.shoot_vlog || '';
+    var tagsXhs = r.tags_xhs || (r.keywords ? r.keywords.split(',').map(function(k){return '#'+k.trim();}).join(' ') : '');
+    var tagsDy = r.tags_dy || (r.keywords ? r.keywords.split(',').map(function(k){return '#'+k.trim();}).join(' ') : '');
+
+    var headerExtra = [];
+    if (time) headerExtra.push('⏱ ' + escapeHtml(time));
+    if (serving) headerExtra.push('👤 ' + escapeHtml(serving));
+    var headerLine = headerExtra.length ? '<div class="recipe-meta-v2">' + headerExtra.join(' ｜ ') + '</div>' : '';
+
+    // 食材拆分：主料/辅料/调料
+    var ingrHTML = '';
+    var ingrParts = r.ingredients.split('｜');
+    if (ingrParts.length >= 2) {
+      ingrHTML = ingrParts.map(function(p){ return '<span class="ingr-seg">'+escapeHtml(p.trim())+'</span>'; }).join('');
+    } else {
+      ingrHTML = '<span class="ingr-seg">'+escapeHtml(r.ingredients)+'</span>';
+    }
+
+    var stepsHTML = r.steps.split('\n').map(function(s,i){
+      return '<div class="step-line-v2"><span class="step-num-v2">' + (i+1) + '</span><span class="step-text-v2">' + escapeHtml(s.replace(/^\d+[\.\、]?\s*/, '').trim()) + '</span></div>';
+    }).join('');
+
+    var tipsHTML = tips ? tips.split('\n').map(function(t){ return '<li>'+escapeHtml(t.replace(/^[•\-\*]\s*/, '').trim())+'</li>'; }).join('') : '';
+
+    return '<div class="recipe-card-v2">'+
+      '<div class="recipe-header-v2"><div class="recipe-name-v2">'+escapeHtml(r.name)+'</div>'+headerLine+'<span class="recipe-cat-v2 cat-'+r.category+'">'+r.category+'</span></div>'+
+
+      '<div class="recipe-sec-v2"><div class="recipe-sec-title-v2">✅ 食材清单</div><div class="ingr-list-v2">'+ingrHTML+'</div></div>'+
+
+      '<div class="recipe-sec-v2"><div class="recipe-sec-title-v2">📝 详细分步做法</div><div class="steps-list-v2">'+stepsHTML+'</div></div>'+
+
+      (tipsHTML ? '<div class="recipe-sec-v2"><div class="recipe-sec-title-v2">💡 美食博主专属小贴士</div><ul class="tips-list-v2">'+tipsHTML+'</ul></div>' : '')+
+
+      '<div class="recipe-sec-v2"><div class="recipe-sec-title-v2">📸 拍摄建议</div>'+
+        (shootPlog ? '<div class="shoot-sub-v2"><span class="shoot-label-v2">📕 Plog图文取景</span><div class="shoot-text-v2">'+escapeHtml(shootPlog)+'</div></div>' : '')+
+        (shootVlog ? '<div class="shoot-sub-v2"><span class="shoot-label-v2">🎬 Vlog重点镜头</span><div class="shoot-text-v2">'+escapeHtml(shootVlog)+'</div></div>' : '')+
+      '</div>'+
+
+      '<div class="recipe-sec-v2"><div class="recipe-sec-title-v2">✍️ 平台文案</div>'+
+        '<div class="copy-block-v2"><span class="copy-platform-v2 platform-xhs-v2">📕 小红书图文文案</span><div class="copy-text-v2">'+escapeHtml(r.copy_xhs)+'</div></div>'+
+        '<div class="copy-block-v2"><span class="copy-platform-v2 platform-dy-v2">🎬 抖音钩子文案</span><div class="copy-text-v2">'+escapeHtml(r.copy_dy)+'</div></div>'+
+      '</div>'+
+
+      '<div class="recipe-sec-v2"><div class="recipe-sec-title-v2">🔖 平台标签</div>'+
+        '<div class="tag-row-v2"><span class="tag-plat-label-v2">📕 小红书���</span><div class="tag-chips-v2">'+(tagsXhs.split(/[ ,#]+/).filter(Boolean).map(function(t){return '<span class="tag-chip-v2 tag-xhs-v2">#'+t+'</span>';}).join('')||'—')+'</div></div>'+
+        '<div class="tag-row-v2"><span class="tag-plat-label-v2">🎬 抖音：</span><div class="tag-chips-v2">'+(tagsDy.split(/[ ,#]+/).filter(Boolean).map(function(t){return '<span class="tag-chip-v2 tag-dy-v2">#'+t+'</span>';}).join('')||'—')+'</div></div>'+
+      '</div>'+
+    '</div>';
+  }).join('');
 }
 
-// ===== Init =====
-function init() {
-  loadData();
-  updateDate();
-  updateStreak();
-  renderTasks();
-  renderTrending();
-  renderReviews();
-  setRandomPrompt();
-  setDefaultDate();
-  setupPWA();
-  // 显示热点更新日期
-  const today = new Date();
-  const td = document.getElementById('trendingDate');
-  if (td) td.textContent = `${today.getMonth()+1}月${today.getDate()}日更新`;
+function openFoodRecipeModal() {
+  ['fr_name','fr_time','fr_serving','fr_ingr','fr_steps','fr_tips','fr_shoot_plog','fr_shoot_vlog','fr_copy_xhs','fr_copy_dy','fr_tags_xhs','fr_tags_dy'].forEach(function(id){document.getElementById(id).value='';});
+  document.getElementById('foodRecipeModal').classList.add('show');
+}
+function saveFoodRecipe() {
+  var name = document.getElementById('fr_name').value.trim();
+  if (!name) { showToast('请输入菜品名称'); return; }
+  store.foodRecipes.push({
+    id: store.nextFoodRecipeId++,
+    name: name,
+    category: document.getElementById('fr_cat').value,
+    cooking_time: document.getElementById('fr_time').value.trim(),
+    serving: document.getElementById('fr_serving').value.trim(),
+    ingredients: document.getElementById('fr_ingr').value.trim(),
+    steps: document.getElementById('fr_steps').value.trim(),
+    tips: document.getElementById('fr_tips').value.trim(),
+    shoot_plog: document.getElementById('fr_shoot_plog').value.trim(),
+    shoot_vlog: document.getElementById('fr_shoot_vlog').value.trim(),
+    copy_xhs: document.getElementById('fr_copy_xhs').value.trim(),
+    copy_dy: document.getElementById('fr_copy_dy').value.trim(),
+    tags_xhs: document.getElementById('fr_tags_xhs').value.trim(),
+    tags_dy: document.getElementById('fr_tags_dy').value.trim()
+  });
+  saveData(); renderFoodRecipes(); closeFoodModal('foodRecipeModal'); showToast('✅ 菜谱已保存');
 }
 
+// ===== 美食博主：内容选题库 =====
+function renderFoodTopics() {
+  var tbody = document.getElementById('foodTopicTable');
+  if (!store.foodTopics || !store.foodTopics.length) { tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:32px;color:var(--text-muted);">暂无选题，点击「新增选题」开始</td></tr>'; return; }
+  var sc = {'灵感':'status-idea','策划中':'status-planning','拍摄中':'status-shooting','已完成':'status-done'};
+  var tb = {'Plog':'badge-plog','Vlog':'badge-vlog','双平台':'badge-both'};
+  tbody.innerHTML = store.foodTopics.map(function(t){
+    return '<tr><td style="font-weight:600;">'+escapeHtml(t.name)+'</td><td>'+t.category+'</td><td><span class="badge-t '+(tb[t.type]||'')+'">'+t.type+'</span></td><td>'+t.platform+'</td><td><span class="status-badge '+(sc[t.status]||'')+'">'+t.status+'</span></td><td>'+(t.date||'—')+'</td><td><button class="btn-outline-sm" onclick="advanceFoodTopic('+t.id+')" style="font-size:11px;padding:3px 8px;">推进</button> <button class="btn-danger-sm" onclick="deleteFoodTopic('+t.id+')">删除</button></td></tr>';
+  }).join('');
+}
+function openFoodTopicModal() {
+  ['ft_name','ft_note'].forEach(function(id){document.getElementById(id).value='';});
+  document.getElementById('ft_date').value = ''; document.getElementById('foodTopicModal').classList.add('show');
+}
+function saveFoodTopic() {
+  var name = document.getElementById('ft_name').value.trim();
+  if (!name) { showToast('请输入选题名称'); return; }
+  store.foodTopics.push({id:store.nextFoodTopicId++,name:name,category:document.getElementById('ft_cat').value,type:document.getElementById('ft_type').value,platform:document.getElementById('ft_plat').value,status:'灵感',date:document.getElementById('ft_date').value,note:document.getElementById('ft_note').value.trim()});
+  saveData(); renderFoodTopics(); closeFoodModal('foodTopicModal'); showToast('✅ 选题已保存');
+}
+function advanceFoodTopic(id) {
+  var t = store.foodTopics.find(function(x){return x.id===id;});
+  if (!t) return;
+  var flow = ['灵感','策划中','拍摄中','已完成'], idx = flow.indexOf(t.status);
+  if (idx < flow.length-1) { t.status = flow[idx+1]; saveData(); renderFoodTopics(); }
+}
+function deleteFoodTopic(id) {
+  if (!confirm('确定删除这个选题吗？')) return;
+  store.foodTopics = store.foodTopics.filter(function(t){return t.id!==id;});
+  saveData(); renderFoodTopics();
+}
+function planFoodNextWeek() {
+  var ideas = (store.foodTopics||[]).filter(function(t){return t.status==='灵感'||t.status==='策划中';});
+  if (!ideas.length) { showToast('暂无待规划选题'); return; }
+  var nw = new Date(); nw.setDate(nw.getDate()+1);
+  var wd = ['一','二','三','四','五','六','日'];
+  var plan = '📅 下周选题排期：\n\n';
+  ideas.slice(0,7).forEach(function(t,i){
+    var d = new Date(nw); d.setDate(d.getDate()+i);
+    var dn = '周'+wd[d.getDay()===0?6:d.getDay()-1];
+    var ds = (d.getMonth()+1)+'月'+d.getDate()+'日('+dn+')';
+    plan += ds+' → '+t.name+' ['+t.type+'/'+t.platform+']\n';
+    t.date = d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+  });
+  plan += '\n💡 周末安排Vlog（时间充裕），工作日以Plog为主（效率高），周三/周五黄金发布时段';
+  alert(plan); saveData(); renderFoodTopics();
+}
+
+// ===== 美食博主：发布复盘清单 =====
+function renderFoodReviews() {
+  var list = document.getElementById('foodReviewList');
+  if (!store.foodReviews || !store.foodReviews.length) { list.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📝</div><p>暂无复盘记录，点击「新增复盘」开始</p></div>'; return; }
+  list.innerHTML = store.foodReviews.map(function(r){
+    var icon = r.platform==='小红书'?'📕':'🎬';
+    return '<div class="review-item-v"><div class="review-plat"><div class="review-plat-icon">'+icon+'</div><div class="review-plat-name">'+r.platform+'</div></div><div class="review-cont"><h4 style="font-size:14px;font-weight:600;">'+escapeHtml(r.title)+' <span class="badge-t '+(r.type==='Plog'?'badge-plog':'badge-vlog')+'">'+r.type+'</span></h4><div class="review-metrics-v"><div class="metric-box-v"><div class="metric-val-v">'+r.m1+'</div><div class="metric-lbl-v">'+r.m1_label+'</div></div><div class="metric-box-v"><div class="metric-val-v">'+r.m2+'</div><div class="metric-lbl-v">'+r.m2_label+'</div></div><div class="metric-box-v"><div class="metric-val-v">'+r.m3+'</div><div class="metric-lbl-v">'+r.m3_label+'</div></div><div class="metric-box-v"><div class="metric-val-v">'+r.m4+'</div><div class="metric-lbl-v">'+r.m4_label+'</div></div></div><p style="font-size:12px;color:var(--text-muted);margin-top:8px;">📋 '+escapeHtml(r.summary)+'</p></div></div>';
+  }).join('');
+}
+function openFoodReviewModal() {
+  ['frv_title','frv_sum'].forEach(function(id){document.getElementById(id).value='';});
+  ['frv_m1','frv_m2','frv_m3','frv_m4'].forEach(function(id){document.getElementById(id).value='';});
+  document.getElementById('foodReviewModal').classList.add('show'); updateFoodReviewLabels();
+}
+function updateFoodReviewLabels() {
+  var p = document.getElementById('frv_plat').value;
+  document.getElementById('frv_l1').textContent = p==='小红书'?'浏览量':'播放量';
+  document.getElementById('frv_l2').textContent = '点赞数';
+  document.getElementById('frv_l3').textContent = p==='小红书'?'收藏数':'评论数';
+  document.getElementById('frv_l4').textContent = p==='小红书'?'评论数':'转发数';
+}
+function saveFoodReview() {
+  var title = document.getElementById('frv_title').value.trim();
+  if (!title) { showToast('请输入内容标题'); return; }
+  var p = document.getElementById('frv_plat').value;
+  var labels = p==='小红书'?['浏览','点赞','收藏','评论']:['播放','点赞','评论','转发'];
+  store.foodReviews.unshift({id:store.nextFoodReviewId++,title:title,platform:p,type:document.getElementById('frv_type').value,m1_label:labels[0],m1:parseInt(document.getElementById('frv_m1').value)||0,m2_label:labels[1],m2:parseInt(document.getElementById('frv_m2').value)||0,m3_label:labels[2],m3:parseInt(document.getElementById('frv_m3').value)||0,m4_label:labels[3],m4:parseInt(document.getElementById('frv_m4').value)||0,summary:document.getElementById('frv_sum').value.trim()});
+  saveData(); renderFoodReviews(); closeFoodModal('foodReviewModal'); showToast('✅ 复盘已保存');
+}
+
+// ===== 美食博主：每日任务 & 快捷操作 =====
+function startFoodWorkbench() {
+  switchPanel('daily-food');
+  document.querySelectorAll('#plogFlow .step-checkbox, #vlogFlow .step-checkbox').forEach(function(c){c.classList.remove('checked');});
+  updateFoodProgress();
+  showToast('⚡ 今日美食工作台已开启！Plog+Vlog双流程就绪');
+}
+function updateFoodProgress() {
+  var plog = document.querySelectorAll('#plogFlow .step-checkbox.checked').length;
+  var vlog = document.querySelectorAll('#vlogFlow .step-checkbox.checked').length;
+  var pct = Math.round((plog+vlog)/14*100);
+  document.getElementById('foodProgressText').textContent = 'Plog：'+plog+'/7 · Vlog：'+vlog+'/7 · 总进度：'+pct+'%';
+  document.getElementById('foodProgressBar').style.width = pct+'%';
+}
+
+function closeFoodModal(id) { document.getElementById(id).classList.remove('show'); }
+
+// 模态框外部点击关闭
+document.querySelectorAll('.modal-overlay').forEach(function(o){
+  if (o.id.indexOf('food')===0) {
+    o.addEventListener('click',function(e){if(e.target===o) o.classList.remove('show');});
+  }
+});
+
+// ===== 初始渲染美食板块 =====
+renderFoodRecipes(); renderFoodTopics(); renderFoodReviews();
+
+// 启动
 init();
 </script>
+
+</div><!-- /content-wrap -->
 </body>
 </html>
