@@ -1,0 +1,22 @@
+{
+  "name": "林夕夕的工作台",
+  "short_name": "林夕夕",
+  "description": "极简护肤创作者每日工作台 — 任务管理、热点发现、内容复盘、灵感库",
+  "start_url": "linxixi-mobile.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f8f6f3",
+  "theme_color": "#f8f6f3",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect width='192' height='192' rx='40' fill='%23ff8fab'/><text x='96' y='120' text-anchor='middle' font-size='80'>✨</text></svg>",
+      "sizes": "192x192",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='100' fill='%23ff8fab'/><text x='256' y='320' text-anchor='middle' font-size='220'>✨</text></svg>",
+      "sizes": "512x512",
+      "type": "image/svg+xml"
+    }
+  ]
+}
