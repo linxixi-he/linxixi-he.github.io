@@ -2173,9 +2173,13 @@ function init() {
   const today = new Date();
   const trendingDateEl = document.getElementById('trendingDate');
   if (trendingDateEl) trendingDateEl.textContent = `${today.getMonth()+1}月${today.getDate()}日更新`;
-  // 更新侧边栏热点数量
-  const sidebarBadge = document.getElementById('sidebarBadge');
-  if (sidebarBadge) sidebarBadge.textContent = getDailyTrending(currentTrendingSeed).length;
+    // 更新侧边栏热点数量
+    const sidebarBadge = document.getElementById('sidebarBadge');
+    if (sidebarBadge) sidebarBadge.textContent = getDailyTrending(currentTrendingSeed).length;
+    // 初始渲染美食板块（必须在 loadData 预填充数据之后）
+    renderFoodRecipes();
+    renderFoodTopics();
+    renderFoodReviews();
 }
 
 function loadData() {
@@ -2994,9 +2998,6 @@ document.querySelectorAll('.modal-overlay').forEach(function(o){
     o.addEventListener('click',function(e){if(e.target===o) o.classList.remove('show');});
   }
 });
-
-// ===== 初始渲染美食板块 =====
-renderFoodRecipes(); renderFoodTopics(); renderFoodReviews();
 
 // 启动
 init();
